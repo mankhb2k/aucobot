@@ -1,17 +1,17 @@
 import { Avatar } from "@/components/ui/Avatar/Avatar";
-import type { Message, MessageApproval } from "@/types/chat";
 import { formatMessageTime } from "@/utils/chat/format-time";
 
 import { ChatMarkdown } from "../ChatMarkdown/ChatMarkdown";
+import { InlineActionBar } from "../InlineActionBar/InlineActionBar";
 import bubbleStyles from "../MessageBubble/MessageBubble.module.css";
 
 import {
   DEFAULT_APPROVAL_ACTIONS,
   resolvedApprovalLabel,
 } from "./approval-actions";
-import { InlineActionBar } from "../InlineActionBar/InlineActionBar";
 
 import styles from "./MessageActionBlock.module.css";
+import type { Message, MessageApproval } from "@/types/chat";
 
 export interface MessageActionBlockProps {
   message: Message;

@@ -1,8 +1,8 @@
-import type { Conversation } from "@/types/chat";
 
 import { ConversationItem } from "../ConversationItem/ConversationItem";
 
 import styles from "./ConversationList.module.css";
+import type { Conversation } from "@/types/chat";
 
 interface ConversationListProps {
   items: Conversation[];

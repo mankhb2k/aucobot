@@ -1,8 +1,8 @@
-import type { InlineAction } from "@/types/chat";
 
 import { ChatInlineButton } from "../ChatInlineButton/ChatInlineButton";
 
 import styles from "./InlineActionBar.module.css";
+import type { InlineAction } from "@/types/chat";
 
 export interface InlineActionBarProps {
   actions: InlineAction[];

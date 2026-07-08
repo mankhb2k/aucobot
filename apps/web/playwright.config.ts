@@ -3,7 +3,7 @@ import { defineConfig, devices } from "@playwright/test";
 const PORT = 8386;
 const baseURL = `http://localhost:${PORT}`;
 
-export default defineConfig({
+const config = defineConfig({
   testDir: "./e2e",
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
@@ -21,3 +21,5 @@ export default defineConfig({
     timeout: 120_000,
   },
 });
+
+export { config as default };

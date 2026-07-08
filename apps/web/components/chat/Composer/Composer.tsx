@@ -38,7 +38,7 @@ export function Composer({
 
   useLayoutEffect(() => {
     const el = textareaRef.current;
-    if (!el) return;
+    if (!el) return undefined;
 
     function adjustHeight() {
       if (!el) return;

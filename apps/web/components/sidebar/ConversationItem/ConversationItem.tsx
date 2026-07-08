@@ -1,10 +1,10 @@
 import { BoltIcon, UsersIcon } from "@heroicons/react/24/solid";
 
 import { Avatar } from "@/components/ui/Avatar/Avatar";
-import type { Conversation } from "@/types/chat";
 import { formatConversationTime } from "@/utils/chat/format-time";
 
 import styles from "./ConversationItem.module.css";
+import type { Conversation } from "@/types/chat";
 
 interface ConversationItemProps {
   conversation: Conversation;

@@ -2,7 +2,6 @@
 
 import { Fragment, useEffect, useRef } from "react";
 
-import type { AgentState, Message } from "@/types/chat";
 import { dayKey } from "@/utils/chat/format-time";
 
 import { AgentActivityCard } from "../AgentActivityCard/AgentActivityCard";
@@ -12,6 +11,7 @@ import { MessageBubble } from "../MessageBubble/MessageBubble";
 import { TypingIndicator } from "../TypingIndicator/TypingIndicator";
 
 import styles from "./MessageList.module.css";
+import type { AgentState, Message } from "@/types/chat";
 
 export interface MessageListProps {
   messages: Message[];

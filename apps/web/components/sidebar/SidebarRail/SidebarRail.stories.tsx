@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
 import { fn } from "storybook/test";
 
 import { SidebarRail } from "./SidebarRail";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
 const meta = {
   title: "Sidebar/SidebarRail",

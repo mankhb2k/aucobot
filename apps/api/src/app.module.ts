@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 
 import { CoreModule } from "./core/core.module";
-import { loadEnabledFeatures } from "./core/features/feature-loader";
+import { loadEnabledFeatures } from "./features/feature-registry";
 
 @Module({
   imports: [CoreModule, ...loadEnabledFeatures()],

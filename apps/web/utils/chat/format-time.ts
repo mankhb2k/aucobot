@@ -27,7 +27,7 @@ export function formatConversationTime(iso: string): string {
 
   const diffDays = Math.floor((now.getTime() - date.getTime()) / 86_400_000);
   if (diffDays < 7) {
-    return WEEKDAYS[date.getDay()]!;
+    return WEEKDAYS[date.getDay()];
   }
 
   return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}`;

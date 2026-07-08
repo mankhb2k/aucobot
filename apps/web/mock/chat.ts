@@ -1,6 +1,6 @@
+import type { Conversation, Message } from "@/types/chat";
 import type { ConversationResponse } from "@aucobot/shared";
 
-import type { Conversation, Message } from "@/types/chat";
 
 /**
  * Dữ liệu giả cho tầng chat — dùng dựng UI và trong Storybook.

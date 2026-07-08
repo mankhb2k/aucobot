@@ -1,6 +1,6 @@
+import styles from "./PanelSection.module.css";
 import type { ReactNode } from "react";
 
-import styles from "./PanelSection.module.css";
 
 export interface PanelSectionProps {
   title?: string;

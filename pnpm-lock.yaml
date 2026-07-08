@@ -23,6 +23,9 @@ importers:
       '@aucobot/database':
         specifier: workspace:*
         version: link:../../packages/database
+      '@aucobot/llm-services':
+        specifier: workspace:*
+        version: link:../../packages/llm-services
       '@aucobot/shared':
         specifier: workspace:*
         version: link:../../packages/shared

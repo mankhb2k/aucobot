@@ -26,18 +26,13 @@ export function ClientAppShell({ userName }: { userName: string }) {
     error: activeError,
   } = useActiveConversation(conversationId);
   const [createView, setCreateView] = useState<CreateView>(null);
+  const effectiveCreateView = conversationId ? null : createView;
 
   useEffect(() => {
     if (activeError && conversationId) {
       clearConversation();
     }
   }, [activeError, conversationId, clearConversation]);
-
-  useEffect(() => {
-    if (conversationId) {
-      setCreateView(null);
-    }
-  }, [conversationId]);
 
   function startCreate(type: ConversationType) {
     clearConversation();
@@ -51,7 +46,7 @@ export function ClientAppShell({ userName }: { userName: string }) {
   }
 
   const showEmptyMain =
-    !conversationId && !createView && !loading && items.length === 0;
+    !conversationId && !effectiveCreateView && !loading && items.length === 0;
 
   return (
     <div className={styles.shell} data-chat-shell>
@@ -112,9 +107,9 @@ export function ClientAppShell({ userName }: { userName: string }) {
       </aside>
 
       <section className={styles.chat}>
-        {createView ? (
+        {effectiveCreateView ? (
           <CreateConversationView
-            type={createView}
+            type={effectiveCreateView}
             onBack={() => setCreateView(null)}
             onCreated={(created) => handleCreated(created.id)}
           />

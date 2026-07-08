@@ -1,10 +1,10 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
 import { fn } from "storybook/test";
 
 import { mockConversations } from "@/mock/chat";
 
 import { ConversationList } from "./ConversationList";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
 const meta = {
   title: "Sidebar/ConversationList",
@@ -26,7 +26,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 
 export const WithActive: Story = {
-  args: { activeId: mockConversations[0]!.id },
+  args: { activeId: mockConversations[0].id },
 };
 
 export const Empty: Story = {

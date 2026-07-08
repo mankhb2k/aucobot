@@ -3,12 +3,12 @@
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import { useMemo, useState } from "react";
 
-import type { Conversation } from "@/types/chat";
 
 import { ConversationList } from "../ConversationList/ConversationList";
 import { SearchBar } from "../SearchBar/SearchBar";
 
 import styles from "./SidebarMain.module.css";
+import type { Conversation } from "@/types/chat";
 
 interface SidebarMainProps {
   items: Conversation[];

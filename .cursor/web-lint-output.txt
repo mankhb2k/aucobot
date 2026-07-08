@@ -1,0 +1,157 @@
+﻿
+> @aucobot/web@0.0.0 lint:ci D:\NextJS\aucobot\apps\web
+> eslint . --max-warnings 0
+
+
+D:\NextJS\aucobot\apps\web\.storybook\main.ts
+  0:0  error  Parsing error: D:\NextJS\aucobot\apps\web\.storybook\main.ts was not found by the project service. Consider either including it in the tsconfig.json or including it in allowDefaultProject
+
+D:\NextJS\aucobot\apps\web\.storybook\preview.tsx
+  0:0  error  Parsing error: D:\NextJS\aucobot\apps\web\.storybook\preview.tsx was not found by the project service. Consider either including it in the tsconfig.json or including it in allowDefaultProject
+
+D:\NextJS\aucobot\apps\web\app\app\_components\ClientAppShell\ClientAppShell.tsx
+  38:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\NextJS\aucobot\apps\web\app\app\_components\ClientAppShell\ClientAppShell.tsx:38:7
+  36 |   useEffect(() => {
+  37 |     if (conversationId) {
+> 38 |       setCreateView(null);
+     |       ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  39 |     }
+  40 |   }, [conversationId]);
+  41 |  react-hooks/set-state-in-effect
+
+D:\NextJS\aucobot\apps\web\app\site\_components\LandingPage\sections\FaqSection\FaqSection.tsx
+  45:23  warning  Do not use Array index in keys  react/no-array-index-key
+
+D:\NextJS\aucobot\apps\web\app\site\_components\LandingPage\sections\HeroSection\HeroSection.tsx
+  19:11  error  Unsafe assignment of an `any` value                           @typescript-eslint/no-unsafe-assignment
+  19:33  error  Unexpected any. Specify a different type                      @typescript-eslint/no-explicit-any
+  21:20  error  Unsafe member access .isFinished on an `any` value            @typescript-eslint/no-unsafe-member-access
+  21:49  error  Unsafe call of an `any` typed value                           @typescript-eslint/no-unsafe-call
+  21:53  error  Unsafe member access .isFinished on an `any` value            @typescript-eslint/no-unsafe-member-access
+  22:22  error  Unsafe member access .resetSimulation on an `any` value       @typescript-eslint/no-unsafe-member-access
+  23:9   error  Unsafe call of an `any` typed value                           @typescript-eslint/no-unsafe-call
+  23:13  error  Unsafe member access .resetSimulation on an `any` value       @typescript-eslint/no-unsafe-member-access
+  26:27  error  Unsafe member access .isPaused on an `any` value              @typescript-eslint/no-unsafe-member-access
+  26:54  error  Unsafe call of an `any` typed value                           @typescript-eslint/no-unsafe-call
+  26:58  error  Unsafe member access .isPaused on an `any` value              @typescript-eslint/no-unsafe-member-access
+  27:22  error  Unsafe member access .resumeSimulation on an `any` value      @typescript-eslint/no-unsafe-member-access
+  28:9   error  Unsafe call of an `any` typed value                           @typescript-eslint/no-unsafe-call
+  28:13  error  Unsafe member access .resumeSimulation on an `any` value      @typescript-eslint/no-unsafe-member-access
+  32:22  error  Unsafe member access .pauseSimulation on an `any` value       @typescript-eslint/no-unsafe-member-access
+  33:9   error  Unsafe call of an `any` typed value                           @typescript-eslint/no-unsafe-call
+  33:13  error  Unsafe member access .pauseSimulation on an `any` value       @typescript-eslint/no-unsafe-member-access
+  40:11  error  Unsafe assignment of an `any` value                           @typescript-eslint/no-unsafe-assignment
+  40:27  error  Unexpected any. Specify a different type                      @typescript-eslint/no-explicit-any
+  41:9   error  Unsafe member access .onSimulationFinished on an `any` value  @typescript-eslint/no-unsafe-member-access
+  42:9   error  Unsafe member access .onSimulationReset on an `any` value     @typescript-eslint/no-unsafe-member-access
+  43:9   error  Unsafe member access .onSimulationPaused on an `any` value    @typescript-eslint/no-unsafe-member-access
+  44:9   error  Unsafe member access .onSimulationResumed on an `any` value   @typescript-eslint/no-unsafe-member-access
+  47:18  error  Unsafe member access .onSimulationFinished on an `any` value  @typescript-eslint/no-unsafe-member-access
+  48:18  error  Unsafe member access .onSimulationReset on an `any` value     @typescript-eslint/no-unsafe-member-access
+  49:18  error  Unsafe member access .onSimulationPaused on an `any` value    @typescript-eslint/no-unsafe-member-access
+  50:18  error  Unsafe member access .onSimulationResumed on an `any` value   @typescript-eslint/no-unsafe-member-access
+
+D:\NextJS\aucobot\apps\web\components\chat-panel\ChatPanelHeader\ChatPanelHeader.stories.tsx
+  23:20  error  Unexpected console statement  no-console
+  24:21  error  Unexpected console statement  no-console
+
+D:\NextJS\aucobot\apps\web\components\chat-panel\ChatPanel\ChatPanel.stories.tsx
+  26:20  error  Unexpected console statement  no-console
+  27:31  error  Unexpected console statement  no-console
+  28:32  error  Unexpected console statement  no-console
+  29:31  error  Unexpected console statement  no-console
+
+D:\NextJS\aucobot\apps\web\components\chat-panel\PanelActions\PanelActions.stories.tsx
+  17:22  error  Unexpected console statement  no-console
+  18:21  error  Unexpected console statement  no-console
+
+D:\NextJS\aucobot\apps\web\components\chat\AgentActivityCard\AgentActivityCard.stories.tsx
+  94:5  error  Arrow function expected no return value  consistent-return
+
+D:\NextJS\aucobot\apps\web\components\chat\ChatArea\ChatArea.stories.tsx
+  19:31  error  Unexpected console statement  no-console
+  20:23  error  Unexpected console statement  no-console
+  21:21  error  Unexpected console statement  no-console
+  22:21  error  Unexpected console statement  no-console
+  23:22  error  Unexpected console statement  no-console
+  24:21  error  Unexpected console statement  no-console
+
+D:\NextJS\aucobot\apps\web\components\chat\ChatHeader\ChatHeader.stories.tsx
+  19:23  error  Unexpected console statement  no-console
+  20:21  error  Unexpected console statement  no-console
+  21:21  error  Unexpected console statement  no-console
+  22:22  error  Unexpected console statement  no-console
+  23:21  error  Unexpected console statement  no-console
+
+D:\NextJS\aucobot\apps\web\components\chat\ChatInlineButton\ChatInlineButton.stories.tsx
+  35:20  error  Unexpected console statement  no-console
+  58:40  error  Unexpected console statement  no-console
+  61:40  error  Unexpected console statement  no-console
+  64:40  error  Unexpected console statement  no-console
+
+D:\NextJS\aucobot\apps\web\components\chat\Composer\Composer.stories.tsx
+  17:31  error  Unexpected console statement  no-console
+  18:21  error  Unexpected console statement  no-console
+  19:20  error  Unexpected console statement  no-console
+  20:20  error  Unexpected console statement  no-console
+  21:20  error  Unexpected console statement  no-console
+
+D:\NextJS\aucobot\apps\web\components\chat\Composer\Composer.tsx
+  63:5  error  Arrow function expected no return value  consistent-return
+
+D:\NextJS\aucobot\apps\web\components\chat\MessageActionBlock\MessageActionBlock.stories.tsx
+  54:23  error  Unexpected console statement  no-console
+
+D:\NextJS\aucobot\apps\web\hooks\thread\use-active-conversation.ts
+  37:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\NextJS\aucobot\apps\web\hooks\thread\use-active-conversation.ts:37:7
+  35 |   useEffect(() => {
+  36 |     if (!conversationId) {
+> 37 |       setConversation(null);
+     |       ^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  38 |       setError(null);
+  39 |       setLoading(false);
+  40 |       return;  react-hooks/set-state-in-effect
+
+D:\NextJS\aucobot\apps\web\hooks\thread\use-conversation-list.ts
+  35:10  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\NextJS\aucobot\apps\web\hooks\thread\use-conversation-list.ts:35:10
+  33 |
+  34 |   useEffect(() => {
+> 35 |     void refetch();
+     |          ^^^^^^^ Avoid calling setState() directly within an effect
+  36 |   }, [refetch]);
+  37 |
+  38 |   return { items, loading, error, refetch };  react-hooks/set-state-in-effect
+
+D:\NextJS\aucobot\apps\web\playwright.config.ts
+  6:1  error  Use named exports ΓÇö default export only allowed in page.tsx, layout.tsx, and *.stories.tsx  no-restricted-syntax
+
+D:\NextJS\aucobot\apps\web\vitest.config.ts
+  14:1  error  Use named exports ΓÇö default export only allowed in page.tsx, layout.tsx, and *.stories.tsx  no-restricted-syntax
+
+Γ£û 66 problems (65 errors, 1 warning)
+
+ΓÇëELIFECYCLEΓÇë Command failed with exit code 1.

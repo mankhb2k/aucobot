@@ -20,6 +20,7 @@ model User {
 
   refreshTokens RefreshToken[]
   conversations Conversation[]
+  agents        Agent[]
 
   @@map("users")
 }
@@ -39,10 +40,66 @@ model Conversation {
   createdAt     DateTime         @default(now()) @map("created_at")
   updatedAt     DateTime         @updatedAt @map("updated_at")
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user     User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  members  ConversationMember[]
+  messages Message[]
 
   @@index([userId, updatedAt(sort: Desc)])
   @@map("conversations")
+}
+
+model Agent {
+  id                   String   @id @default(cuid())
+  ownerId              String?  @map("owner_id")
+  isSystem             Boolean  @default(false) @map("is_system")
+  presetId             String   @map("preset_id")
+  name                 String
+  instructionsCompiled String   @map("instructions_compiled") @db.Text
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  owner   User?                  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  members ConversationMember[]
+  messages Message[]
+
+  @@unique([presetId])
+  @@index([ownerId])
+  @@map("agents")
+}
+
+model ConversationMember {
+  id             String   @id @default(cuid())
+  conversationId String   @map("conversation_id")
+  agentId        String   @map("agent_id")
+  isDefault      Boolean  @default(false) @map("is_default")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  agent        Agent        @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, agentId])
+  @@map("conversation_members")
+}
+
+enum MessageSenderType {
+  user
+  agent
+}
+
+model Message {
+  id             String            @id @default(uuid(7))
+  conversationId String            @map("conversation_id")
+  ownerId        String            @map("owner_id")
+  senderType     MessageSenderType @map("sender_type")
+  agentId        String?           @map("agent_id")
+  content        String            @db.Text
+  createdAt      DateTime          @default(now()) @map("created_at")
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  agent        Agent?       @relation(fields: [agentId], references: [id], onDelete: SetNull)
+
+  @@index([conversationId, createdAt])
+  @@map("messages")
 }
 
 model RefreshToken {

@@ -62,7 +62,7 @@ Mọi thông điệp quảng cáo, landing page, social media và nội dung tru
 | Telegram | Aucobot |
 |----------|---------|
 | Group / Channel | **Room (Phòng)** — nhiều agent trong một phòng làm việc chung |
-| Chat 1-1 với bot / task | **Session (Phiên)** — một việc cụ thể, có thể archive sau |
+| Chat 1-1 với bot / task | **Session (Phiên)** — việc nhanh / scratch; **agent hệ thống ship sẵn**, mở là chat (kiểu ChatGPT / Gemini) |
 | Danh sách chat | Sidebar sort theo hoạt động gần nhất |
 | Contact | **💡** Danh bạ agent preset (DM riêng — phase sau) |
 
@@ -70,13 +70,18 @@ Mọi thông điệp quảng cáo, landing page, social media và nội dung tru
 
 | Có trong Phase 1 | Chưa Phase 1 (💡) |
 |------------------|-------------------|
-| Empty state: chưa có chat → user **tự tạo** | Tạo / custom agent |
-| **Tạo Phòng** (tên bắt buộc + mô tả tùy chọn) | Thêm agent vào phòng |
-| **Tạo Phiên** (một việc / goal ngắn) | DM agent từ danh bạ |
-| Sidebar list Room + Session | WebSocket stream agent |
-| Mở chat qua hash `#conversationId` | Brand kit, approval, đăng FB/TikTok |
+| **Session + Quick Assistant** — tạo phiên → chat ngay, không setup agent | WebSocket stream agent |
+| **Tạo Phiên** (goal ngắn) — auto gắn agent hệ thống | Brand kit, approval, đăng FB/TikTok |
+| **Tạo Phòng** (tên bắt buộc + mô tả tùy chọn) | Thêm user-agent vào phòng (sau khi Mother đẻ) |
+| Sidebar list Room + Session | DM agent từ danh bạ |
+| Mở chat qua hash `#conversationId` | |
+| Empty state → **Phiên chat mới** (zero ceremony) | |
 
-**Không auto-tạo phòng** khi đăng ký — giống Telegram lần đầu: user chọn **Tạo phòng** hoặc **Phiên chat mới**.
+**Không auto-tạo Room** khi đăng ký — giống Telegram: phòng marketing user **chủ động dựng**.
+
+**Session khác Room:** platform **ship sẵn Quick Assistant** (agent hệ thống). User **không** chọn agent, **không** qua Mother, **không** tag — mở phiên là gõ tin (trải nghiệm giống ChatGPT / Gemini). Dùng cho việc nhanh, ngoài lề, không ảnh hưởng context các Room khác.
+
+**User agent** (Mai, CS Bot, …) — user tạo qua **Mother**, chỉ dùng trong **Room**; không add vào Session.
 
 ### Tạo Phòng — UX giống Telegram “New Channel”
 
@@ -98,26 +103,75 @@ Mọi thông điệp quảng cáo, landing page, social media và nội dung tru
 └─────────────────────────────────┘
 ```
 
-**🔜 API:** `POST /api/conversations` `{ type: "room", title, description? }`
+**🔜 API:** `POST /api/conversations` `{ type: "room", title, description? }` → auto member `@Trợ Lý` **💡**
+
+### Tạo Phiên — UX ChatGPT / Gemini (zero setup)
+
+User **không** chọn agent, **không** wizard — chỉ đặt tên goal (vd. "Soạn caption Tết") rồi chat.
+
+```text
+┌─ Phiên chat mới ────────────────┐
+│  ← back                         │
+│  ┌─────────────────────────┐   │
+│  │ Tên phiên *              │   │  ← vd. "Brainstorm headline"
+│  └─────────────────────────┘   │
+│  ┌─────────────────────────┐   │
+│  │ Mô tả (tùy chọn)         │   │
+│  └─────────────────────────┘   │
+│                          [ → ] │  → mở chat với Quick Assistant
+└─────────────────────────────────┘
+```
+
+**🔜 API:** `POST /api/conversations` `{ type: "session", title, description? }` → backend auto-bind **Quick Assistant** (system).
+
+Empty state gợi ý **Phiên chat mới** trước **Tạo phòng** — đường vào nhanh nhất giống "New chat" ChatGPT.
 
 ### Room vs Session
 
 | | **Room (Phòng)** | **Session (Phiên)** |
 |---|------------------|---------------------|
-| Mục đích | Không gian làm việc lâu dài (team, campaign) | Một nhiệm vụ ngắn (vd. “Soạn 5 caption Tết”) |
+| Mục đích | Không gian làm việc lâu dài (team, campaign, phòng marketing) | Việc nhanh / scratch / ngoài lề — không lẫn context Room |
+| Mental model | Telegram **group** — nhiều agent, mention | **ChatGPT / Gemini** — mở là chat 1-1 |
 | Tên | User đặt (bắt buộc) | User đặt / goal ngắn |
 | Mô tả | Tùy chọn | Tùy chọn |
-| Agent | **💡** Nhiều preset trong phòng | **💡** 1 assistant mặc định |
+| Agent | **User agents** (Mother đẻ) + **`@Trợ Lý`** (system orchestrator) | **`Quick Assistant`** (system) — ship sẵn, **1 agent cố định** |
+| Chọn agent lúc tạo? | Không bắt buộc — add sau từ danh bạ | **Không** — backend auto-bind Quick Assistant |
+| Routing tin nhắn | **Mention-only** (không tag → không ai trả lời) | **Luôn trả lời** — không cần tag |
+| Orchestrator | Có `@Trợ Lý` (auto-provision) | **Không** — thừa cho 1-1 |
 | Icon sidebar | 👥 group | ⚡ task |
+
+### System agents vs User agents (đã chốt hướng)
+
+Hai tầng agent — **không gộp**:
+
+| Tầng | `ownerId` | Ai tạo | Ví dụ | Dùng ở đâu |
+|------|-----------|--------|-------|------------|
+| **System** | `null` · `isSystem: true` | Platform seed / provision | **Quick Assistant**, **@Trợ Lý**, **Mother** | Session · Room · onboarding |
+| **User** | `userId` | User qua Mother → `POST /api/agents` | Mai Content, CS Bot, … | **Room** — add từ danh bạ |
+
+| System agent | `presetId` | Vai trò |
+|--------------|------------|---------|
+| **Quick Assistant** | `quick-assistant` | Gắn **mọi Session** — chat zero-setup, việc nhanh |
+| **@Trợ Lý** | `orchestrator` | Auto **mọi Room** — dispatch user-agent theo mention |
+| **Mother** | `mother` | Onboarding — **chỉ đẻ** user agent (BotFather-style) |
+
+**Quy tắc enforce (planned):**
+
+- `POST session` → auto `ConversationMember` Quick Assistant (`isDefault: true`, không remove)
+- User **không** add user-agent vào Session (API reject)
+- User agent **không** tự vào Session khi Mother tạo xong
+- Mỗi Session = thread riêng — history/memory scope theo `conversationId`, không leak sang Room
+
+Module: [`core/agents/`](apps/api/src/core/agents/README.md) — CRUD user agent, seed system agents, `AgentResolver`.
 
 ### Agent vs Bot — **💡 ý tưởng** (hai loại "người làm việc")
 
-Trong mỗi Room/Session, user có hai loại "trợ lý" bổ trợ nhau — **Agent** (linh hoạt, suy nghĩ) và **Bot** (cố định, chạy workflow). Cùng ý tưởng Telegram: vừa có bot thông minh, vừa có bot lệnh cứng.
+Trong mỗi **Room**, user có **Agent user** (linh hoạt, Mother đẻ) và **Bot** (workflow cố định). **Session** chỉ dùng **Quick Assistant** (system) — không mix user-agent vào phiên scratch.
 
 | | **Agent** 🧠 | **Bot** ⚙️ |
 |---|-------------|-----------|
 | Bản chất | AI reasoning — hiểu ngôn ngữ, tự quyết, gọi tool linh hoạt | Workflow **cố định** cho một việc cụ thể — **không suy nghĩ** |
-| Ai tạo | **User tạo** (setup wizard) — Mother đẻ | **Agent lắp ráp** từ **Block** hệ thống (glue); thiếu Block → JS inline user kiểm soát |
+| Ai tạo | **User** (Mother wizard) hoặc **System** (Quick Assistant, @Trợ Lý, Mother) | **Agent lắp ráp** từ **Block** hệ thống (glue); thiếu Block → JS inline user kiểm soát |
 | Cách chạy | LLM (Vercel AI SDK) + tool calling, kết quả không định trước | Thực thi **JavaScript đơn giản** — deterministic, input → output rõ ràng |
 | Chi phí / tốc độ | Tốn token, chậm hơn, "đắt" | Rẻ, nhanh, chạy lặp lại ổn định |
 | Ví dụ | "Viết 5 caption Tết theo brand kit rồi lên lịch" | "Mỗi 9h sáng lấy post nhiều like nhất tuần → gửi báo cáo" |
@@ -282,8 +336,8 @@ User → @Trợ Lý "làm X cần A rồi B"
 | Reply vào tin của agent | Tiếp tục ngữ cảnh với agent đó, khỏi tag lại |
 | Không tag (Room) | **Không ai trả lời** — tránh nhiễu + tốn token |
 
-- **Session (chat 1-1):** **không có orchestrator** — thừa. Trợ lý mặc định trả lời mọi tin.
-- **Auto-provision:** mỗi Room tự có sẵn `@Trợ Lý` — user không cấu hình gì.
+- **Session (chat 1-1):** **không có orchestrator** — route luôn tới **Quick Assistant** (system). Mọi tin user gửi đều có reply — **không tag** (giống ChatGPT / Gemini).
+- **Auto-provision:** mỗi **Room** tự có sẵn `@Trợ Lý`; mỗi **Session** tự có sẵn **Quick Assistant** — user không cấu hình agent lúc tạo phiên/phòng.
 
 #### 3 — Định tuyến 2 lớp: LỌC cứng + CHỌN mềm
 
@@ -361,19 +415,32 @@ Conversation                    # ✅ Room hoặc Session
   title, description?
   lastMessageAt, createdAt
 
-Message                         # 💡 kế tiếp — agent marketing reply
+Agent                           # 💡 core/agents/
+  id, ownerId?                   # null = system agent (Quick Assistant, @Trợ Lý, Mother)
+  isSystem, presetId             # quick-assistant | orchestrator | mother | custom
+  name, instructionsCompiled, enabledSkillGroups, …
+
+Message                         # 💡 kế tiếp — agent reply
   id, conversationId, ownerId    # mang ownerId để sau shard theo tenant
   senderType: user | agent | system
-  content, createdAt
+  agentId?, content, createdAt
 
-ConversationMember              # 💡 Vòng 2 — mời đồng nghiệp / gắn agent
+ConversationMember              # 💡 Phase 1 agents — gắn agent ↔ hội thoại
   conversationId
   memberType: user | agent
   userId? | agentId?
+  isDefault                      # session → Quick Assistant (true)
   role: owner | admin | member | viewer
 ```
 
-**Module API:** `core/conversations/` — **✅ đã implement** (CRUD Room + Session). Mọi truy cập đi qua **1 checkpoint** — xem [Chiến lược mở rộng](#chiến-lược-mở-rộng-mvp-đơn-nhất--super-app-cộng-tác).
+**Provision khi tạo hội thoại (planned):**
+
+| `type` | Auto member |
+|--------|-------------|
+| `session` | **Quick Assistant** (`isSystem`, `isDefault: true`) |
+| `room` | **@Trợ Lý** (`isSystem` orchestrator) — user add user-agent sau |
+
+**Module API:** `core/conversations/` — **✅** CRUD Room + Session. `core/agents/` — **💡** system seed + user CRUD + resolve. Mọi truy cập đi qua **1 checkpoint** — xem [Chiến lược mở rộng](#chiến-lược-mở-rộng-mvp-đơn-nhất--super-app-cộng-tác).
 
 ### URL & routing — **✅ đã làm (web)**
 
@@ -416,7 +483,10 @@ WebSocket **💡:** `WSS /api/ws/conversations/:id` (tên cũ trong doc: `.../de
 | API conversations CRUD | ✅ |
 | UI tạo phòng (Telegram-style form) | ✅ |
 | UI tạo phiên | ✅ |
-| Agent preset catalog + add vào phòng | 💡 |
+| UI tạo phiên (Quick Assistant auto-bind 💡) | ✅ form · 🔜 backend member |
+| Quick Assistant (system) + chat zero-setup | 🔜 `core/agents/` seed + resolver |
+| User agent catalog + Mother wizard | 💡 |
+| Add user-agent vào Room | 💡 |
 | DM agent (danh bạ) | 💡 |
 | AI reply + WebSocket stream | 💡 |
 
@@ -427,9 +497,9 @@ WebSocket **💡:** `WSS /api/ws/conversations/:id` (tên cũ trong doc: `.../de
 ### Ưu tiên phát triển
 
 ```text
-✅ Đã làm:     Auth, web shell, landing, hash routing, Docker API, CI
-🔜 Phase 1:    Conversation (Room + Session) — CRUD + UI tạo phòng Telegram-style
-💡 Sau Phase 1: Agent preset, MCP social, approval, publish, BullMQ worker
+✅ Đã làm:     Auth, web shell, landing, hash routing, conversations CRUD, Docker API, CI
+🔜 Phase 1:    Quick Assistant (session zero-setup) + messages + stream
+💡 Sau Phase 1: User agents (Mother), Room orchestrator, MCP social, approval, publish, BullMQ worker
 ```
 
 ### Mô hình sản phẩm dài hạn — **💡 ý tưởng** (trong mỗi Room)
@@ -454,16 +524,17 @@ User
 |---|-----------|---------------|
 | 1 | **Auth + session** | ✅ Passport + JWT httpOnly cookie |
 | 2 | **OAuth Facebook + TikTok** | 💡 Lưu token encrypt trong `social_accounts` |
-| 3 | **Room / Session CRUD** | 🔜 Phase 1 — thay Department CRUD |
-| 4 | **Agent preset + setup** | 💡 Wizard → system prompt từ form |
-| 5 | **Tool allowlist / agent** | 💡 MCP tools per agent |
-| 6 | **MCP tools — social** | 💡 |
-| 7 | **MCP tools — knowledge** | 💡 |
-| 8 | **Human-in-the-loop** | 💡 |
-| 9 | **BullMQ worker** | 💡 |
-| 10 | **Task / job status API** | 💡 |
-| 11 | **Audit log** | 💡 |
-| 12 | **Agent memory / learning** | 💡 |
+| 3 | **Room / Session CRUD** | ✅ conversations · 🔜 auto-bind system agent |
+| 4 | **Quick Assistant (Session)** | 🔜 System agent ship sẵn — chat zero-setup |
+| 5 | **User agent + Mother** | 💡 Wizard → user agent cho Room |
+| 6 | **Tool allowlist / agent** | 💡 MCP tools per agent |
+| 7 | **MCP tools — social** | 💡 |
+| 8 | **MCP tools — knowledge** | 💡 |
+| 9 | **Human-in-the-loop** | 💡 |
+| 10 | **BullMQ worker** | 💡 |
+| 11 | **Task / job status API** | 💡 |
+| 12 | **Audit log** | 💡 |
+| 13 | **Agent memory / learning** | 💡 |
 
 ### Agent setup wizard — **💡 ý tưởng** (API contract)
 
@@ -535,7 +606,7 @@ API **💡:** `GET /api/conversations/:id/approvals`, `POST /api/approvals/:id/a
 |-------|---------|
 | `Conversation` | Room hoặc Session — **thay `Department`** |
 | `Message` | Tin nhắn trong hội thoại |
-| `Agent` | Agent AI (user tạo) — reasoning, tool calling |
+| `Agent` | Agent AI — **system** (Quick Assistant, @Trợ Lý, Mother) + **user** (Mother đẻ, dùng trong Room) |
 | `Block` | Khối Lego hệ thống (vetted catalog) — đơn vị 1-việc để agent ghép |
 | `Bot` | Automation (Block ghép + glue) — con trỏ version active + owner/tier; user bật/tắt/sửa/xóa |
 | `BotTemplate` | Khung workflow hướng dẫn Agent nối Block (trigger `schedule`/`event`/`agent-invoked`) |
@@ -561,7 +632,7 @@ API **💡:** `GET /api/conversations/:id/approvals`, `POST /api/approvals/:id/a
 
 | Vòng | Ai dùng | Năng lực | Trạng thái |
 |------|---------|----------|------------|
-| **1 — MVP cá nhân** | 1 user | Room/Session cá nhân + AI agent **marketing** (Content) | 🔜 trọng tâm hiện tại |
+| **1 — MVP cá nhân** | 1 user | Session (Quick Assistant, chat ngay) + Room shell; user-agent marketing **💡** | 🔜 trọng tâm hiện tại |
 | **2 — Cộng tác** | User + đồng nghiệp | Mời bạn vào Room (Telegram-style), giao việc, xem chung, nhiều agent / room | 💡 |
 | **3 — Super app** | Team / Org | **RBAC** phân quyền: ai được dùng agent nào; workspace/org; billing team | 💡 |
 
@@ -585,9 +656,10 @@ Trọng tâm code **bây giờ chỉ là Vòng 1**. Vòng 2–3 chỉ cần **ch
 
 ```text
 Vòng 1 (MVP)       Conversation.ownerId = userId
+                   + ConversationMember(agent) — session→Quick Assistant, room→@Trợ Lý  💡
                    access = (ownerId == me)                     ← 1 method
 
-Vòng 2 (cộng tác)  + ConversationMember(conversationId, userId|agentId, role)
+Vòng 2 (cộng tác)  + ConversationMember(user) — mời đồng nghiệp
                    backfill: mỗi conversation → 1 member (owner)
                    access = EXISTS(member)                      ← sửa đúng 1 method
 
@@ -885,7 +957,7 @@ Core gồm **4 lớp**. Tắt bất kỳ feature nào, core vẫn chạy — app
 | Module | Vai trò |
 |--------|---------|
 | `conversations/` | Room + Session — CRUD, messages **🔜** (folder cũ: `departments/`) |
-| `agents/` | Agent registry: role, instructions, **tool allowlist** (tools lấy từ plugin registry) |
+| `agents/` | **💡** System agents (Quick Assistant, @Trợ Lý, Mother) + user CRUD + `AgentResolver` + tool allowlist |
 
 **`common/` chi tiết:**
 
@@ -1145,7 +1217,8 @@ aucobot/
 │   └── llm-services/            # Vercel AI SDK + Together AI
 │
 ├── docker-compose.yml           # PostgreSQL local
-├── .env.example
+├── .env.dev.example             # Mẫu env development (commit)
+├── .env.pro.example             # Mẫu env production (commit)
 ├── .npmrc                       # Cấu hình pnpm
 ├── pnpm-lock.yaml               # Lockfile (pnpm only)
 ├── package.json
@@ -1553,7 +1626,7 @@ TIKTOK_CLIENT_SECRET=
 | Key quảng cáo: **「Xây dựng Phòng Marketing Ảo」** | ✅ (marketing); Room = tên kỹ thuật |
 | Kiến trúc **core + features (plugin)** | ✅ doc; 💡 implement dần |
 | Giao thức **REST + WebSocket** | ✅ chốt; 💡 WS gateway |
-| Agent preset, MCP, approval, publish | 💡 |
+| Agent preset, MCP, approval, publish | 💡 (user agents + Room; Session dùng Quick Assistant) |
 | BullMQ worker | 💡 |
 | Frontend `STRUCTURE.md` + ESLint | ✅ |
 | Frontend CSS Modules + Storybook | 💡 |

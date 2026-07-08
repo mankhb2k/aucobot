@@ -3,8 +3,8 @@ import { ApiCookieAuth, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swa
 
 import { CurrentUser } from "../common/decorators/current-user.decorator";
 
-import { ConversationsService } from "./conversations.service";
 import { CreateConversationDto } from "./dto/create-conversation.dto";
+import { ConversationsService } from "./service/conversations/conversations.service";
 
 import type { AuthenticatedUser } from "../common/decorators/current-user.decorator";
 import type { ConversationListResponse, ConversationResponse } from "@aucobot/shared";

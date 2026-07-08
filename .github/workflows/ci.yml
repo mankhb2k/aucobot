@@ -15,10 +15,10 @@ env:
   NEXT_PUBLIC_API_URL: https://api.aucobot.com
 
 jobs:
-  ci:
-    name: Lint, test, typecheck, build
+  lint-api:
+    name: Lint API
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
@@ -42,10 +42,69 @@ jobs:
         run: pnpm db:generate
 
       - name: Build workspace packages for ESLint
-        run: pnpm --filter @aucobot/shared --filter @aucobot/database build
+        run: pnpm --filter @aucobot/shared --filter @aucobot/database --filter @aucobot/llm-services build
 
       - name: Lint API
         run: pnpm --filter @aucobot/api lint:ci
+
+  lint-web:
+    name: Lint Web
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared package for ESLint
+        run: pnpm --filter @aucobot/shared build
+
+      - name: Lint Web
+        run: pnpm --filter @aucobot/web lint:ci
+
+  test-build:
+    name: Test, typecheck, build
+    runs-on: ubuntu-latest
+    needs: [lint-api, lint-web]
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm db:generate
+
+      - name: Build workspace packages
+        run: pnpm --filter @aucobot/shared --filter @aucobot/database --filter @aucobot/llm-services build
 
       - name: Test API
         run: pnpm --filter @aucobot/api test

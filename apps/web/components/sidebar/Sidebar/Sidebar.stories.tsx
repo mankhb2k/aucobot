@@ -1,10 +1,10 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
 import { fn } from "storybook/test";
 
 import { mockConversations } from "@/mock/chat";
 
 import { Sidebar } from "./Sidebar";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
 const meta = {
   title: "Sidebar/Sidebar",
@@ -13,7 +13,7 @@ const meta = {
   args: {
     userName: "Nguyễn An",
     items: mockConversations,
-    activeConversationId: mockConversations[0]!.id,
+    activeConversationId: mockConversations[0].id,
     onSelectConversation: fn(),
     onNewConversation: fn(),
     onOpenSettings: fn(),

@@ -96,7 +96,13 @@ const appLayerRestrictions = {
 };
 
 export default tseslint.config({
-  ignores: [".next/**", "node_modules/**", "next-env.d.ts", "eslint.config.mjs"],
+  ignores: [
+    ".next/**",
+    "node_modules/**",
+    "next-env.d.ts",
+    "eslint.config.mjs",
+    "public/**",
+  ],
 }, eslint.configs.recommended, ...nextVitals, ...tseslint.configs.recommendedTypeChecked, {
   files: ["**/*.{ts,tsx}"],
   languageOptions: {

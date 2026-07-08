@@ -9,14 +9,14 @@ import {
   Send,
   Zap,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 
 import { Avatar } from "@/components/ui/Avatar/Avatar";
-import type { AgentActionKind, AgentActivity } from "@/types/chat";
 
 import bubbleStyles from "../MessageBubble/MessageBubble.module.css";
 
 import styles from "./AgentActivityCard.module.css";
+import type { AgentActionKind, AgentActivity } from "@/types/chat";
+import type { LucideIcon } from "lucide-react";
 
 export interface AgentActivityCardProps {
   activities: AgentActivity[];

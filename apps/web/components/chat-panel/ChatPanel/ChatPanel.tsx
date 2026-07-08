@@ -7,7 +7,6 @@ import {
   formatFullDate,
 } from "@/utils/chat/format-time";
 
-import type { ConversationResponse } from "@aucobot/shared";
 
 import { ChatPanelHeader } from "../ChatPanelHeader/ChatPanelHeader";
 import { ChatPanelIdentity } from "../ChatPanelIdentity/ChatPanelIdentity";
@@ -17,6 +16,7 @@ import { PanelInfoRow } from "../PanelInfoRow/PanelInfoRow";
 import { PanelSection } from "../PanelSection/PanelSection";
 
 import styles from "./ChatPanel.module.css";
+import type { ConversationResponse } from "@aucobot/shared";
 
 const TYPE_LABEL = {
   room: "Phòng",

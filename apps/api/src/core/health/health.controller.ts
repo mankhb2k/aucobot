@@ -3,7 +3,7 @@ import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 import { Public } from "../common/decorators/public.decorator";
 
-import { HealthService } from "./health.service";
+import { HealthService } from "./service/health/health.service";
 
 import type { HealthResponse } from "@aucobot/shared";
 

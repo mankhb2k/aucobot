@@ -1,14 +1,14 @@
 "use client";
 
-import type { AgentState, Message } from "@/types/chat";
 
-import type { ConversationResponse } from "@aucobot/shared";
 
 import { ChatHeader } from "../ChatHeader/ChatHeader";
 import { Composer } from "../Composer/Composer";
 import { MessageList } from "../MessageList/MessageList";
 
 import styles from "./ChatArea.module.css";
+import type { AgentState, Message } from "@/types/chat";
+import type { ConversationResponse } from "@aucobot/shared";
 
 export interface ChatAreaProps {
   conversation: ConversationResponse;

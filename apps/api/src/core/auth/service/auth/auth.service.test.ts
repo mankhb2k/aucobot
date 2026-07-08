@@ -6,7 +6,7 @@ import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
 
 import { PrismaService } from "../../../database/prisma.service";
-import { EmailService } from "../../../email/service/email.service";
+import { EmailService } from "../../../email/service/email/email.service";
 import { OtpRateLimitService } from "../otp-rate-limit/otp-rate-limit.service";
 
 import { AuthService } from "./auth.service";
@@ -75,6 +75,7 @@ describe("AuthService", () => {
         emailOtpResendCooldownSeconds: 60,
         emailOtpMaxAttempts: 5,
         emailOtpHmacSecret: OTP_HMAC_SECRET,
+        devAuthEmail: "dev@aucobot.local",
       };
 
       return values[key];
@@ -417,6 +418,50 @@ describe("AuthService", () => {
 
       expect(authService.decodeAccessExpiresAt(undefined)).toBeNull();
       expect(authService.decodeAccessExpiresAt("bad-token")).toBeNull();
+    });
+  });
+
+  describe("devLogin", () => {
+    it("creates a verified dev user and issues tokens", async () => {
+      const created = mockUser({ email: "dev@aucobot.local", name: "Dev User" });
+      prisma.user.findUnique.mockResolvedValue(null);
+      prisma.user.create.mockResolvedValue(created);
+      prisma.refreshToken.create.mockResolvedValue({ id: "rt-1" });
+
+      const result = await authService.devLogin();
+
+      expect(prisma.user.create).toHaveBeenCalledWith({
+        data: {
+          email: "dev@aucobot.local",
+          name: "Dev User",
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- jest asymmetric matcher
+          emailVerifiedAt: expect.any(Date),
+        },
+      });
+      expect(result.user.email).toBe("dev@aucobot.local");
+      expect(result.accessToken).toBe("jwt-token");
+    });
+
+    it("reuses existing dev user and verifies email if needed", async () => {
+      const existing = mockUser({
+        email: "dev@aucobot.local",
+        emailVerifiedAt: null,
+      });
+      const updated = mockUser({ email: "dev@aucobot.local" });
+      prisma.user.findUnique.mockResolvedValue(existing);
+      prisma.user.update.mockResolvedValue(updated);
+      prisma.refreshToken.create.mockResolvedValue({ id: "rt-1" });
+
+      const result = await authService.devLogin();
+
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { id: existing.id },
+        data: {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- jest asymmetric matcher
+          emailVerifiedAt: expect.any(Date),
+        },
+      });
+      expect(result.user.email).toBe("dev@aucobot.local");
     });
   });
 

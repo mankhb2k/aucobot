@@ -1,5 +1,6 @@
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 
+import { AgentsModule } from "./agents/agents.module";
 import { AuthModule } from "./auth/auth.module";
 import { CommonModule } from "./common/common.module";
 import { RequestIdMiddleware } from "./common/middleware/request-id.middleware";
@@ -21,6 +22,7 @@ import { RedisModule } from "./redis/redis.module";
     RedisModule,
     AuthModule,
     HealthModule,
+    AgentsModule,
     ConversationsModule,
   ],
 })

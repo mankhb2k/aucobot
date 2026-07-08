@@ -18,9 +18,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/Dropdown/Dropdown";
 
+import styles from "./ChatHeader.module.css";
 import type { ConversationResponse } from "@aucobot/shared";
 
-import styles from "./ChatHeader.module.css";
 
 const TYPE_LABEL = {
   room: "Phòng",

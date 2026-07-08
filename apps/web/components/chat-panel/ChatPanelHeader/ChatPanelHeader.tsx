@@ -2,9 +2,9 @@
 
 import { PencilSquareIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
+import styles from "./ChatPanelHeader.module.css";
 import type { ConversationType } from "@aucobot/shared";
 
-import styles from "./ChatPanelHeader.module.css";
 
 const PANEL_TITLE = {
   room: "Thông tin phòng",

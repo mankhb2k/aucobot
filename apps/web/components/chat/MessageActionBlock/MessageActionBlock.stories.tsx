@@ -1,8 +1,8 @@
 import { useState } from "react";
 
+import { MessageActionBlock } from "./MessageActionBlock";
 import type { Message } from "@/types/chat";
 
-import { MessageActionBlock } from "./MessageActionBlock";
 
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 

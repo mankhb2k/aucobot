@@ -17,6 +17,7 @@ function readEnv(): EnvConfig {
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL,
+    DEV_AUTH_EMAIL: process.env.DEV_AUTH_EMAIL,
     SWAGGER_ENABLED: process.env.SWAGGER_ENABLED,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     EMAIL_FROM: process.env.EMAIL_FROM,
@@ -29,6 +30,8 @@ function readEnv(): EnvConfig {
     EMAIL_OTP_IP_WINDOW_SECONDS: process.env.EMAIL_OTP_IP_WINDOW_SECONDS,
     EMAIL_OTP_HMAC_SECRET: process.env.EMAIL_OTP_HMAC_SECRET,
     ENABLED_FEATURES: process.env.ENABLED_FEATURES,
+    TOGETHER_API_KEY: process.env.TOGETHER_API_KEY,
+    TOGETHER_MODEL: process.env.TOGETHER_MODEL,
   });
 }
 
@@ -52,6 +55,7 @@ export const appConfig = () => {
     googleClientId: env.GOOGLE_CLIENT_ID,
     googleClientSecret: env.GOOGLE_CLIENT_SECRET,
     googleCallbackUrl: env.GOOGLE_CALLBACK_URL,
+    devAuthEmail: env.DEV_AUTH_EMAIL,
     swaggerEnabled: env.NODE_ENV === "production" ? env.SWAGGER_ENABLED : true,
     resendApiKey: env.RESEND_API_KEY,
     emailFrom: env.EMAIL_FROM,
@@ -64,6 +68,8 @@ export const appConfig = () => {
     emailOtpIpWindowSeconds: env.EMAIL_OTP_IP_WINDOW_SECONDS,
     emailOtpHmacSecret: env.EMAIL_OTP_HMAC_SECRET ?? env.JWT_SECRET,
     enabledFeatures: env.ENABLED_FEATURES,
+    togetherApiKey: env.TOGETHER_API_KEY,
+    togetherModel: env.TOGETHER_MODEL,
   };
 };
 

@@ -10,6 +10,19 @@ export {
 } from "./conversations";
 
 export {
+  createMessageSchema,
+  messageListResponseSchema,
+  messageResponseSchema,
+  messageSenderTypeSchema,
+  sendMessageResponseSchema,
+  type CreateMessageInput,
+  type MessageListResponse,
+  type MessageResponse,
+  type MessageSenderType,
+  type SendMessageResponse,
+} from "./messages";
+
+export {
   emailOtpPurposeSchema,
   resendEmailCodeSchema,
   sendEmailCodeSchema,
@@ -48,4 +61,25 @@ export interface AuthSessionMeta {
 export interface AuthSuccessResponse {
   user: UserResponse;
   accessExpiresAt: string;
+}
+
+export interface DevLoginCookieInfo {
+  name: string;
+  value: string;
+  path: string;
+  httpOnly: boolean;
+  sameSite: "lax";
+  secure: boolean;
+  maxAgeMs: number;
+}
+
+export interface DevLoginResponse {
+  ok: true;
+  user: UserResponse;
+  accessExpiresAt: string;
+  cookies: {
+    access_token: DevLoginCookieInfo;
+    refresh_token: DevLoginCookieInfo;
+  };
+  cookieUsageNote: string;
 }

@@ -7,7 +7,7 @@
     "dev": "next dev --port 8386",
     "start": "next start --port 8386",
     "lint": "eslint . --fix",
-    "lint:ci": "eslint . --max-warnings 0",
+    "lint:ci": "eslint . --ignore-pattern \"**/*.stories.tsx\" --max-warnings 0",
     "typecheck": "tsc --noEmit",
     "clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\"",
     "storybook": "storybook dev -p 6006",

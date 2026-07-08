@@ -13,7 +13,8 @@
     "db:generate": "pnpm --filter @aucobot/database db:generate",
     "db:migrate": "pnpm --filter @aucobot/database db:migrate",
     "db:push": "pnpm --filter @aucobot/database db:push",
-    "db:studio": "pnpm --filter @aucobot/database db:studio"
+    "db:studio": "pnpm --filter @aucobot/database db:studio",
+    "docker:api:release": "powershell -ExecutionPolicy Bypass -File scripts/docker-api.ps1"
   },
   "devDependencies": {
     "only-allow": "^1.2.1",

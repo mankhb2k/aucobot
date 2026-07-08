@@ -35,16 +35,21 @@ COPY tsconfig.json ./
 COPY apps/api ./apps/api
 COPY packages/database ./packages/database
 COPY packages/shared ./packages/shared
+COPY packages/llm-services ./packages/llm-services
 
 ENV DATABASE_URL="postgresql://build:build@localhost:5432/build?schema=public"
 
 RUN pnpm db:generate \
   && pnpm --filter @aucobot/database build \
   && pnpm --filter @aucobot/shared build \
+  && pnpm --filter @aucobot/llm-services build \
   && pnpm --filter @aucobot/api build
 
 # --- runner: production image ---
 FROM base AS runner
+
+ARG IMAGE_VERSION=dev
+LABEL org.opencontainers.image.version=$IMAGE_VERSION
 
 ENV NODE_ENV=production
 ENV NODE_PATH="/app/node_modules/.pnpm/node_modules"
@@ -67,6 +72,9 @@ COPY docker/api-entrypoint.sh /app/docker/api-entrypoint.sh
 RUN sed -i 's/\r$//' /app/docker/api-entrypoint.sh && chmod +x /app/docker/api-entrypoint.sh
 
 EXPOSE 8387
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
+  CMD node -e "fetch('http://127.0.0.1:'+(process.env.API_PORT||process.env.PORT||8387)+'/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
 # Railway sets PORT; app.config maps PORT → API_PORT when API_PORT is unset
 CMD ["/app/docker/api-entrypoint.sh"]

@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
   Post,
   Req,
   Res,
@@ -26,6 +27,7 @@ import { getClientIp } from "../common/utils/get-client-ip.util";
 
 import {
   ACCESS_TOKEN_COOKIE,
+  buildDevLoginCookieInfo,
   clearAuthCookies,
   readCookieValue,
   REFRESH_TOKEN_COOKIE,
@@ -38,7 +40,11 @@ import { VerifyEmailCodeDto } from "./dto/verify-email-code.dto";
 import { AuthService, type AuthUser } from "./service/auth/auth.service";
 
 import type { AuthenticatedUser } from "../common/decorators/current-user.decorator";
+import type { DevLoginResponse } from "@aucobot/shared";
 import type { Request, Response } from "express";
+
+const DEV_LOGIN_COOKIE_USAGE_NOTE =
+  "Giá trị cookies bên dưới chỉ dùng khi client (vd. Postman) chưa tự lưu Set-Cookie từ response header.";
 
 @ApiTags("Auth")
 @Controller("auth")
@@ -136,6 +142,33 @@ export class AuthController {
   @ApiOkResponse({ description: "User profile from JWT" })
   getMe(@CurrentUser() user: AuthenticatedUser) {
     return this.authService.getMe(user.userId);
+  }
+
+  @Public()
+  @Post("dev-login")
+  @ApiOperation({
+    summary: "Development only — sign in as DEV_AUTH_EMAIL without OTP/OAuth",
+  })
+  @ApiOkResponse({
+    description:
+      "Sets auth cookies; JSON includes cookie values for manual Postman setup",
+  })
+  async devLogin(@Res({ passthrough: true }) res: Response): Promise<DevLoginResponse> {
+    if (this.configService.get<string>("nodeEnv") !== "development") {
+      throw new NotFoundException();
+    }
+
+    const tokens = await this.authService.devLogin();
+    const cookieMaxAge = this.getCookieMaxAge();
+    setAuthCookies(res, tokens, cookieMaxAge);
+
+    return {
+      ok: true,
+      user: tokens.user,
+      accessExpiresAt: tokens.accessExpiresAt,
+      cookies: buildDevLoginCookieInfo(tokens, cookieMaxAge),
+      cookieUsageNote: DEV_LOGIN_COOKIE_USAGE_NOTE,
+    };
   }
 
   // --- Google OAuth ---

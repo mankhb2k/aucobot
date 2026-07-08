@@ -1,6 +1,6 @@
+import styles from "./PanelFutureRow.module.css";
 import type { ComponentType, SVGProps } from "react";
 
-import styles from "./PanelFutureRow.module.css";
 
 export interface PanelFutureRowProps {
   icon: ComponentType<SVGProps<SVGSVGElement>>;

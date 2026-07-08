@@ -2,9 +2,9 @@
 
 import { ArchiveBoxIcon, TrashIcon } from "@heroicons/react/24/outline";
 
+import styles from "./PanelActions.module.css";
 import type { ConversationType } from "@aucobot/shared";
 
-import styles from "./PanelActions.module.css";
 
 export interface PanelActionsProps {
   type: ConversationType;

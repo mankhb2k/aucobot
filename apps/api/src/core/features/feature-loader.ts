@@ -5,20 +5,12 @@ import type { DynamicModule, Type } from "@nestjs/common";
 type FeatureModule = Type<unknown> | DynamicModule;
 
 /**
- * Registry feature → module. **Thêm feature = thêm 1 dòng ở đây.**
- *
- * Rỗng ở MVP (chưa có feature module). Ví dụ tương lai:
- *   facebook: () => FacebookModule,
- *   publishing: () => PublishingModule,
+ * Registry feature → module (legacy stub in core).
+ * **Đăng ký feature thật:** `src/features/feature-registry.ts`
  */
 const FEATURE_REGISTRY: Partial<Record<FeatureId, () => FeatureModule>> = {};
 
-/**
- * Trả về các feature module được bật (đọc `ENABLED_FEATURES` lúc bootstrap).
- * Dùng trong `app.module.ts`: `imports: [CoreModule, ...loadEnabledFeatures()]`.
- *
- * Feature tắt (không có trong env) → module **không được nạp** vào app.
- */
+/** @deprecated Prefer `loadEnabledFeatures` from `src/features/feature-registry.ts` */
 export function loadEnabledFeatures(): FeatureModule[] {
   return parseEnabledFeatures(process.env.ENABLED_FEATURES)
     .map((id) => FEATURE_REGISTRY[id]?.())

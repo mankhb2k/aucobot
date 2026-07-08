@@ -10,7 +10,7 @@ import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 
 import { PrismaService } from "../../../database/prisma.service";
-import { EmailService } from "../../../email/service/email.service";
+import { EmailService } from "../../../email/service/email/email.service";
 import { OtpRateLimitService } from "../otp-rate-limit/otp-rate-limit.service";
 
 import type { User } from "@aucobot/database";
@@ -266,6 +266,13 @@ export class AuthService {
     });
   }
 
+  async devLogin(): Promise<TokenPair> {
+    const email = this.configService.getOrThrow<string>("devAuthEmail");
+    const user = await this.findOrCreateDevUser(email);
+
+    return this.issueTokenPair(user);
+  }
+
   async issueTokenPair(user: User): Promise<TokenPair> {
     const accessToken = await this.jwtService.signAsync({
       sub: user.id,
@@ -354,6 +361,32 @@ export class AuthService {
 
   private normalizeEmail(email: string): string {
     return email.trim().toLowerCase();
+  }
+
+  private async findOrCreateDevUser(email: string): Promise<User> {
+    const normalizedEmail = this.normalizeEmail(email);
+    const existing = await this.prisma.user.findUnique({
+      where: { email: normalizedEmail },
+    });
+
+    if (existing) {
+      if (existing.emailVerifiedAt) {
+        return existing;
+      }
+
+      return this.prisma.user.update({
+        where: { id: existing.id },
+        data: { emailVerifiedAt: new Date() },
+      });
+    }
+
+    return this.prisma.user.create({
+      data: {
+        email: normalizedEmail,
+        name: "Dev User",
+        emailVerifiedAt: new Date(),
+      },
+    });
   }
 
   private getOtpExpiresInSeconds(): number {

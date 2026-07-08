@@ -36,7 +36,7 @@ app.aucobot.com/#1244557231   chat department
 | `localhost:8386` | Marketing + `/login`, `/register` |
 | `app.localhost:8386` | Chat shell |
 
-**Env:** API đọc `../../.env` · Next đọc `apps/web/.env.local` (mẫu: `.env.local.example`).
+**Env:** API đọc `../../.env` (local, gitignored) · mẫu repo: `.env.dev.example` / `.env.pro.example` · Next: `apps/web/.env.local` (mẫu: `.env.local.example`).
 
 ## Trạng thái
 

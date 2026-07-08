@@ -1,5 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import {
+  getChatSimulatorHostWindow,
+  getSimulatorFromIframe,
+} from "@/types/chat-simulator-bridge";
 import { WaitlistForm } from "../WaitlistForm/WaitlistForm";
 import "./HeroSection.css";
 
@@ -12,42 +16,37 @@ export function HeroSection({ showToast }: HeroSectionProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const handlePlayPause = () => {
-    const iframe = iframeRef.current;
-    const iframeWindow = iframe?.contentWindow;
-    if (!iframeWindow) return;
+    const simulator = getSimulatorFromIframe(iframeRef.current);
+    if (!simulator) return;
 
-    const win = iframeWindow as any;
-
-    if (typeof win.isFinished === "function" && win.isFinished()) {
-      if (typeof win.resetSimulation === "function") {
-        win.resetSimulation();
+    if (typeof simulator.isFinished === "function" && simulator.isFinished()) {
+      if (typeof simulator.resetSimulation === "function") {
+        simulator.resetSimulation();
         setIsPlaying(true);
       }
-    } else if (typeof win.isPaused === "function" && win.isPaused()) {
-      if (typeof win.resumeSimulation === "function") {
-        win.resumeSimulation();
+    } else if (typeof simulator.isPaused === "function" && simulator.isPaused()) {
+      if (typeof simulator.resumeSimulation === "function") {
+        simulator.resumeSimulation();
         setIsPlaying(true);
       }
-    } else {
-      if (typeof win.pauseSimulation === "function") {
-        win.pauseSimulation();
-        setIsPlaying(false);
-      }
+    } else if (typeof simulator.pauseSimulation === "function") {
+      simulator.pauseSimulation();
+      setIsPlaying(false);
     }
   };
 
   useEffect(() => {
-    const win = window as any;
-    win.onSimulationFinished = () => setIsPlaying(false);
-    win.onSimulationReset = () => setIsPlaying(true);
-    win.onSimulationPaused = () => setIsPlaying(false);
-    win.onSimulationResumed = () => setIsPlaying(true);
+    const hostWindow = getChatSimulatorHostWindow();
+    hostWindow.onSimulationFinished = () => setIsPlaying(false);
+    hostWindow.onSimulationReset = () => setIsPlaying(true);
+    hostWindow.onSimulationPaused = () => setIsPlaying(false);
+    hostWindow.onSimulationResumed = () => setIsPlaying(true);
 
     return () => {
-      delete win.onSimulationFinished;
-      delete win.onSimulationReset;
-      delete win.onSimulationPaused;
-      delete win.onSimulationResumed;
+      delete hostWindow.onSimulationFinished;
+      delete hostWindow.onSimulationReset;
+      delete hostWindow.onSimulationPaused;
+      delete hostWindow.onSimulationResumed;
     };
   }, []);
 

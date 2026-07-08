@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
+import { AgentActivityCard } from "./AgentActivityCard";
 import type { AgentActivity } from "@/types/chat";
 
-import { AgentActivityCard } from "./AgentActivityCard";
 
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 

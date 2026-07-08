@@ -1,6 +1,6 @@
 import type { ConfigService } from "@nestjs/config";
-import type { IncomingMessage } from "node:http";
 import type { Params } from "nestjs-pino";
+import type { IncomingMessage } from "node:http";
 
 export function createPinoParams(configService: ConfigService): Params {
   const nodeEnv = configService.getOrThrow<string>("nodeEnv");

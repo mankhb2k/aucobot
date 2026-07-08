@@ -1,10 +1,10 @@
 import { Avatar } from "@/components/ui/Avatar/Avatar";
-import type { Message } from "@/types/chat";
 import { formatMessageTime } from "@/utils/chat/format-time";
 
 import { ChatMarkdown } from "../ChatMarkdown/ChatMarkdown";
 
 import styles from "./MessageBubble.module.css";
+import type { Message } from "@/types/chat";
 
 export interface MessageBubbleProps {
   message: Message;

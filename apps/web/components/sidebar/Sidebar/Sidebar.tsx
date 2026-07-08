@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 
-import type { Conversation } from "@/types/chat";
 
 import { SidebarMain } from "../SidebarMain/SidebarMain";
 import { SidebarRail, type RailView } from "../SidebarRail/SidebarRail";
 
 import styles from "./Sidebar.module.css";
+import type { Conversation } from "@/types/chat";
 
 interface SidebarProps {
   userName: string;

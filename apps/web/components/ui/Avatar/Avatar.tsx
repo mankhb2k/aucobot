@@ -25,8 +25,8 @@ const PALETTE = [
 function initials(name: string): string {
   const words = name.trim().split(/\s+/).filter(Boolean);
   if (words.length === 0) return "?";
-  if (words.length === 1) return words[0]!.slice(0, 2).toUpperCase();
-  return (words[0]![0]! + words[words.length - 1]![0]!).toUpperCase();
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return (words[0][0] + words[words.length - 1][0]).toUpperCase();
 }
 
 function pickColor(seed: string): string {
@@ -34,7 +34,7 @@ function pickColor(seed: string): string {
   for (let i = 0; i < seed.length; i += 1) {
     hash = (hash * 31 + seed.charCodeAt(i)) | 0;
   }
-  return PALETTE[Math.abs(hash) % PALETTE.length]!;
+  return PALETTE[Math.abs(hash) % PALETTE.length];
 }
 
 export function Avatar({ name, seed, size = "md" }: AvatarProps) {

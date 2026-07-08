@@ -1,7 +1,10 @@
+import type { DevLoginCookieInfo } from "@aucobot/shared";
 import type { Response } from "express";
 
 export const ACCESS_TOKEN_COOKIE = "access_token";
 export const REFRESH_TOKEN_COOKIE = "refresh_token";
+export const ACCESS_TOKEN_COOKIE_PATH = "/";
+export const REFRESH_TOKEN_COOKIE_PATH = "/api/auth";
 
 export interface AuthCookieMaxAge {
   accessMaxAgeMs: number;
@@ -34,7 +37,7 @@ export function setRefreshCookie(res: Response, token: string, maxAgeMs: number)
   res.cookie(REFRESH_TOKEN_COOKIE, token, {
     ...cookieBaseOptions(),
     maxAge: maxAgeMs,
-    path: "/api/auth",
+    path: REFRESH_TOKEN_COOKIE_PATH,
   });
 }
 
@@ -50,7 +53,38 @@ export function setAuthCookies(
 export function clearAuthCookies(res: Response): void {
   const base = cookieBaseOptions();
   res.clearCookie(ACCESS_TOKEN_COOKIE, base);
-  res.clearCookie(REFRESH_TOKEN_COOKIE, { ...base, path: "/api/auth" });
+  res.clearCookie(REFRESH_TOKEN_COOKIE, { ...base, path: REFRESH_TOKEN_COOKIE_PATH });
+}
+
+export function buildDevLoginCookieInfo(
+  tokens: { accessToken: string; refreshToken: string },
+  maxAge: AuthCookieMaxAge,
+): {
+  access_token: DevLoginCookieInfo;
+  refresh_token: DevLoginCookieInfo;
+} {
+  const base = cookieBaseOptions();
+
+  return {
+    access_token: {
+      name: ACCESS_TOKEN_COOKIE,
+      value: tokens.accessToken,
+      path: ACCESS_TOKEN_COOKIE_PATH,
+      httpOnly: base.httpOnly,
+      sameSite: base.sameSite,
+      secure: base.secure,
+      maxAgeMs: maxAge.accessMaxAgeMs,
+    },
+    refresh_token: {
+      name: REFRESH_TOKEN_COOKIE,
+      value: tokens.refreshToken,
+      path: REFRESH_TOKEN_COOKIE_PATH,
+      httpOnly: base.httpOnly,
+      sameSite: base.sameSite,
+      secure: base.secure,
+      maxAgeMs: maxAge.refreshMaxAgeMs,
+    },
+  };
 }
 
 export function readCookieValue(cookies: unknown, name: string): string | undefined {

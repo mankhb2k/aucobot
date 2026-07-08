@@ -31,6 +31,8 @@ export const envSchema = z.object({
     .string()
     .url()
     .default("http://localhost:8387/api/auth/google/callback"),
+  /** Dev only — email for POST /api/auth/dev-login (find-or-create). Ignored in production. */
+  DEV_AUTH_EMAIL: z.string().email().default("dev@aucobot.local"),
   SWAGGER_ENABLED: z.coerce.boolean().default(true),
   RESEND_API_KEY: z.string().optional(),
   EMAIL_FROM: z.string().default("Aucobot <noreply@send.aucobot.com>"),
@@ -57,6 +59,9 @@ export const envSchema = z.object({
         .filter(Boolean),
     )
     .pipe(z.array(z.enum(FEATURE_IDS))),
+  /** Together AI — required when ai-orchestration feature is enabled. */
+  TOGETHER_API_KEY: z.string().optional(),
+  TOGETHER_MODEL: z.string().optional(),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

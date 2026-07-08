@@ -4,7 +4,8 @@ dist
 .turbo
 .env
 .env.*
-!.env.example
+!.env.dev.example
+!.env.pro.example
 *.log
 coverage
 .DS_Store
@@ -17,3 +18,5 @@ yarn.lock
 
 *storybook.log
 storybook-static
+
+docker/api.test.env

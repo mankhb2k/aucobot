@@ -1,6 +1,6 @@
+import styles from "./ChatInlineButton.module.css";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-import styles from "./ChatInlineButton.module.css";
 
 export interface ChatInlineButtonProps
   extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> {

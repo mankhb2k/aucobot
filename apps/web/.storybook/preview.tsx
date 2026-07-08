@@ -1,5 +1,6 @@
-import type { Preview } from "@storybook/nextjs-vite";
 import { Be_Vietnam_Pro } from "next/font/google";
+
+import type { Preview } from "@storybook/nextjs-vite";
 
 import "../app/globals.css";
 
@@ -37,4 +38,4 @@ const preview: Preview = {
   ],
 };
 
-export default preview;
+export { preview as default };

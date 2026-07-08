@@ -3,10 +3,10 @@ import { useState } from "react";
 import "./FaqSection.css";
 
 export function FaqSection() {
-  const [openFaqs, setOpenFaqs] = useState<Record<number, boolean>>({});
+  const [openFaqs, setOpenFaqs] = useState<Record<string, boolean>>({});
 
-  const toggleFaq = (idx: number) => {
-    setOpenFaqs((prev) => ({ ...prev, [idx]: !prev[idx] }));
+  const toggleFaq = (question: string) => {
+    setOpenFaqs((prev) => ({ ...prev, [question]: !prev[question] }));
   };
 
   const faqItems = [
@@ -39,11 +39,11 @@ export function FaqSection() {
       </div>
 
       <div className="faq-grid">
-        {faqItems.map((item, idx) => {
-          const isOpen = !!openFaqs[idx];
+        {faqItems.map((item) => {
+          const isOpen = !!openFaqs[item.q];
           return (
-            <div key={idx} className={`faq-item ${isOpen ? "active" : ""}`}>
-              <div className="faq-question" onClick={() => toggleFaq(idx)}>
+            <div key={item.q} className={`faq-item ${isOpen ? "active" : ""}`}>
+              <div className="faq-question" onClick={() => toggleFaq(item.q)}>
                 <span>{item.q}</span>
                 <span className="faq-toggle-icon">{isOpen ? "-" : "+"}</span>
               </div>

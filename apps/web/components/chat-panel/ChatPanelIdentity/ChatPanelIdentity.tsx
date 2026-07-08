@@ -3,9 +3,9 @@ import { BoltIcon, UsersIcon } from "@heroicons/react/16/solid";
 import { Avatar } from "@/components/ui/Avatar/Avatar";
 import { formatFullDate } from "@/utils/chat/format-time";
 
+import styles from "./ChatPanelIdentity.module.css";
 import type { ConversationResponse } from "@aucobot/shared";
 
-import styles from "./ChatPanelIdentity.module.css";
 
 const TYPE_META = {
   room: { label: "Phòng", Icon: UsersIcon },

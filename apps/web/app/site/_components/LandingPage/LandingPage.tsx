@@ -2,15 +2,15 @@
 
 import { useState } from "react";
 import "./LandingPage.css";
-import { Navigation } from "./sections/Navigation/Navigation";
-import { HeroSection } from "./sections/HeroSection/HeroSection";
-import { ProblemSection } from "./sections/ProblemSection/ProblemSection";
-import { SolutionSection } from "./sections/SolutionSection/SolutionSection";
-import { FeaturesSection } from "./sections/FeaturesSection/FeaturesSection";
-import { RoadmapSection } from "./sections/RoadmapSection/RoadmapSection";
 import { CtaSection } from "./sections/CtaSection/CtaSection";
 import { FaqSection } from "./sections/FaqSection/FaqSection";
+import { FeaturesSection } from "./sections/FeaturesSection/FeaturesSection";
 import { Footer } from "./sections/Footer/Footer";
+import { HeroSection } from "./sections/HeroSection/HeroSection";
+import { Navigation } from "./sections/Navigation/Navigation";
+import { ProblemSection } from "./sections/ProblemSection/ProblemSection";
+import { RoadmapSection } from "./sections/RoadmapSection/RoadmapSection";
+import { SolutionSection } from "./sections/SolutionSection/SolutionSection";
 
 export function LandingPage() {
   const [toastVisible, setToastVisible] = useState(false);
