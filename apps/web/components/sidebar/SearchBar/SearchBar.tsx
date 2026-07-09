@@ -1,4 +1,4 @@
-import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Search, X } from "lucide-react";
 
 import styles from "./SearchBar.module.css";
 
@@ -15,7 +15,7 @@ export function SearchBar({
 }: SearchBarProps) {
   return (
     <div className={styles.wrap}>
-      <MagnifyingGlassIcon className={styles.icon} />
+      <Search className={styles.icon} />
       <input
         type="text"
         className={styles.input}
@@ -31,7 +31,7 @@ export function SearchBar({
           onClick={() => onChange("")}
           aria-label="Xóa tìm kiếm"
         >
-          <XMarkIcon className={styles.clearIcon} />
+          <X className={styles.clearIcon} />
         </button>
       )}
     </div>

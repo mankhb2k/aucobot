@@ -1,4 +1,4 @@
-import { ClientLoginPage } from "./_components/ClientLoginPage/ClientLoginPage";
+import { ClientLoginPage } from "@/components/auth/ClientLoginPage/ClientLoginPage";
 
 const showDevLogin = process.env.NODE_ENV === "development";
 

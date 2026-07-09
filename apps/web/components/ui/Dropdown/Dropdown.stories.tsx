@@ -1,15 +1,15 @@
 import {
-  ArrowRightStartOnRectangleIcon,
-  Cog6ToothIcon,
-  EllipsisHorizontalIcon,
-  EllipsisVerticalIcon,
-  MoonIcon,
-  PlusIcon,
-  QuestionMarkCircleIcon,
-  SunIcon,
-  UserIcon,
-  UsersIcon,
-} from "@heroicons/react/24/outline";
+  CircleHelp,
+  LogOut,
+  Moon,
+  MoreHorizontal,
+  MoreVertical,
+  Plus,
+  Settings,
+  Sun,
+  User,
+  Users,
+} from "lucide-react";
 import React from "react";
 
 import {
@@ -109,8 +109,7 @@ const DemoBox = ({ children }: { children: React.ReactNode }) => (
 
 const iconSize = 18;
 const iconProps = {
-  width: iconSize,
-  height: iconSize,
+  size: iconSize,
   strokeWidth: 2,
   "aria-hidden": true,
 } as const;
@@ -138,7 +137,7 @@ export const Default: StoryObj<CustomStoryArgs> = {
         <DropdownMenu>
           <DropdownMenuTrigger variant={args.triggerVariant}>
             {args.triggerVariant === "icon" ? (
-              <EllipsisHorizontalIcon width={20} height={20} strokeWidth={2} />
+              <MoreHorizontal size={20} strokeWidth={2} />
             ) : (
               args.triggerText
             )}
@@ -194,29 +193,25 @@ export const IconTrigger: StoryObj<
           <div style={{ display: "flex", gap: 12 }}>
             <DropdownMenu>
               <DropdownMenuTrigger variant="icon" aria-label="Ba chấm ngang">
-                <EllipsisHorizontalIcon
-                  width={20}
-                  height={20}
-                  strokeWidth={2}
-                />
+                <MoreHorizontal size={20} strokeWidth={2} />
               </DropdownMenuTrigger>
               {menu}
             </DropdownMenu>
             <DropdownMenu>
               <DropdownMenuTrigger variant="icon" aria-label="Ba chấm dọc">
-                <EllipsisVerticalIcon width={20} height={20} strokeWidth={2} />
+                <MoreVertical size={20} strokeWidth={2} />
               </DropdownMenuTrigger>
               {menu}
             </DropdownMenu>
             <DropdownMenu>
               <DropdownMenuTrigger variant="icon" aria-label="Thêm">
-                <PlusIcon width={20} height={20} strokeWidth={2} />
+                <Plus size={20} strokeWidth={2} />
               </DropdownMenuTrigger>
               {menu}
             </DropdownMenu>
             <DropdownMenu>
               <DropdownMenuTrigger variant="icon" aria-label="Cài đặt">
-                <Cog6ToothIcon width={20} height={20} strokeWidth={2} />
+                <Settings size={20} strokeWidth={2} />
               </DropdownMenuTrigger>
               {menu}
             </DropdownMenu>
@@ -278,12 +273,12 @@ export const ItemExtend: StoryObj<SubMenuStoryArgs> = {
               width={args.contentWidth}
             >
               <DropdownMenuItem>
-                <Cog6ToothIcon {...iconProps} />
+                <Settings {...iconProps} />
                 Cài đặt
               </DropdownMenuItem>
               <DropdownMenuSub select={args.select}>
                 <DropdownMenuSubItem detail={THEME_LABELS[theme]}>
-                  <SunIcon {...iconProps} />
+                  <Sun {...iconProps} />
                   Giao diện
                 </DropdownMenuSubItem>
                 <DropdownMenuSubContent width={args.subContentWidth}>
@@ -291,28 +286,28 @@ export const ItemExtend: StoryObj<SubMenuStoryArgs> = {
                     selected={theme === "light"}
                     onSelect={() => setTheme("light")}
                   >
-                    <SunIcon {...iconProps} />
+                    <Sun {...iconProps} />
                     Sáng
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     selected={theme === "dark"}
                     onSelect={() => setTheme("dark")}
                   >
-                    <MoonIcon {...iconProps} />
+                    <Moon {...iconProps} />
                     Tối
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     selected={theme === "system"}
                     onSelect={() => setTheme("system")}
                   >
-                    <Cog6ToothIcon {...iconProps} />
+                    <Settings {...iconProps} />
                     Hệ thống
                   </DropdownMenuItem>
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
               <DropdownMenuSub>
                 <DropdownMenuSubItem>
-                  <QuestionMarkCircleIcon {...iconProps} />
+                  <CircleHelp {...iconProps} />
                   Trợ giúp
                 </DropdownMenuSubItem>
                 <DropdownMenuSubContent width={200}>
@@ -323,7 +318,7 @@ export const ItemExtend: StoryObj<SubMenuStoryArgs> = {
               </DropdownMenuSub>
               <DropdownMenuSeparator />
               <DropdownMenuItem variant="danger">
-                <ArrowRightStartOnRectangleIcon {...iconProps} />
+                <LogOut {...iconProps} />
                 Đăng xuất
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -359,29 +354,29 @@ export const WithIcons: StoryObj<
             <DropdownMenuLabel>Tài khoản</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <UserIcon {...iconProps} />
+              <User {...iconProps} />
               Hồ sơ
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <Cog6ToothIcon {...iconProps} />
+              <Settings {...iconProps} />
               Cài đặt
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <UsersIcon {...iconProps} />
+              <Users {...iconProps} />
               Nhóm
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <MoonIcon {...iconProps} />
+              <Moon {...iconProps} />
               Chế độ tối
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <SunIcon {...iconProps} />
+              <Sun {...iconProps} />
               Chế độ sáng
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="danger">
-              <ArrowRightStartOnRectangleIcon {...iconProps} />
+              <LogOut {...iconProps} />
               Đăng xuất
             </DropdownMenuItem>
           </DropdownMenuContent>

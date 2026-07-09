@@ -1,0 +1,23 @@
+.shell {
+  background: var(--color-panel);
+  display: flex;
+  height: 100dvh;
+  overflow: hidden;
+  width: 100%;
+}
+
+.sidebar {
+  display: flex;
+  flex-shrink: 0;
+  height: 100%;
+  min-height: 0;
+}
+
+.content {
+  background: var(--chat-wallpaper);
+  background-attachment: fixed;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}

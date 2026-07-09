@@ -1,7 +1,7 @@
 "use client";
 
-import { CheckIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
+import { Check, ChevronRight } from "lucide-react";
 import * as React from "react";
 
 import styles from "./Dropdown.module.css";
@@ -143,7 +143,7 @@ export const DropdownMenuItem = React.forwardRef<
             {children}
             {isSelectable && selected ? (
               <span className={styles.itemIndicator} aria-hidden>
-                <CheckIcon width={16} height={16} />
+                <Check size={16} />
               </span>
             ) : null}
           </>
@@ -247,9 +247,8 @@ export const DropdownMenuSubItem = React.forwardRef<
     {detail != null && detail !== "" ? (
       <span className={styles.itemExtendDetail}>{detail}</span>
     ) : null}
-    <ChevronRightIcon
-      width={16}
-      height={16}
+    <ChevronRight
+      size={16}
       className={styles.itemExtendChevron}
       aria-hidden
     />

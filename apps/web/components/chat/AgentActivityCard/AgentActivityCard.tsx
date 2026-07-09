@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { Avatar } from "@/components/ui/Avatar/Avatar";
+import { buildAvatarProps } from "@/utils/avatar/build-avatar-props";
 
 import bubbleStyles from "../MessageBubble/MessageBubble.module.css";
 
@@ -59,7 +60,7 @@ export function AgentActivityCard({
   return (
     <div className={styles.row}>
       <div className={`${bubbleStyles.avatarSlot} ${styles.avatarSlot}`}>
-        <Avatar name={agentName} seed={agentName} size="sm" />
+        <Avatar {...buildAvatarProps(agentName, agentName, { size: "sm" })} />
       </div>
 
       <div className={styles.card}>

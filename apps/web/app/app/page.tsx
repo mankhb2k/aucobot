@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
+import { ClientAppShell } from "@/components/app/ClientAppShell/ClientAppShell";
 import { marketingUrl } from "@/lib/host/urls";
 import { getServerUser } from "@/lib/http/server-auth";
 
@@ -10,10 +11,7 @@ export default async function AppHomePage() {
     redirect(marketingUrl("/login"));
   }
 
-  return (
-    <div style={{ padding: 20 }}>
-      <h1>App Home</h1>
-      <p>Hello {user.name ?? user.email}</p>
-    </div>
-  );
+  const userName = user.name?.trim() || user.email;
+
+  return <ClientAppShell userName={userName} />;
 }

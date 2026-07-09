@@ -1,13 +1,15 @@
 "use client";
 
 import {
-  FaceSmileIcon,
-  MicrophoneIcon,
-  PaperAirplaneIcon,
-  PaperClipIcon,
-  PhotoIcon,
-} from "@heroicons/react/24/outline";
+  Image as ImageIcon,
+  Mic,
+  Paperclip,
+  Send,
+  Smile,
+} from "lucide-react";
 import { useLayoutEffect, useRef, useState } from "react";
+
+import { FloatingBar } from "@/components/ui/FloatingBar/FloatingBar";
 
 import styles from "./Composer.module.css";
 
@@ -88,7 +90,7 @@ export function Composer({
 
   return (
     <div className={styles.composer}>
-      <div className={styles.pill}>
+      <FloatingBar align="end">
         <button
           type="button"
           className={styles.sideBtn}
@@ -97,7 +99,7 @@ export function Composer({
           aria-label="Đính kèm"
           title="Đính kèm"
         >
-          <PaperClipIcon {...iconProps} />
+          <Paperclip {...iconProps} />
         </button>
 
         <button
@@ -108,7 +110,7 @@ export function Composer({
           aria-label="Gửi ảnh"
           title="Gửi ảnh"
         >
-          <PhotoIcon {...iconProps} />
+          <ImageIcon {...iconProps} aria-hidden />
         </button>
 
         <textarea
@@ -130,7 +132,7 @@ export function Composer({
           aria-label="Emoji"
           title="Emoji"
         >
-          <FaceSmileIcon {...iconProps} />
+          <Smile {...iconProps} />
         </button>
 
         <button
@@ -143,17 +145,17 @@ export function Composer({
           data-mode={hasText ? "send" : "voice"}
         >
           <span className={styles.actionIcons} aria-hidden>
-            <MicrophoneIcon
+            <Mic
               className={`${styles.actionIcon} ${styles.micIcon}`}
               strokeWidth={2}
             />
-            <PaperAirplaneIcon
+            <Send
               className={`${styles.actionIcon} ${styles.planeIcon}`}
               strokeWidth={2}
             />
           </span>
         </button>
-      </div>
+      </FloatingBar>
     </div>
   );
 }

@@ -6,6 +6,8 @@ import { OtpInput } from "@/components/ui/OtpInput/OtpInput";
 
 import styles from "./OtpStep.module.css";
 
+const OTP_LENGTH = 6;
+
 interface OtpStepProps {
   maskedEmail: string;
   busy: boolean;
@@ -70,7 +72,7 @@ export function OtpStep({
   }
 
   function handleCodeChange(nextCode: string) {
-    if (nextCode.length < 6) {
+    if (nextCode.length < OTP_LENGTH) {
       lastSubmittedCode.current = null;
     }
 
@@ -93,6 +95,11 @@ export function OtpStep({
 
       <OtpInput
         value={code}
+        length={OTP_LENGTH}
+        label="6-digit verification code"
+        getDigitAriaLabel={(index, total) =>
+          `Digit ${index + 1} of ${total}`
+        }
         onChange={handleCodeChange}
         onComplete={handleComplete}
         disabled={busy}
@@ -102,7 +109,7 @@ export function OtpStep({
         <button
           type="button"
           className={styles.btnPrimary}
-          disabled={busy || code.length !== 6}
+          disabled={busy || code.length !== OTP_LENGTH}
           onClick={() => handleComplete(code)}
         >
           {busy ? "Verifying…" : "Continue"}
