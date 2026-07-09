@@ -17,6 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/Dropdown/Dropdown";
+import { FloatingBar } from "@/components/ui/FloatingBar/FloatingBar";
 
 import styles from "./ChatHeader.module.css";
 import type { ConversationResponse } from "@aucobot/shared";
@@ -55,7 +56,7 @@ export function ChatHeader({
   const statusLine = subtitle ?? TYPE_LABEL[type];
 
   return (
-    <header className={styles.header}>
+    <FloatingBar as="header">
       {onBack ? (
         <button
           type="button"
@@ -127,6 +128,6 @@ export function ChatHeader({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-    </header>
+    </FloatingBar>
   );
 }

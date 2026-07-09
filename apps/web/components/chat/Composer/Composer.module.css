@@ -2,19 +2,6 @@
   width: 100%;
 }
 
-/* Pill kiểu Telegram — bo tròn, nền trắng, đổ bóng */
-.pill {
-  align-items: flex-end;
-  background: var(--color-composer);
-  border-radius: 24px;
-  box-shadow: var(--shadow-md);
-  display: flex;
-  gap: 2px;
-  min-height: 48px;
-  padding: 4px 6px 4px 4px;
-  width: 100%;
-}
-
 .sideBtn {
   align-items: center;
   align-self: flex-end;

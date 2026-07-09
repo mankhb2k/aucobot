@@ -9,6 +9,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { useLayoutEffect, useRef, useState } from "react";
 
+import { FloatingBar } from "@/components/ui/FloatingBar/FloatingBar";
+
 import styles from "./Composer.module.css";
 
 export interface ComposerProps {
@@ -88,7 +90,7 @@ export function Composer({
 
   return (
     <div className={styles.composer}>
-      <div className={styles.pill}>
+      <FloatingBar align="end">
         <button
           type="button"
           className={styles.sideBtn}
@@ -153,7 +155,7 @@ export function Composer({
             />
           </span>
         </button>
-      </div>
+      </FloatingBar>
     </div>
   );
 }
