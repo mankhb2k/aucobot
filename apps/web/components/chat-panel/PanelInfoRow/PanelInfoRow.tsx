@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckIcon, ClipboardIcon } from "@heroicons/react/16/solid";
+import { Check, Clipboard } from "lucide-react";
 import { useState } from "react";
 
 import styles from "./PanelInfoRow.module.css";
@@ -52,9 +52,9 @@ export function PanelInfoRow({
             title={copied ? "Đã sao chép" : "Sao chép"}
           >
             {copied ? (
-              <CheckIcon className={styles.copyIcon} data-copied="true" />
+              <Check className={styles.copyIcon} data-copied="true" />
             ) : (
-              <ClipboardIcon className={styles.copyIcon} />
+              <Clipboard className={styles.copyIcon} />
             )}
           </button>
         ) : null}

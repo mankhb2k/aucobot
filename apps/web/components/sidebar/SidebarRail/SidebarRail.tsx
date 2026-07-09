@@ -1,10 +1,7 @@
-import {
-  ChatBubbleLeftRightIcon,
-  Cog6ToothIcon,
-  UserGroupIcon,
-} from "@heroicons/react/24/outline";
+import { MessagesSquare, Settings, Users, type LucideIcon } from "lucide-react";
 
 import { Avatar } from "@/components/ui/Avatar/Avatar";
+import { buildAvatarProps } from "@/utils/avatar/build-avatar-props";
 
 import styles from "./SidebarRail.module.css";
 
@@ -20,10 +17,10 @@ interface SidebarRailProps {
 const NAV: {
   view: RailView;
   label: string;
-  Icon: typeof ChatBubbleLeftRightIcon;
+  Icon: LucideIcon;
 }[] = [
-  { view: "chats", label: "Đoạn chat", Icon: ChatBubbleLeftRightIcon },
-  { view: "contacts", label: "Agent", Icon: UserGroupIcon },
+  { view: "chats", label: "Đoạn chat", Icon: MessagesSquare },
+  { view: "contacts", label: "Agent", Icon: Users },
 ];
 
 export function SidebarRail({
@@ -40,7 +37,7 @@ export function SidebarRail({
         aria-label={userName}
         title={userName}
       >
-        <Avatar name={userName} seed={userName} size="sm" />
+        <Avatar {...buildAvatarProps(userName, userName, { size: "sm" })} />
       </button>
 
       <div className={styles.nav}>
@@ -68,7 +65,7 @@ export function SidebarRail({
         aria-label="Cài đặt"
         title="Cài đặt"
       >
-        <Cog6ToothIcon className={styles.navIcon} />
+        <Settings className={styles.navIcon} />
       </button>
     </nav>
   );

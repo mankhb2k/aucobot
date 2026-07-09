@@ -1,13 +1,13 @@
 "use client";
 
 import {
-  ArchiveBoxIcon,
-  ArrowLeftIcon,
-  EllipsisVerticalIcon,
-  MagnifyingGlassIcon,
-  PencilSquareIcon,
-  TrashIcon,
-} from "@heroicons/react/24/outline";
+  Archive,
+  ArrowLeft,
+  MoreVertical,
+  Search,
+  SquarePen,
+  Trash2,
+} from "lucide-react";
 
 import { Avatar } from "@/components/ui/Avatar/Avatar";
 import {
@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/Dropdown/Dropdown";
 import { FloatingBar } from "@/components/ui/FloatingBar/FloatingBar";
+import { buildAvatarProps } from "@/utils/avatar/build-avatar-props";
 
 import styles from "./ChatHeader.module.css";
 import type { ConversationResponse } from "@aucobot/shared";
@@ -64,7 +65,7 @@ export function ChatHeader({
           onClick={onBack}
           aria-label="Quay lại"
         >
-          <ArrowLeftIcon {...iconProps} />
+          <ArrowLeft {...iconProps} />
         </button>
       ) : null}
 
@@ -74,7 +75,7 @@ export function ChatHeader({
         onClick={onOpenInfo}
         aria-label="Xem thông tin"
       >
-        <Avatar name={title} seed={conversation.id} size="sm" />
+        <Avatar {...buildAvatarProps(title, conversation.id, { size: "sm" })} />
         <span className={styles.text}>
           <span className={styles.title}>{title}</span>
           <span className={styles.subtitle}>{statusLine}</span>
@@ -89,7 +90,7 @@ export function ChatHeader({
           aria-label="Tìm trong cuộc trò chuyện"
           title="Tìm kiếm"
         >
-          <MagnifyingGlassIcon {...iconProps} />
+          <Search {...iconProps} />
         </button>
 
         <DropdownMenu>
@@ -98,7 +99,7 @@ export function ChatHeader({
             className={styles.actionBtn}
             aria-label="Tùy chọn"
           >
-            <EllipsisVerticalIcon
+            <MoreVertical
               className={styles.kebabIcon}
               strokeWidth={2}
             />
@@ -106,13 +107,13 @@ export function ChatHeader({
           <DropdownMenuContent align="end">
             {onRename ? (
               <DropdownMenuItem onSelect={onRename}>
-                <PencilSquareIcon width={18} height={18} strokeWidth={2} />
+                <SquarePen size={18} strokeWidth={2} />
                 Đổi tên
               </DropdownMenuItem>
             ) : null}
             {type === "session" && onArchive ? (
               <DropdownMenuItem onSelect={onArchive}>
-                <ArchiveBoxIcon width={18} height={18} strokeWidth={2} />
+                <Archive size={18} strokeWidth={2} />
                 Lưu trữ
               </DropdownMenuItem>
             ) : null}
@@ -120,7 +121,7 @@ export function ChatHeader({
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem variant="danger" onSelect={onDelete}>
-                  <TrashIcon width={18} height={18} strokeWidth={2} />
+                  <Trash2 size={18} strokeWidth={2} />
                   {type === "room" ? "Xoá phòng" : "Xoá phiên"}
                 </DropdownMenuItem>
               </>

@@ -1,6 +1,9 @@
+import { buildAvatarProps } from "@/utils/avatar/build-avatar-props";
 import { Avatar } from "./Avatar";
+
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
+const sampleAvatar = buildAvatarProps("Team TikTok", "conv-sample");
 
 const meta = {
   title: "UI/Avatar",
@@ -9,11 +12,12 @@ const meta = {
   tags: ["autodocs"],
   argTypes: {
     size: { control: "inline-radio", options: ["sm", "md", "lg"] },
-    name: { control: "text" },
-    seed: { control: "text" },
+    fallbackText: { control: "text" },
+    backgroundColor: { control: "color" },
+    alt: { control: "text" },
   },
   args: {
-    name: "Team TikTok",
+    ...sampleAvatar,
     size: "md",
   },
 } satisfies Meta<typeof Avatar>;
@@ -34,7 +38,7 @@ export const Sizes: Story = {
 };
 
 export const SingleWord: Story = {
-  args: { name: "Marketing" },
+  args: buildAvatarProps("Marketing", "marketing"),
 };
 
 export const Colors: Story = {
@@ -50,8 +54,21 @@ export const Colors: Story = {
         "Caption AI",
         "Lên lịch tuần",
       ].map((name, i) => (
-        <Avatar key={name} name={name} seed={`conv-${i}`} size="lg" />
+        <Avatar
+          key={name}
+          {...buildAvatarProps(name, `conv-${i}`, { size: "lg" })}
+        />
       ))}
     </div>
   ),
+};
+
+export const WithImage: Story = {
+  args: {
+    ...buildAvatarProps("Aucobot", "aucobot", {
+      src: "https://api.dicebear.com/9.x/shapes/svg?seed=aucobot",
+      decorative: false,
+      imageFallbackDelayMs: 600,
+    }),
+  },
 };

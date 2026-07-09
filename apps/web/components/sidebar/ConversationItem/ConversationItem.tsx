@@ -1,6 +1,7 @@
-import { BoltIcon, UsersIcon } from "@heroicons/react/24/solid";
+import { Users, Zap, type LucideIcon } from "lucide-react";
 
 import { Avatar } from "@/components/ui/Avatar/Avatar";
+import { buildAvatarProps } from "@/utils/avatar/build-avatar-props";
 import { formatConversationTime } from "@/utils/chat/format-time";
 
 import styles from "./ConversationItem.module.css";
@@ -19,7 +20,7 @@ export function ConversationItem({
 }: ConversationItemProps) {
   const { id, type, title, lastMessage, lastMessageAt, unreadCount } =
     conversation;
-  const TypeIcon = type === "room" ? UsersIcon : BoltIcon;
+  const TypeIcon: LucideIcon = type === "room" ? Users : Zap;
   const hasUnread = unreadCount > 0;
 
   return (
@@ -31,7 +32,7 @@ export function ConversationItem({
       data-unread={hasUnread ? "true" : undefined}
     >
       <span className={styles.avatarWrap}>
-        <Avatar name={title} seed={id} size="md" />
+        <Avatar {...buildAvatarProps(title, id, { size: "md" })} />
         <span className={styles.typeBadge} data-type={type}>
           <TypeIcon className={styles.typeIcon} />
         </span>

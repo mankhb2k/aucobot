@@ -1,6 +1,6 @@
 "use client";
 
-import { ArchiveBoxIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { Archive, Trash2 } from "lucide-react";
 
 import styles from "./PanelActions.module.css";
 import type { ConversationType } from "@aucobot/shared";
@@ -17,7 +17,7 @@ export function PanelActions({ type, onArchive, onDelete }: PanelActionsProps) {
     <div className={styles.actions}>
       {type === "session" && onArchive ? (
         <button type="button" className={styles.action} onClick={onArchive}>
-          <ArchiveBoxIcon className={styles.icon} />
+          <Archive className={styles.icon} />
           Lưu trữ
         </button>
       ) : null}
@@ -28,7 +28,7 @@ export function PanelActions({ type, onArchive, onDelete }: PanelActionsProps) {
           className={`${styles.action} ${styles.danger}`}
           onClick={onDelete}
         >
-          <TrashIcon className={styles.icon} />
+          <Trash2 className={styles.icon} />
           {type === "room" ? "Xoá phòng" : "Xoá phiên"}
         </button>
       ) : null}

@@ -6,64 +6,18 @@
   width: 100%;
 }
 
-.sidebarRegion {
-  background: var(--color-sidebar);
+.sidebar {
+  display: flex;
   flex-shrink: 0;
+  height: 100%;
   min-height: 0;
 }
 
-.chatRegion {
+.content {
+  background: var(--chat-wallpaper);
+  background-attachment: fixed;
   display: flex;
   flex: 1;
   min-height: 0;
   min-width: 0;
-  position: relative;
-}
-
-.panelRegion {
-  display: flex;
-  flex-shrink: 0;
-  min-height: 0;
-}
-
-.centerMessage {
-  align-items: center;
-  background: var(--chat-wallpaper);
-  background-attachment: fixed;
-  color: var(--color-description);
-  display: flex;
-  flex: 1;
-  font-size: var(--font-sm);
-  justify-content: center;
-  min-height: 0;
-  padding: var(--space-6);
-  text-align: center;
-}
-
-.centerMessage[data-tone="error"] {
-  color: var(--color-danger);
-}
-
-@media (max-width: 900px) {
-  .shell[data-mobile-pane="chat"] .sidebarRegion {
-    display: none;
-  }
-
-  .shell[data-mobile-pane="list"] .chatRegion,
-  .shell[data-mobile-pane="list"] .panelRegion {
-    display: none;
-  }
-
-  .panelRegion {
-    inset: 0;
-    position: absolute;
-    right: 0;
-    z-index: 3;
-  }
-}
-
-@media (min-width: 901px) {
-  .panelRegion {
-    position: relative;
-  }
 }

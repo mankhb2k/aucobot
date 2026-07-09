@@ -1,6 +1,6 @@
 "use client";
 
-import { PencilSquareIcon } from "@heroicons/react/24/outline";
+import { SquarePen } from "lucide-react";
 import { useMemo, useState } from "react";
 
 
@@ -47,7 +47,7 @@ export function SidebarMain({
           onClick={onNew}
           aria-label="Tạo cuộc trò chuyện mới"
         >
-          <PencilSquareIcon className={styles.newIcon} />
+          <SquarePen className={styles.newIcon} />
         </button>
       </header>
 

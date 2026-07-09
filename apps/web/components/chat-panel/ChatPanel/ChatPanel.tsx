@@ -1,6 +1,6 @@
 "use client";
 
-import { BellIcon, CpuChipIcon } from "@heroicons/react/24/outline";
+import { Bell, Cpu } from "lucide-react";
 
 import {
   formatConversationTime,
@@ -64,8 +64,8 @@ export function ChatPanel({
         </PanelSection>
 
         <PanelSection>
-          <PanelFutureRow icon={BellIcon} label="Thông báo" trailing="toggle" />
-          <PanelFutureRow icon={CpuChipIcon} label="Agent trong phòng" />
+          <PanelFutureRow icon={Bell} label="Thông báo" trailing="toggle" />
+          <PanelFutureRow icon={Cpu} label="Agent trong phòng" />
         </PanelSection>
 
         <PanelActions

@@ -1,4 +1,4 @@
-import { BellIcon, CpuChipIcon } from "@heroicons/react/24/outline";
+import { Bell, Cpu } from "lucide-react";
 
 import { PanelFutureRow } from "./PanelFutureRow";
 
@@ -28,9 +28,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Toggle: Story = {
-  args: { icon: BellIcon, label: "Thông báo", trailing: "toggle" },
+  args: { icon: Bell, label: "Thông báo", trailing: "toggle" },
 };
 
 export const Badge: Story = {
-  args: { icon: CpuChipIcon, label: "Agent trong phòng", trailing: "badge" },
+  args: { icon: Cpu, label: "Agent trong phòng", trailing: "badge" },
 };

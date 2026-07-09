@@ -1,6 +1,6 @@
 "use client";
 
-import { PencilSquareIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { SquarePen, X } from "lucide-react";
 
 import styles from "./ChatPanelHeader.module.css";
 import type { ConversationType } from "@aucobot/shared";
@@ -27,7 +27,7 @@ export function ChatPanelHeader({ type, onClose, onRename }: ChatPanelHeaderProp
         aria-label="Đóng"
         title="Đóng"
       >
-        <XMarkIcon className={styles.icon} />
+        <X className={styles.icon} />
       </button>
 
       <h2 className={styles.title}>{PANEL_TITLE[type]}</h2>
@@ -39,7 +39,7 @@ export function ChatPanelHeader({ type, onClose, onRename }: ChatPanelHeaderProp
         aria-label="Đổi tên"
         title="Đổi tên"
       >
-        <PencilSquareIcon className={styles.icon} />
+        <SquarePen className={styles.icon} />
       </button>
     </header>
   );

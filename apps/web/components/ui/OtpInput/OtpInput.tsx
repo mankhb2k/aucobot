@@ -1,28 +1,43 @@
 "use client";
 
+import * as Label from "@radix-ui/react-label";
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { useId, useRef } from "react";
 
 import styles from "./OtpInput.module.css";
 
-const OTP_LENGTH = 6;
-const OTP_SLOTS = ["d0", "d1", "d2", "d3", "d4", "d5"] as const;
-
 interface OtpInputProps {
   value: string;
   onChange: (value: string) => void;
+  length: number;
+  label: string;
+  getDigitAriaLabel: (index: number, total: number) => string;
   onComplete?: (value: string) => void;
   disabled?: boolean;
+  className?: string;
+  showLabel?: boolean;
 }
 
-export function OtpInput({ value, onChange, onComplete, disabled }: OtpInputProps) {
+export function OtpInput({
+  value,
+  onChange,
+  length,
+  label,
+  getDigitAriaLabel,
+  onComplete,
+  disabled,
+  className,
+  showLabel = false,
+}: OtpInputProps) {
   const labelId = useId();
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
-  const digits = Array.from({ length: OTP_LENGTH }, (_, index) => value[index] ?? "");
+  const digits = Array.from({ length }, (_, index) => value[index] ?? "");
+  const slots = Array.from({ length }, (_, index) => index);
 
   function commitValue(next: string) {
     onChange(next);
 
-    if (next.length === OTP_LENGTH) {
+    if (next.length === length) {
       onComplete?.(next);
     }
   }
@@ -30,14 +45,14 @@ export function OtpInput({ value, onChange, onComplete, disabled }: OtpInputProp
   function updateAt(index: number, nextChar: string) {
     const chars = digits.slice();
     chars[index] = nextChar;
-    commitValue(chars.join("").slice(0, OTP_LENGTH));
+    commitValue(chars.join("").slice(0, length));
   }
 
   function handleChange(index: number, nextValue: string) {
     const digit = nextValue.replace(/\D/g, "").slice(-1);
     updateAt(index, digit);
 
-    if (digit && index < OTP_LENGTH - 1) {
+    if (digit && index < length - 1) {
       inputsRef.current[index + 1]?.focus();
     }
   }
@@ -50,22 +65,36 @@ export function OtpInput({ value, onChange, onComplete, disabled }: OtpInputProp
 
   function handlePaste(event: React.ClipboardEvent<HTMLInputElement>) {
     event.preventDefault();
-    const pasted = event.clipboardData.getData("text").replace(/\D/g, "").slice(0, OTP_LENGTH);
+    const pasted = event.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, length);
     commitValue(pasted);
 
-    const focusIndex = Math.min(pasted.length, OTP_LENGTH - 1);
+    const focusIndex = Math.min(pasted.length, length - 1);
     inputsRef.current[focusIndex]?.focus();
   }
 
+  const labelNode = (
+    <Label.Root
+      id={labelId}
+      className={showLabel ? styles.visibleLabel : undefined}
+    >
+      {label}
+    </Label.Root>
+  );
+
   return (
-    <div>
-      <span id={labelId} className={styles.srOnly}>
-        6-digit verification code
-      </span>
+    <div className={className}>
+      {showLabel ? (
+        labelNode
+      ) : (
+        <VisuallyHidden.Root asChild>{labelNode}</VisuallyHidden.Root>
+      )}
       <div className={styles.otpRow} role="group" aria-labelledby={labelId}>
-        {OTP_SLOTS.map((slotId, index) => (
+        {slots.map((index) => (
           <input
-            key={slotId}
+            key={index}
             ref={(el) => {
               inputsRef.current[index] = el;
             }}
@@ -75,7 +104,7 @@ export function OtpInput({ value, onChange, onComplete, disabled }: OtpInputProp
             maxLength={1}
             value={digits[index]}
             disabled={disabled}
-            aria-label={`Digit ${index + 1} of ${OTP_LENGTH}`}
+            aria-label={getDigitAriaLabel(index, length)}
             onChange={(e) => handleChange(index, e.target.value)}
             onKeyDown={(e) => handleKeyDown(index, e.key)}
             onPaste={handlePaste}

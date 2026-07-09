@@ -1,6 +1,7 @@
-import { BoltIcon, UsersIcon } from "@heroicons/react/16/solid";
+import { Users, Zap, type LucideIcon } from "lucide-react";
 
 import { Avatar } from "@/components/ui/Avatar/Avatar";
+import { buildAvatarProps } from "@/utils/avatar/build-avatar-props";
 import { formatFullDate } from "@/utils/chat/format-time";
 
 import styles from "./ChatPanelIdentity.module.css";
@@ -8,9 +9,12 @@ import type { ConversationResponse } from "@aucobot/shared";
 
 
 const TYPE_META = {
-  room: { label: "Phòng", Icon: UsersIcon },
-  session: { label: "Phiên", Icon: BoltIcon },
-} as const;
+  room: { label: "Phòng", Icon: Users },
+  session: { label: "Phiên", Icon: Zap },
+} as const satisfies Record<
+  ConversationResponse["type"],
+  { label: string; Icon: LucideIcon }
+>;
 
 export interface ChatPanelIdentityProps {
   conversation: ConversationResponse;
@@ -22,7 +26,7 @@ export function ChatPanelIdentity({ conversation }: ChatPanelIdentityProps) {
 
   return (
     <section className={styles.identity}>
-      <Avatar name={title} seed={id} size="lg" />
+      <Avatar {...buildAvatarProps(title, id, { size: "lg" })} />
 
       <h3 className={styles.name}>{title}</h3>
 

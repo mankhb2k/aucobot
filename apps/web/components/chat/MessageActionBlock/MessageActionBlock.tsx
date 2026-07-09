@@ -1,4 +1,5 @@
 import { Avatar } from "@/components/ui/Avatar/Avatar";
+import { buildAvatarProps } from "@/utils/avatar/build-avatar-props";
 import { formatMessageTime } from "@/utils/chat/format-time";
 
 import { ChatMarkdown } from "../ChatMarkdown/ChatMarkdown";
@@ -45,7 +46,7 @@ export function MessageActionBlock({
     <div className={styles.row} data-side="in">
       <div className={`${bubbleStyles.avatarSlot} ${styles.avatarSlot}`}>
         {isGroupStart ? (
-          <Avatar name={senderName} seed={senderName} size="sm" />
+          <Avatar {...buildAvatarProps(senderName, senderName, { size: "sm" })} />
         ) : null}
       </div>
 
