@@ -17,12 +17,11 @@ App chat **kiểu Telegram** — user trò chuyện với AI. Một route `/app`
 ```text
 app/app/
   layout.tsx
-  page.tsx                          # RSC auth guard → ClientAppShell
+  page.tsx                          # RSC auth guard
   _components/
-    ClientAppShell/                   # Sidebar + main panel
-    ConversationEmptyState/
-    CreateConversationView/
-    ChatMetaPanel/
+    Sidebar/                        # Sidebar components
+    Chat/                           # Chat area components
+    ChatPanel/                      # Detail/metadata panel components
 ```
 
 ## Hash routing — ✅

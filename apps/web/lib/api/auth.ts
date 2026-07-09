@@ -133,4 +133,26 @@ export const authApi = {
     });
     clearAuthSession();
   },
+
+  /** Development only — API returns 404 when NODE_ENV !== development. */
+  async devLogin(): Promise<AuthSuccessResponse> {
+    const res = await fetch(`${getApiBaseUrl()}/api/auth/dev-login`, {
+      method: "POST",
+      credentials: "include",
+    });
+
+    const data: unknown = await res.json();
+
+    if (!res.ok) {
+      throwApiError(data, "Dev login is unavailable.", res.status);
+    }
+
+    const parsed = authSuccessResponseSchema.parse(data);
+
+    if (parsed.accessExpiresAt) {
+      setAuthSession(parsed.accessExpiresAt);
+    }
+
+    return parsed;
+  },
 };

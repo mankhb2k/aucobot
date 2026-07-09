@@ -1,8 +1,20 @@
+/**
+ * ESLint flat config for @aucobot/api (NestJS).
+ *
+ * Layers:
+ *  1. Base JS + TypeScript type-checked rules (projectService)
+ *  2. Global rules for all *.ts
+ *  3. Overrides per file pattern (controllers, DTOs, middleware, tests)
+ *
+ * CI: `pnpm --filter @aucobot/api lint:ci` (zero warnings).
+ * Build workspace packages first so @aucobot/* types resolve (see .github/workflows/ci.yml).
+ */
 import eslint from "@eslint/js";
 import importPlugin from "eslint-plugin-import";
 import prettierRecommended from "eslint-plugin-prettier/recommended";
 import tseslint from "typescript-eslint";
 
+/** Feature plugin roots under src/features/ — each is an isolated deploy-time module. */
 const featureRoots = [
   "tools",
   "integrations",
@@ -33,6 +45,7 @@ function featureCrossImportZones() {
   return zones;
 }
 
+/** Runtime safety and general JS hygiene — applied to all API source files. */
 const coreSafetyRules = {
   eqeqeq: ["error", "always", { null: "ignore" }],
   "no-eval": "error",
@@ -62,6 +75,7 @@ const coreSafetyRules = {
   "guard-for-in": "error",
 };
 
+/** Import graph hygiene — blank lines between groups, @aucobot/* before relative paths. */
 const importRules = {
   "import/no-duplicates": "error",
   "import/no-self-import": "error",
@@ -80,6 +94,7 @@ const importRules = {
   ],
 };
 
+/** Strict TypeScript — requires type-checked lint (projectService: true below). */
 const typescriptErrorRules = {
   "@typescript-eslint/no-explicit-any": "error",
   "@typescript-eslint/ban-ts-comment": [
@@ -120,6 +135,7 @@ export default tseslint.config(
   ...tseslint.configs.recommendedTypeChecked,
   prettierRecommended,
   {
+    // Default block: all API TypeScript sources.
     files: ["**/*.ts"],
     plugins: {
       import: importPlugin,
@@ -141,6 +157,7 @@ export default tseslint.config(
       ...coreSafetyRules,
       ...importRules,
       ...typescriptErrorRules,
+      // Platform: Express only (not Fastify).
       "no-restricted-imports": [
         "error",
         {
@@ -152,6 +169,7 @@ export default tseslint.config(
           ],
         },
       ],
+      // Layer boundaries: core ↔ features, feature ↔ feature.
       "import/no-restricted-paths": [
         "error",
         {
@@ -169,6 +187,7 @@ export default tseslint.config(
     },
   },
   {
+    // Controllers: thin HTTP layer — no Prisma or database imports.
     files: ["**/*.controller.ts"],
     rules: {
       "no-restricted-imports": [
@@ -195,6 +214,7 @@ export default tseslint.config(
     },
   },
   {
+    // DTOs: Zod/class validation only — no DI or persistence.
     files: ["**/dto/**/*.ts"],
     rules: {
       "no-restricted-imports": [
@@ -222,18 +242,21 @@ export default tseslint.config(
     },
   },
   {
+    // Express middleware may mutate req/res — allow param property reassignment.
     files: ["**/*.middleware.ts"],
     rules: {
       "no-param-reassign": ["error", { props: false }],
     },
   },
   {
+    // Tests: console allowed for debugging output.
     files: ["**/*.spec.ts", "**/*.test.ts"],
     rules: {
       "no-console": "off",
     },
   },
   {
+    // This config file is plain JS — relax rules that do not apply.
     files: ["eslint.config.mjs"],
     rules: {
       "no-console": "off",

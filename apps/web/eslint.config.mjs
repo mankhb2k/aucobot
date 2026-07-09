@@ -1,10 +1,25 @@
-// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
+/**
+ * ESLint flat config for @aucobot/web (Next.js App Router).
+ *
+ * Layers:
+ *  1. Base JS + Next.js core-web-vitals + TypeScript type-checked rules
+ *  2. Global rules for all *.ts / *.tsx
+ *  3. Layer overrides (app/components/hooks/utils, lib/api, hooks, tests)
+ *  4. Storybook recommended rules (flat/recommended)
+ *
+ * CI: `pnpm --filter @aucobot/web lint:ci`
+ *   — lints entire app except story files (see package.json lint:ci script).
+ * Build @aucobot/shared before lint so workspace types resolve.
+ *
+ * Storybook: https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
+ */
 import storybook from "eslint-plugin-storybook";
 
 import eslint from "@eslint/js";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import tseslint from "typescript-eslint";
 
+/** UI layers that must use lib/api for HTTP — no raw fetch/axios. */
 const appLayerFiles = [
   "app/**/*.{ts,tsx}",
   "components/**/*.{ts,tsx}",
@@ -12,6 +27,7 @@ const appLayerFiles = [
   "utils/**/*.{ts,tsx}",
 ];
 
+/** Runtime safety and general JS hygiene — applied to all web source files. */
 const coreSafetyRules = {
   eqeqeq: ["error", "always", { null: "ignore" }],
   "no-eval": "error",
@@ -38,6 +54,7 @@ const coreSafetyRules = {
   "prefer-template": "error",
 };
 
+/** Import graph hygiene — @/* alias grouped as internal. */
 const importRules = {
   "import/no-duplicates": "error",
   "import/no-self-import": "error",
@@ -55,6 +72,7 @@ const importRules = {
   ],
 };
 
+/** Strict TypeScript — requires type-checked lint (projectService: true below). */
 const typescriptErrorRules = {
   "@typescript-eslint/no-explicit-any": "error",
   "@typescript-eslint/ban-ts-comment": [
@@ -74,6 +92,7 @@ const typescriptErrorRules = {
   ],
 };
 
+/** App UI layers: route HTTP through lib/api, not fetch/axios directly. */
 const appLayerRestrictions = {
   "no-restricted-globals": [
     "error",
@@ -101,9 +120,10 @@ export default tseslint.config({
     "node_modules/**",
     "next-env.d.ts",
     "eslint.config.mjs",
-    "public/**",
+    "public/**", // static assets (e.g. chat-simulator/app.js) — not TS source
   ],
 }, eslint.configs.recommended, ...nextVitals, ...tseslint.configs.recommendedTypeChecked, {
+  // Default block: all TypeScript / TSX sources.
   files: ["**/*.{ts,tsx}"],
   languageOptions: {
     parserOptions: {
@@ -130,6 +150,7 @@ export default tseslint.config({
     "react/no-array-index-key": "warn",
     "react/no-danger": "warn",
     "react/no-unescaped-entities": ["error", { forbid: [">", "}"] }],
+    // Prefer named exports; Next.js pages/layouts and Storybook are exempt (see block below).
     "no-restricted-syntax": [
       "error",
       {
@@ -140,6 +161,7 @@ export default tseslint.config({
     ],
   },
 }, {
+  // Next.js pages/layouts, Storybook stories, and tool configs require default export.
   files: [
     "**/page.tsx",
     "**/layout.tsx",
@@ -151,9 +173,11 @@ export default tseslint.config({
     "no-restricted-syntax": "off",
   },
 }, {
+  // app/, components/, hooks/, utils/ — enforce HTTP layer boundaries.
   files: appLayerFiles,
   rules: appLayerRestrictions,
 }, {
+  // lib/api: client-side API modules — no React, no server-only imports, no UI deps.
   files: ["lib/api/**/*.{ts,tsx}"],
   rules: {
     "no-restricted-imports": [
@@ -179,6 +203,7 @@ export default tseslint.config({
     ],
   },
 }, {
+  // utils/: pure helpers — no React, no upward imports into app/UI layers.
   files: ["utils/**/*.{ts,tsx}"],
   rules: {
     "no-restricted-imports": [
@@ -198,6 +223,7 @@ export default tseslint.config({
     ],
   },
 }, {
+  // hooks/: data/orchestration — may call lib/api, must not import components or app routes.
   files: ["hooks/**/*.{ts,tsx}"],
   rules: {
     ...appLayerRestrictions,
@@ -220,6 +246,7 @@ export default tseslint.config({
     ],
   },
 }, {
+  // Tests: relax layer restrictions for mocks and fixtures.
   files: ["**/*.spec.ts", "**/*.test.ts", "**/*.test.tsx"],
   rules: {
     "no-restricted-globals": "off",
@@ -227,6 +254,7 @@ export default tseslint.config({
     "import/first": "off",
   },
 }, {
+  // This config file is plain JS — relax rules that do not apply.
   files: ["eslint.config.mjs"],
   rules: {
     "no-console": "off",
