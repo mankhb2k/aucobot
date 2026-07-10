@@ -61,7 +61,9 @@ export function SidebarHeader({
                 icon={menuIcon}
                 aria-label={menuAriaLabel}
               />
-              <DropdownMenuContent align="end">{menuContent}</DropdownMenuContent>
+              <DropdownMenuContent align="end" glass>
+                {menuContent}
+              </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <DropdownIconButton
@@ -79,7 +81,7 @@ export function SidebarHeader({
                 icon={composeIcon}
                 aria-label={composeAriaLabel}
               />
-              <DropdownMenuContent align="start">
+              <DropdownMenuContent align="start" glass>
                 {composeContent}
               </DropdownMenuContent>
             </DropdownMenu>

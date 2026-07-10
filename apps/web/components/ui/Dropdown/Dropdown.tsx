@@ -145,6 +145,8 @@ export type DropdownMenuContentProps = React.ComponentPropsWithoutRef<
 > & {
   /** Chiều rộng tối thiểu của menu (number = px, string = CSS length). */
   width?: number | string;
+  /** Hiệu ứng kính mờ (glassmorphism) — blur nền phía sau. */
+  glass?: boolean;
 };
 
 export const DropdownMenuContent = React.forwardRef<
@@ -152,7 +154,7 @@ export const DropdownMenuContent = React.forwardRef<
   DropdownMenuContentProps
 >(
   (
-    { className, sideOffset = 4, width, style, onCloseAutoFocus, ...props },
+    { className, sideOffset = 4, width, glass, style, onCloseAutoFocus, ...props },
     ref,
   ) => {
     const widthStyle =
@@ -165,7 +167,7 @@ export const DropdownMenuContent = React.forwardRef<
         <DropdownMenuPrimitive.Content
           ref={ref}
           sideOffset={sideOffset}
-          className={`${styles.content} ${className ?? ""}`.trim()}
+          className={`${styles.content} ${glass ? styles.contentGlass : ""} ${className ?? ""}`.trim()}
           style={{ ...widthStyle, ...style }}
           onCloseAutoFocus={(event) => {
             // Đóng bằng chuột: không trả focus về trigger → không hiện viền.
@@ -277,12 +279,14 @@ export type DropdownMenuSubContentProps = React.ComponentPropsWithoutRef<
   typeof DropdownMenuPrimitive.SubContent
 > & {
   width?: number | string;
+  /** Hiệu ứng kính mờ (glassmorphism) — blur nền phía sau. */
+  glass?: boolean;
 };
 
 export const DropdownMenuSubContent = React.forwardRef<
   HTMLDivElement,
   DropdownMenuSubContentProps
->(({ className, sideOffset = 4, width, style, ...props }, ref) => {
+>(({ className, sideOffset = 4, width, glass, style, ...props }, ref) => {
   const widthStyle =
     width !== undefined
       ? { minWidth: typeof width === "number" ? `${width}px` : width }
@@ -292,7 +296,7 @@ export const DropdownMenuSubContent = React.forwardRef<
     <DropdownMenuPrimitive.SubContent
       ref={ref}
       sideOffset={sideOffset}
-      className={`${styles.content} ${className ?? ""}`.trim()}
+      className={`${styles.content} ${glass ? styles.contentGlass : ""} ${className ?? ""}`.trim()}
       style={{ ...widthStyle, ...style }}
       {...props}
     />

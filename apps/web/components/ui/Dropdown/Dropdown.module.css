@@ -4,13 +4,52 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
-  padding: 5px;
+  padding: 4px;
   min-width: 180px;
   z-index: 50;
   /* Mở bung từ điểm neo vào trigger (Radix tính sẵn theo side/align). */
   transform-origin: var(--radix-dropdown-menu-content-transform-origin);
   animation: expandFromTrigger 0.15s ease-out;
   outline: none;
+}
+
+/* Glassmorphism — bật qua prop `glass` trên DropdownMenuContent */
+.contentGlass,
+.content.contentGlass {
+  position: relative;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  overflow: hidden;
+  padding: 5px;
+}
+
+.contentGlass::before,
+.content.contentGlass::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  pointer-events: none;
+}
+
+.content.contentGlass .item:hover,
+.content.contentGlass .item[data-highlighted] {
+  background: var(--glass-item-hover);
+}
+
+.content.contentGlass .item.danger:hover,
+.content.contentGlass .item.danger[data-highlighted] {
+  background: var(--color-danger-dim);
+}
+
+.content.contentGlass .separator {
+  background-color: var(--glass-separator);
 }
 
 /* 2. MENU ITEM */

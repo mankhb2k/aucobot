@@ -69,6 +69,10 @@ const meta: Meta = {
       options: ["light", "dark", "system"],
       description: "Giá trị đang chọn trong submenu Appearance",
     },
+    glass: {
+      control: "boolean",
+      description: "Bật hiệu ứng kính mờ (glassmorphism)",
+    },
   },
 };
 
@@ -120,6 +124,7 @@ type CustomStoryArgs = {
   triggerText: string;
   sideOffset: number;
   contentWidth: number;
+  glass: boolean;
 };
 
 export const Default: StoryObj<CustomStoryArgs> = {
@@ -129,6 +134,7 @@ export const Default: StoryObj<CustomStoryArgs> = {
     triggerText: "Options",
     sideOffset: 4,
     contentWidth: 180,
+    glass: true,
   },
   render: (args) => (
     <div>
@@ -146,6 +152,7 @@ export const Default: StoryObj<CustomStoryArgs> = {
             align={args.align}
             sideOffset={args.sideOffset}
             width={args.contentWidth}
+            glass={args.glass}
           >
             <DropdownMenuLabel>Tài khoản</DropdownMenuLabel>
             <DropdownMenuSeparator />
@@ -255,6 +262,7 @@ type SubMenuStoryArgs = {
   subContentWidth: number;
   select: boolean;
   theme: ThemeOption;
+  glass: boolean;
 };
 
 export const ItemExtend: StoryObj<SubMenuStoryArgs> = {
@@ -266,6 +274,7 @@ export const ItemExtend: StoryObj<SubMenuStoryArgs> = {
     subContentWidth: 180,
     select: true,
     theme: "light",
+    glass: true,
   },
   render: function ItemExtendStory(args) {
     const [theme, setTheme] = React.useState<ThemeOption>(args.theme);
@@ -288,6 +297,7 @@ export const ItemExtend: StoryObj<SubMenuStoryArgs> = {
               align={args.align}
               sideOffset={args.sideOffset}
               width={args.contentWidth}
+              glass={args.glass}
             >
               <DropdownMenuItem>
                 <Settings {...iconProps} />
@@ -298,7 +308,7 @@ export const ItemExtend: StoryObj<SubMenuStoryArgs> = {
                   <Sun {...iconProps} />
                   Giao diện
                 </DropdownMenuSubItem>
-                <DropdownMenuSubContent width={args.subContentWidth}>
+                <DropdownMenuSubContent width={args.subContentWidth} glass={args.glass}>
                   <DropdownMenuItem
                     selected={theme === "light"}
                     onSelect={() => setTheme("light")}
