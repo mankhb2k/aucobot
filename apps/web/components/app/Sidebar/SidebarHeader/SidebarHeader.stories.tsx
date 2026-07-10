@@ -9,6 +9,7 @@ import {
   SquarePen,
   Star,
   Users,
+  Zap,
 } from "lucide-react";
 import { useState, type ComponentProps } from "react";
 import { fn } from "storybook/test";
@@ -22,7 +23,7 @@ import { SidebarHeaderNav } from "../SidebarHeaderNav/SidebarHeaderNav";
 import { SidebarHeader } from "./SidebarHeader";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 
-const iconProps = { strokeWidth: 2.5 };
+const iconProps = { strokeWidth: 2 };
 
 const navItems = [
   {
@@ -101,7 +102,7 @@ const meta = {
     searchPlaceholder: "Tìm kiếm",
     searchClearAriaLabel: "Xóa tìm kiếm",
     menuAriaLabel: "Mở menu",
-    menuIcon: <Menu {...iconProps} />,
+    menuIcon: <Menu />,
     menuContent: (
       <>
         <DropdownMenuItem onSelect={fn()}>Cài đặt</DropdownMenuItem>
@@ -110,8 +111,19 @@ const meta = {
       </>
     ),
     composeAriaLabel: "Tạo hội thoại mới",
-    composeIcon: <SquarePen {...iconProps} />,
-    onComposeClick: fn(),
+    composeIcon: <SquarePen />,
+    composeContent: (
+      <>
+        <DropdownMenuItem onSelect={fn()}>
+          <Zap {...iconProps} />
+          Phiên làm việc mới
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={fn()}>
+          <Users {...iconProps} />
+          Nhóm mới
+        </DropdownMenuItem>
+      </>
+    ),
   },
   decorators: [
     (Story) => (

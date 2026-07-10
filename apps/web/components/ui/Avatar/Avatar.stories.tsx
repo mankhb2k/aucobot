@@ -11,7 +11,7 @@ const meta = {
   parameters: { layout: "centered" },
   tags: ["autodocs"],
   argTypes: {
-    size: { control: "inline-radio", options: ["sm", "md", "lg"] },
+    size: { control: "inline-radio", options: ["xs", "sm", "md", "lg"] },
     fallbackText: { control: "text" },
     backgroundColor: { control: "color" },
     alt: { control: "text" },
@@ -30,6 +30,7 @@ export const Default: Story = {};
 export const Sizes: Story = {
   render: (args) => (
     <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+      <Avatar {...args} size="xs" />
       <Avatar {...args} size="sm" />
       <Avatar {...args} size="md" />
       <Avatar {...args} size="lg" />

@@ -30,40 +30,114 @@ function useDropdownMenuSubSelect() {
 
 export const DropdownMenu = DropdownMenuPrimitive.Root;
 
+export type DropdownIconSize = "sm" | "lg";
+
+/** Đồng bộ với Dropdown stories (`iconProps`: size 18, strokeWidth 2). */
+const DROPDOWN_ICON_SIZE = 18;
+const DROPDOWN_ICON_STROKE = 2;
+
+function getIconTriggerClassName(size: DropdownIconSize = "sm") {
+  return `${styles.iconTrigger} ${size === "lg" ? styles.iconTriggerLg : ""}`.trim();
+}
+
+/** Chuẩn hóa icon Lucide — kích thước/nét vẽ cố định, CSS chỉ scale vùng bấm. */
+function normalizeTriggerIcon(icon: React.ReactNode) {
+  if (!React.isValidElement(icon)) {
+    return icon;
+  }
+
+  return React.cloneElement(
+    icon as React.ReactElement<{
+      size?: number;
+      strokeWidth?: number;
+      "aria-hidden"?: boolean;
+    }>,
+    {
+      size: DROPDOWN_ICON_SIZE,
+      strokeWidth: DROPDOWN_ICON_STROKE,
+      "aria-hidden": true,
+    },
+  );
+}
+
+export type DropdownIconButtonProps =
+  React.ButtonHTMLAttributes<HTMLButtonElement> & {
+    icon: React.ReactNode;
+    size?: DropdownIconSize;
+  };
+
+/** Nút-icon dùng chung style với `DropdownMenuTrigger variant="icon"` (khi không cần menu). */
+export const DropdownIconButton = React.forwardRef<
+  HTMLButtonElement,
+  DropdownIconButtonProps
+>(({ className, icon, size = "sm", type = "button", ...props }, ref) => (
+  <button
+    ref={ref}
+    type={type}
+    className={`${getIconTriggerClassName(size)} ${className ?? ""}`.trim()}
+    {...props}
+  >
+    {normalizeTriggerIcon(icon)}
+  </button>
+));
+DropdownIconButton.displayName = "DropdownIconButton";
+
 export type DropdownMenuTriggerProps =
   DropdownMenuPrimitive.DropdownMenuTriggerProps & {
     /**
      * Kiểu nút mở menu:
      * - `default`: nút có viền + nhãn chữ.
-     * - `icon`: nút-icon vuông (icon tự truyền qua children, KHÔNG cố định icon nào).
+     * - `icon`: nút-icon (icon qua prop `icon` hoặc children).
      * - `unstyled`: không style, tự tùy biến hoàn toàn.
      */
     variant?: "default" | "icon" | "unstyled";
+    /** Kích thước nút-icon (`sm` = 34px, `lg` = sidebar header). Chỉ áp dụng `variant="icon"`. */
+    size?: DropdownIconSize;
+    /** Icon hiển thị — thay cho children khi `variant="icon"`. */
+    icon?: React.ReactNode;
     children?: React.ReactNode;
   };
 
 export const DropdownMenuTrigger = React.forwardRef<
   HTMLButtonElement,
   DropdownMenuTriggerProps
->(({ className, variant = "default", children, style, ...props }, ref) => {
-  const variantClass =
-    variant === "icon"
-      ? styles.iconTrigger
-      : variant === "default"
-        ? styles.defaultTrigger
-        : "";
+>(
+  (
+    {
+      className,
+      variant = "default",
+      size = "sm",
+      icon,
+      children,
+      style,
+      ...props
+    },
+    ref,
+  ) => {
+    const variantClass =
+      variant === "icon"
+        ? getIconTriggerClassName(size)
+        : variant === "default"
+          ? styles.defaultTrigger
+          : "";
 
-  return (
-    <DropdownMenuPrimitive.Trigger
-      ref={ref}
-      className={`${variantClass} ${className ?? ""}`.trim()}
-      style={style}
-      {...props}
-    >
-      {children}
-    </DropdownMenuPrimitive.Trigger>
-  );
-});
+    const triggerContent =
+      variant === "icon"
+        ? normalizeTriggerIcon(icon ?? children)
+        : children;
+
+    return (
+      <DropdownMenuPrimitive.Trigger
+        ref={ref}
+        className={`${variantClass} ${className ?? ""}`.trim()}
+        style={style}
+        {...props}
+      >
+        {triggerContent}
+      </DropdownMenuPrimitive.Trigger>
+    );
+  },
+);
 DropdownMenuTrigger.displayName = DropdownMenuPrimitive.Trigger.displayName;
 
 export type DropdownMenuContentProps = React.ComponentPropsWithoutRef<

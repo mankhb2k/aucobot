@@ -42,6 +42,12 @@
   right: var(--space-2);
 }
 
+.item > svg:not(.itemExtendChevron) {
+  flex-shrink: 0;
+  height: 18px;
+  width: 18px;
+}
+
 .item:hover,
 .item[data-highlighted] {
   background: var(--color-secondary-hover);
@@ -108,8 +114,11 @@
   }
 }
 
-/* 5. TRIGGER (Icon button — icon truyền qua children, không cố định) */
+/* 5. TRIGGER (Icon button — icon truyền qua prop `icon` hoặc children) */
 .iconTrigger {
+  --dropdown-icon-trigger-size: 34px;
+  --dropdown-icon-size: 18px;
+  --dropdown-icon-stroke: 2;
   align-items: center;
   background: transparent;
   border: none;
@@ -117,12 +126,25 @@
   color: var(--color-description);
   cursor: pointer;
   display: flex;
-  height: 34px;
+  flex-shrink: 0;
+  height: var(--dropdown-icon-trigger-size);
   justify-content: center;
   transition:
     background var(--transition),
     color var(--transition);
-  width: 34px;
+  width: var(--dropdown-icon-trigger-size);
+}
+
+.iconTrigger svg {
+  flex-shrink: 0;
+  height: var(--dropdown-icon-size);
+  stroke-width: var(--dropdown-icon-stroke);
+  width: var(--dropdown-icon-size);
+}
+
+.iconTriggerLg {
+  --dropdown-icon-trigger-size: var(--sidebar-header-control-size);
+  color: var(--color-icon);
 }
 
 .iconTrigger:hover {

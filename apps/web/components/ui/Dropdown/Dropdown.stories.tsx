@@ -186,33 +186,50 @@ export const IconTrigger: StoryObj<
     return (
       <div>
         <DemoLabel>
-          Variant `icon` chỉ là nút-icon — icon truyền qua children nên đổi tùy
-          ý (ba chấm ngang/dọc, cộng, bánh răng...)
+          Variant `icon` — truyền icon qua prop `icon` hoặc children; `size`
+          `sm` (mặc định) / `lg` (sidebar header).
         </DemoLabel>
         <DemoBox>
-          <div style={{ display: "flex", gap: 12 }}>
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
             <DropdownMenu>
-              <DropdownMenuTrigger variant="icon" aria-label="Ba chấm ngang">
-                <MoreHorizontal size={20} strokeWidth={2} />
-              </DropdownMenuTrigger>
+              <DropdownMenuTrigger
+                variant="icon"
+                icon={<MoreHorizontal />}
+                aria-label="Ba chấm ngang"
+              />
               {menu}
             </DropdownMenu>
             <DropdownMenu>
-              <DropdownMenuTrigger variant="icon" aria-label="Ba chấm dọc">
-                <MoreVertical size={20} strokeWidth={2} />
-              </DropdownMenuTrigger>
+              <DropdownMenuTrigger
+                variant="icon"
+                icon={<MoreVertical />}
+                aria-label="Ba chấm dọc"
+              />
               {menu}
             </DropdownMenu>
             <DropdownMenu>
-              <DropdownMenuTrigger variant="icon" aria-label="Thêm">
-                <Plus size={20} strokeWidth={2} />
-              </DropdownMenuTrigger>
+              <DropdownMenuTrigger
+                variant="icon"
+                icon={<Plus />}
+                aria-label="Thêm"
+              />
               {menu}
             </DropdownMenu>
             <DropdownMenu>
-              <DropdownMenuTrigger variant="icon" aria-label="Cài đặt">
-                <Settings size={20} strokeWidth={2} />
-              </DropdownMenuTrigger>
+              <DropdownMenuTrigger
+                variant="icon"
+                icon={<Settings />}
+                aria-label="Cài đặt"
+              />
+              {menu}
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                variant="icon"
+                size="lg"
+                icon={<Settings />}
+                aria-label="Sidebar header size"
+              />
               {menu}
             </DropdownMenu>
           </div>

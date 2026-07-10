@@ -1,5 +1,4 @@
 .header {
-  --header-control-size: var(--sidebar-header-control-size);
   border-bottom: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
@@ -30,36 +29,6 @@
   display: flex;
   flex-shrink: 0;
   gap: var(--space-1);
-}
-
-.iconBtn {
-  align-items: center;
-  background: transparent;
-  border: none;
-  border-radius: var(--radius-full);
-  color: var(--color-icon);
-  cursor: pointer;
-  display: inline-flex;
-  flex-shrink: 0;
-  height: var(--header-control-size);
-  justify-content: center;
-  transition: background var(--transition);
-  width: var(--header-control-size);
-}
-
-.iconBtn:hover {
-  background: var(--color-secondary-hover);
-}
-
-.iconBtn:focus-visible {
-  box-shadow: var(--focus-ring);
-  outline: none;
-}
-
-.iconBtn svg {
-  height: var(--sidebar-header-icon-size);
-  stroke-width: var(--sidebar-header-icon-stroke);
-  width: var(--sidebar-header-icon-size);
 }
 
 .search {

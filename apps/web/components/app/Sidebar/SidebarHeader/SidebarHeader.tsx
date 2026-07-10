@@ -1,7 +1,7 @@
 "use client";
 
-
 import {
+  DropdownIconButton,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
@@ -19,6 +19,7 @@ interface SidebarHeaderProps {
   onMenuClick?: () => void;
   composeAriaLabel: string;
   composeIcon: ReactNode;
+  composeContent?: ReactNode;
   onComposeClick?: () => void;
   searchValue: string;
   onSearchValueChange: (value: string) => void;
@@ -29,27 +30,6 @@ interface SidebarHeaderProps {
   nav: ReactNode;
 }
 
-function HeaderIconButton({
-  ariaLabel,
-  children,
-  onClick,
-}: {
-  ariaLabel: string;
-  children: ReactNode;
-  onClick?: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      className={styles.iconBtn}
-      aria-label={ariaLabel}
-      onClick={onClick}
-    >
-      {children}
-    </button>
-  );
-}
-
 export function SidebarHeader({
   title,
   menuAriaLabel,
@@ -58,21 +38,16 @@ export function SidebarHeader({
   onMenuClick,
   composeAriaLabel,
   composeIcon,
+  composeContent,
   onComposeClick,
   searchValue,
   onSearchValueChange,
   searchLabel,
   searchPlaceholder,
   searchClearAriaLabel,
-  searchIconStrokeWidth = 2.5,
+  searchIconStrokeWidth = 2,
   nav,
 }: SidebarHeaderProps) {
-  const menuTrigger = (
-    <HeaderIconButton ariaLabel={menuAriaLabel} onClick={onMenuClick}>
-      {menuIcon}
-    </HeaderIconButton>
-  );
-
   return (
     <header className={styles.header}>
       <div className={styles.topRow}>
@@ -81,23 +56,41 @@ export function SidebarHeader({
           {menuContent ? (
             <DropdownMenu>
               <DropdownMenuTrigger
-                variant="unstyled"
-                className={styles.iconBtn}
+                variant="icon"
+                size="lg"
+                icon={menuIcon}
                 aria-label={menuAriaLabel}
-              >
-                {menuIcon}
-              </DropdownMenuTrigger>
+              />
               <DropdownMenuContent align="end">{menuContent}</DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            menuTrigger
+            <DropdownIconButton
+              size="lg"
+              icon={menuIcon}
+              aria-label={menuAriaLabel}
+              onClick={onMenuClick}
+            />
           )}
-          <HeaderIconButton
-            ariaLabel={composeAriaLabel}
-            onClick={onComposeClick}
-          >
-            {composeIcon}
-          </HeaderIconButton>
+          {composeContent ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                variant="icon"
+                size="lg"
+                icon={composeIcon}
+                aria-label={composeAriaLabel}
+              />
+              <DropdownMenuContent align="start">
+                {composeContent}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <DropdownIconButton
+              size="lg"
+              icon={composeIcon}
+              aria-label={composeAriaLabel}
+              onClick={onComposeClick}
+            />
+          )}
         </div>
       </div>
 
