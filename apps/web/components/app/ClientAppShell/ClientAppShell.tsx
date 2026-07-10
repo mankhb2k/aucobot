@@ -19,20 +19,17 @@ import {
 } from "@/components/app/Sidebar/SidebarHeaderNav/SidebarHeaderNav";
 import { SidebarMain } from "@/components/app/Sidebar/SidebarMain/SidebarMain";
 import { DropdownMenuItem } from "@/components/ui/Dropdown/Dropdown";
+import { useAuthGuard } from "@/hooks/auth/use-auth-guard";
 import { useConversationIdFromHash } from "@/hooks/thread/use-conversation-id-from-hash";
 import { useConversationList } from "@/hooks/thread/use-conversation-list";
 import { mapConversationToSidebarItem } from "@/utils/chat/map-conversation";
 
 import styles from "./ClientAppShell.module.css";
 
-interface ClientAppShellProps {
-  userName: string;
-}
-
 const iconProps = { strokeWidth: 2 };
 
-export function ClientAppShell({ userName }: ClientAppShellProps) {
-  void userName;
+export function ClientAppShell() {
+  const { status: authStatus } = useAuthGuard();
   const [searchValue, setSearchValue] = useState("");
   const [navValue, setNavValue] = useState("all");
   const { items: apiItems, loading, error } = useConversationList();
@@ -107,6 +104,10 @@ export function ClientAppShell({ userName }: ClientAppShellProps) {
     ],
     [],
   );
+
+  if (authStatus !== "authenticated") {
+    return <div className={styles.shell} data-chat-shell />;
+  }
 
   return (
     <div className={styles.shell} data-chat-shell>

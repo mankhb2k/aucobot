@@ -34,13 +34,32 @@ apps/api  ──REST + WebSocket──►  lib/http + lib/stream + lib/api
 **Giao thức (đã chốt):** REST (lệnh) + WebSocket (push). Không GraphQL.  
 **UX định hướng:** Telegram-style — list thread (phòng marketing) \| chat full-bleed. Không dashboard AI SaaS.
 
+### 0.1 Rendering: `app/app` luôn SPA (client) · `app/site` SSR (đã chốt)
+
+| Route | Render | Vì sao |
+|-------|--------|--------|
+| `app/app/**` — chat shell, `app.aucobot.com` | **Client-only.** `page.tsx` **không** `cookies()`/`headers()`/fetch động phía server — route giữ static, Next có thể prerender/cache | Sau login, không cần SEO/SSR. `cookies()` ép route dynamic + fetch server-to-server trước byte đầu = round-trip thừa, mất khả năng cache CDN |
+| `app/site/**` — landing, login/register, `aucobot.com` | **SSR/SSG** (Next mặc định) — metadata, OG tags, sitemap | Cần SEO — key quảng cáo "Xây dựng Phòng Marketing Ảo" phải index được |
+
+**Cấm trong `app/app/**`:**
+
+- `page.tsx`/`layout.tsx` gọi `cookies()`, `headers()`, hoặc fetch server để lấy user/data hiển thị initial.
+- Server Component fetch snapshot `initial*` (ngoại lệ so với §3.B.2 — chỉ áp dụng `app/site/**`).
+
+**Auth guard 2 lớp cho `app/app`** (không chặn = SSR, không phải "chỉ ẩn UI" — vẫn đúng §1.1):
+
+1. **Edge (`proxy.ts`)** — chỉ check **có cookie hay không** (đọc `request.cookies`, không gọi API) → thiếu cookie → `redirect` sang `/login` ngay, chưa render gì.
+2. **Client (`hooks/auth/use-auth-guard.ts`)** — `ClientAppShell` gọi `authApi.getMe()` xác thực token còn hợp lệ (chưa hết hạn/bị revoke) → không hợp lệ → `window.location.assign(marketingUrl("/login"))`.
+
+Áp dụng tương tự nếu thêm route mới dưới `app/app/**` sau này (vd `app/app/settings`) — **không** quay lại pattern RSC auth check.
+
 ---
 
 ## Mục lục
 
 | § | Nội dung |
 |---|----------|
-| 0 | Frontend mỏng |
+| 0 | Frontend mỏng (0.1 Rendering SPA vs SSR) |
 | 1 | Bảo mật |
 | 2 | Tái sử dụng code |
 | 3 | Cấu trúc thư mục |
@@ -217,7 +236,7 @@ apps/web/
 ├── schemas/             wrap @aucobot/shared
 ├── public/
 ├── scripts/
-├── proxy.ts             auth guard edge (planned)
+├── proxy.ts             host rewrite + auth guard edge (cookie presence, §0.1)
 └── next.config.ts
 ```
 
@@ -245,6 +264,7 @@ app/
 | Business logic | ❌ | ❌ |
 
 - **`(auth)/`:** ngoại lệ — không bắt buộc `ClientXxxPage`.
+- **`app/app/page.tsx`:** ngoại lệ khác — SPA client-only (§0.1), **không** `initial*` snapshot qua `server-api`, **không** `cookies()`/redirect server.
 - **Chat** `app.aucobot.com/#departmentId` — một route `/`, hash chọn phòng (Telegram Web A).
 - Auth: `site/(auth)/login`, `site/(auth)/register` trên domain marketing.
 

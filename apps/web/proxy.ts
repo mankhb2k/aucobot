@@ -9,6 +9,12 @@ const APP_ROUTE_PREFIX = "/app";
 const SITE_ROUTE_PREFIX = "/site";
 
 const SITE_ONLY_PATHS = ["/login", "/register"];
+const AUTH_COOKIE_NAMES = ["access_token", "refresh_token"];
+
+/** Edge guard rẻ — chỉ check có cookie hay không, không gọi API (§0.1 rule.md). */
+function hasAuthCookie(request: NextRequest): boolean {
+  return AUTH_COOKIE_NAMES.some((name) => request.cookies.has(name));
+}
 
 function isStaticAsset(pathname: string): boolean {
   return (
@@ -52,6 +58,9 @@ export function proxy(request: NextRequest) {
 
   if (onAppHost) {
     if (isAppPath(pathname)) {
+      if (!hasAuthCookie(request)) {
+        return NextResponse.redirect(marketingUrl("/login"));
+      }
       return NextResponse.next();
     }
 
@@ -63,6 +72,9 @@ export function proxy(request: NextRequest) {
 
   // Dev: app at localhost:8386/app (same host as login — cookies work across ports).
   if (isAppPath(pathname)) {
+    if (!hasAuthCookie(request)) {
+      return NextResponse.redirect(marketingUrl("/login"));
+    }
     return NextResponse.next();
   }
 

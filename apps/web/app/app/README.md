@@ -16,13 +16,20 @@ App chat **kiểu Telegram** — user trò chuyện với AI. Một route `/app`
 
 ```text
 app/app/
-  page.tsx                          # RSC auth guard → ClientAppShell
+  page.tsx                          # Static shell → ClientAppShell (SPA, không cookies()/fetch server)
   _components/
-    ClientAppShell/                 # Khung 3 cột + điều phối state
+    ClientAppShell/                 # Khung 3 cột + điều phối state + auth guard client
     Chat/                           # (reserved) container chat
     ChatPanel/                      # (reserved) container panel
     Sidebar/                        # (reserved) container sidebar
 ```
+
+## Auth guard — SPA, không SSR (§0.1 `.agent/rule.md`)
+
+`app/app` luôn **client-only** — không dùng `cookies()`/redirect server để giữ route static, tránh round-trip server-to-server trước byte đầu tiên:
+
+1. **Edge (`proxy.ts`)** — chỉ check **có cookie hay không** (không gọi API) → thiếu cookie → redirect `/login` ngay.
+2. **Client (`hooks/auth/use-auth-guard.ts`)** — `ClientAppShell` gọi `authApi.getMe()` xác thực token còn hợp lệ → không hợp lệ → `window.location.assign` sang `/login` (domain marketing).
 
 ## Hash routing — ✅
 
