@@ -1,6 +1,7 @@
 import {
   CircleHelp,
   LogOut,
+  Menu,
   Moon,
   MoreHorizontal,
   MoreVertical,
@@ -412,3 +413,171 @@ export const WithIcons: StoryObj<
     </div>
   ),
 };
+
+const MockTelegramSidebar = ({ children }: { children: React.ReactNode }) => {
+  const mockChats = [
+    { name: "Telegram", message: "Login code: 12345. Do not share...", time: "12:34", unread: 2, color: "#1ca8db" },
+    { name: "Saved Messages", message: "Remind me to check the database", time: "11:20", unread: 0, color: "#22c55e" },
+    { name: "Group Chat", message: "Tung: Let's meet at 5pm today", time: "10:15", unread: 5, color: "#e11d48" },
+    { name: "CoinMarketCap", message: "New listing notifications...", time: "Yesterday", unread: 0, color: "#f59e0b" },
+    { name: "Ví", message: "Don't let your Gold slip away...", time: "Saturday", unread: 1, color: "#6366f1" },
+  ];
+
+  return (
+    <div
+      style={{
+        width: "360px",
+        height: "500px",
+        border: "1px solid var(--color-border)",
+        borderRadius: "var(--radius-lg)",
+        background: "var(--color-background)",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        position: "relative",
+        boxShadow: "var(--shadow-md)",
+      }}
+    >
+      {/* Top Header Row */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "12px",
+          padding: "12px 16px",
+          borderBottom: "1px solid var(--color-border)",
+        }}
+      >
+        {children}
+        <div
+          style={{
+            flex: 1,
+            height: "36px",
+            background: "var(--color-secondary-hover)",
+            borderRadius: "var(--radius-full)",
+            display: "flex",
+            alignItems: "center",
+            padding: "0 12px",
+            color: "var(--color-description)",
+            fontSize: "13px",
+          }}
+        >
+          Search
+        </div>
+      </div>
+
+      {/* Chat List */}
+      <div style={{ flex: 1, overflowY: "auto", padding: "8px 0" }}>
+        {mockChats.map((chat, idx) => (
+          <div
+            key={idx}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+              padding: "10px 16px",
+              cursor: "pointer",
+            }}
+          >
+            {/* Avatar */}
+            <div
+              style={{
+                width: "42px",
+                height: "42px",
+                borderRadius: "50%",
+                background: chat.color,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#fff",
+                fontWeight: "bold",
+                fontSize: "14px",
+                flexShrink: 0,
+              }}
+            >
+              {chat.name[0]}
+            </div>
+            {/* Info */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "2px" }}>
+                <span style={{ fontWeight: 600, fontSize: "14px", color: "var(--color-text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {chat.name}
+                </span>
+                <span style={{ fontSize: "12px", color: "var(--color-description)" }}>
+                  {chat.time}
+                </span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: "13px", color: "var(--color-description)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginRight: "8px" }}>
+                  {chat.message}
+                </span>
+                {chat.unread > 0 && (
+                  <span
+                    style={{
+                      background: "var(--color-primary)",
+                      color: "#fff",
+                      fontSize: "11px",
+                      fontWeight: "bold",
+                      padding: "2px 6px",
+                      borderRadius: "10px",
+                      minWidth: "18px",
+                      textAlign: "center",
+                    }}
+                  >
+                    {chat.unread}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export const TelegramStyle: StoryObj<CustomStoryArgs> = {
+  args: {
+    align: "start",
+    triggerVariant: "icon",
+    triggerText: "Menu",
+    sideOffset: 8,
+    contentWidth: 200,
+    glass: true,
+  },
+  render: (args) => (
+    <div>
+      <DemoLabel>Telegram Web Style — Hiệu ứng kính mờ hiển thị đè lên danh sách chat</DemoLabel>
+      <MockTelegramSidebar>
+        <DropdownMenu>
+          <DropdownMenuTrigger variant="icon" icon={<Menu />} aria-label="Open menu" />
+          <DropdownMenuContent
+            align={args.align}
+            sideOffset={args.sideOffset}
+            width={args.contentWidth}
+            glass={args.glass}
+          >
+            <DropdownMenuItem>
+              <User {...iconProps} />
+              My Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Settings {...iconProps} />
+              Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <CircleHelp {...iconProps} />
+              Help
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem variant="danger">
+              <LogOut {...iconProps} />
+              Log Out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </MockTelegramSidebar>
+    </div>
+  ),
+};
+
