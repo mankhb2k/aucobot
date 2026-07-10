@@ -4,13 +4,53 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
-  padding: 5px;
+  padding: 4px;
   min-width: 180px;
   z-index: 50;
   /* Mở bung từ điểm neo vào trigger (Radix tính sẵn theo side/align). */
   transform-origin: var(--radix-dropdown-menu-content-transform-origin);
   animation: expandFromTrigger 0.15s ease-out;
   outline: none;
+}
+
+/* Glassmorphism — bật qua prop `glass` trên DropdownMenuContent */
+.contentGlass,
+.content.contentGlass {
+  position: relative;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  overflow: hidden;
+  padding: 5px;
+  animation: fadeIn 0.12s ease-out;
+}
+
+.contentGlass::before,
+.content.contentGlass::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  pointer-events: none;
+}
+
+.content.contentGlass .item:hover,
+.content.contentGlass .item[data-highlighted] {
+  background: var(--glass-item-hover);
+}
+
+.content.contentGlass .item.danger:hover,
+.content.contentGlass .item.danger[data-highlighted] {
+  background: var(--color-danger-dim);
+}
+
+.content.contentGlass .separator {
+  background-color: var(--glass-separator);
 }
 
 /* 2. MENU ITEM */
@@ -40,6 +80,12 @@
   display: inline-flex;
   position: absolute;
   right: var(--space-2);
+}
+
+.item > svg:not(.itemExtendChevron) {
+  flex-shrink: 0;
+  height: 18px;
+  width: 18px;
 }
 
 .item:hover,
@@ -108,8 +154,20 @@
   }
 }
 
-/* 5. TRIGGER (Icon button — icon truyền qua children, không cố định) */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 5. TRIGGER (Icon button — icon truyền qua prop `icon` hoặc children) */
 .iconTrigger {
+  --dropdown-icon-trigger-size: 34px;
+  --dropdown-icon-size: 18px;
+  --dropdown-icon-stroke: 2;
   align-items: center;
   background: transparent;
   border: none;
@@ -117,12 +175,25 @@
   color: var(--color-description);
   cursor: pointer;
   display: flex;
-  height: 34px;
+  flex-shrink: 0;
+  height: var(--dropdown-icon-trigger-size);
   justify-content: center;
   transition:
     background var(--transition),
     color var(--transition);
-  width: 34px;
+  width: var(--dropdown-icon-trigger-size);
+}
+
+.iconTrigger svg {
+  flex-shrink: 0;
+  height: var(--dropdown-icon-size);
+  stroke-width: var(--dropdown-icon-stroke);
+  width: var(--dropdown-icon-size);
+}
+
+.iconTriggerLg {
+  --dropdown-icon-trigger-size: var(--sidebar-header-control-size);
+  color: var(--color-icon);
 }
 
 .iconTrigger:hover {
