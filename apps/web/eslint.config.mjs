@@ -120,6 +120,7 @@ export default tseslint.config({
     "node_modules/**",
     "next-env.d.ts",
     "eslint.config.mjs",
+    "postcss.config.mjs",
     "public/**", // static assets (e.g. chat-simulator/app.js) — not TS source
   ],
 }, eslint.configs.recommended, ...nextVitals, ...tseslint.configs.recommendedTypeChecked, {

@@ -1,50 +1,59 @@
-import * as AvatarPrimitive from "@radix-ui/react-avatar";
+import Image from "next/image";
+import React from "react";
 
-import styles from "./Avatar.module.css";
-
-import type { AvatarSize } from "@/utils/avatar/types";
-
-export type { AvatarSize } from "@/utils/avatar/types";
-
-interface AvatarProps {
-  /** Chữ hiển thị khi không có ảnh. */
-  fallbackText: string;
-  backgroundColor: string;
-  size?: AvatarSize;
+export interface AvatarProps {
   src?: string;
   alt?: string;
-  decorative?: boolean;
-  imageFallbackDelayMs?: number;
+  text?: string;
+  bg?: string;
+  size?: "sm" | "md" | "lg";
+  showOnlineStatus?: boolean;
+  className?: string;
+  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
-export function Avatar({
-  fallbackText,
-  backgroundColor,
-  size = "md",
+export const Avatar: React.FC<AvatarProps> = ({
   src,
   alt = "",
-  decorative = true,
-  imageFallbackDelayMs = 0,
-}: AvatarProps) {
+  text = "",
+  bg = "bg-gray-400",
+  size = "md",
+  showOnlineStatus = false,
+  className = "",
+  onClick,
+}) => {
+  // Map size prop to specific dimensions and text sizes
+  const sizeClasses = {
+    sm: "w-[38px] h-[38px] text-[15px]",
+    md: "w-[48px] h-[48px] text-lg",
+    lg: "w-[100px] h-[100px] text-3xl",
+  };
+
+  const containerClasses = `relative ${sizeClasses[size]} rounded-full flex-shrink-0 select-none ${
+    onClick ? "cursor-pointer" : ""
+  } ${className}`;
+
   return (
-    <AvatarPrimitive.Root
-      className={`${styles.avatar} ${styles[size]}`}
-      aria-hidden={decorative || undefined}
-    >
+    <div className={containerClasses} onClick={onClick}>
       {src ? (
-        <AvatarPrimitive.Image
+        <Image
           src={src}
-          alt={decorative ? "" : alt}
-          className={styles.image}
+          alt={alt}
+          fill
+          unoptimized
+          className="rounded-full object-cover"
         />
-      ) : null}
-      <AvatarPrimitive.Fallback
-        className={styles.fallback}
-        style={{ background: backgroundColor }}
-        delayMs={src ? imageFallbackDelayMs : 0}
-      >
-        {fallbackText}
-      </AvatarPrimitive.Fallback>
-    </AvatarPrimitive.Root>
+      ) : (
+        <div
+          className={`w-full h-full rounded-full flex items-center justify-center font-bold text-white uppercase ${bg}`}
+        >
+          {text}
+        </div>
+      )}
+
+      {showOnlineStatus && (
+        <div className="absolute bottom-0 right-0 w-[12px] h-[12px] bg-green border-2 border-white rounded-full" />
+      )}
+    </div>
   );
-}
+};
