@@ -29,7 +29,7 @@ export const UserInfo: React.FC<UserInfoProps> = ({
   const isFullyScrolled = scrollTop >= 310;
 
   return (
-    <div className="w-full h-full bg-[#f4f4f5] rounded-2xl flex flex-col flex-shrink-0 overflow-hidden animate-in slide-in-from-right duration-200">
+    <div className="w-full h-full bg-[#f4f4f5] rounded-2xl flex flex-col flex-shrink-0 overflow-hidden">
       {/* Header */}
       <div
         className={`h-14 px-4 flex items-center justify-between flex-shrink-0 bg-[#f4f4f5] transition-all duration-200 ${
@@ -108,6 +108,7 @@ export const UserInfo: React.FC<UserInfoProps> = ({
               </span>
             </div>
             <Switch
+              className="self-center"
               checked={activeChat.notifications}
               onCheckedChange={onToggleNotifications}
             />

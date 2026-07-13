@@ -120,8 +120,8 @@ export const TabsList: React.FC<TabsListProps> = ({
 
   const containerClasses =
     variant === "capsule"
-      ? "relative flex gap-0.5 p-1 overflow-x-auto hide-scrollbar text-md font-semibold text-gray-500"
-      : "relative flex gap-2 overflow-x-auto hide-scrollbar text-md font-semibold text-gray-500 py-1";
+      ? "relative flex gap-0.5 p-1 overflow-x-auto scrollbar-none text-md font-semibold text-gray-500"
+      : "relative flex gap-2 overflow-x-auto scrollbar-none text-md font-semibold text-gray-500 py-1";
 
   const wrapperClasses =
     variant === "capsule"

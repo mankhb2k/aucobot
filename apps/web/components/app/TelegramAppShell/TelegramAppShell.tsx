@@ -122,7 +122,7 @@ export function TelegramAppShell() {
       />
 
       {/* ================= COLUMN 2: CHAT CONTAINER ================= */}
-      <div className="flex-1 chat-wallpaper rounded-2xl shadow-xl flex flex-col overflow-hidden min-w-0 relative transition-all duration-300 ease-in-out">
+      <div className="min-w-0 flex-1 chat-wallpaper rounded-2xl shadow-xl flex flex-col overflow-hidden relative">
         <ChatHeader
           activeChat={activeChat}
           isRightPanelOpen={isRightPanelOpen}
@@ -140,17 +140,19 @@ export function TelegramAppShell() {
 
       {/* ================= COLUMN 3: USER INFO PANEL ================= */}
       <div
-        className={`transition-all duration-300 ease-in-out flex flex-shrink-0 overflow-hidden rounded-2xl ${
+        className={`flex-shrink-0 overflow-hidden rounded-2xl shadow-xl shadow-[0_-10px_30px_-5px_rgba(0,0,0,0.08)] transition-[width] duration-500 ease-in-out ${
           isRightPanelOpen
-            ? "w-[22.5rem] lg:w-[28.125rem] opacity-100 shadow-xl shadow-[0_-10px_30px_-5px_rgba(0,0,0,0.08)]"
-            : "w-0 opacity-0 pointer-events-none -ml-3 shadow-none"
+            ? "w-[22.5rem] lg:w-[28.125rem]"
+            : "w-0 pointer-events-none"
         }`}
       >
-        <UserInfo
-          activeChat={activeChat}
-          setIsRightPanelOpen={setIsRightPanelOpen}
-          onToggleNotifications={handleToggleNotifications}
-        />
+        <div className="h-full w-[22.5rem] lg:w-[28.125rem]">
+          <UserInfo
+            activeChat={activeChat}
+            setIsRightPanelOpen={setIsRightPanelOpen}
+            onToggleNotifications={handleToggleNotifications}
+          />
+        </div>
       </div>
     </div>
   );

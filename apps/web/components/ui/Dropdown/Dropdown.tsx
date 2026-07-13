@@ -32,7 +32,7 @@ export const DropdownContent: React.FC<DropdownContentProps> = ({
           align === "right"
             ? "right-0 origin-top-right"
             : "left-0 origin-top-left"
-        } z-50 w-max bg-white/95 backdrop-blur-md rounded-dropdown shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-gray-100/30 p-[4px] text-gray-600 text-left font-medium animate-in fade-in zoom-in-95 duration-100 select-none ${className}`}
+        } z-50 w-max overflow-visible bg-white/95 backdrop-blur-md rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-gray-100/30 p-1 text-gray-600 text-left font-medium animate-in fade-in zoom-in-95 duration-100 select-none ${className}`}
       >
         {children}
       </div>
@@ -62,7 +62,7 @@ export const DropdownItem: React.FC<DropdownItemProps> = ({
   return (
     <button
       onClick={onClick}
-      className={`w-full pl-3 pr-1.5 py-2 flex items-center justify-between rounded-dropdown-item transition-all cursor-pointer border-none bg-transparent text-left font-medium ${
+      className={`w-full pl-3 pr-1.5 py-2 flex items-center justify-between rounded-lg transition-all cursor-pointer border-none bg-transparent text-left font-medium ${
         danger
           ? "hover:bg-red-50 active:bg-red-100 text-red-500"
           : "hover:bg-black/5 active:bg-black/10 text-gray-700"
@@ -126,7 +126,11 @@ export const DropdownSub: React.FC<{ children: React.ReactNode }> = ({
   const [isOpen, setIsOpen] = useState(false);
   return (
     <DropdownSubContext.Provider value={{ isOpen, setIsOpen }}>
-      <div className="relative w-full" onMouseLeave={() => setIsOpen(false)}>
+      <div
+        className="relative w-full"
+        onMouseEnter={() => setIsOpen(true)}
+        onMouseLeave={() => setIsOpen(false)}
+      >
         {children}
       </div>
     </DropdownSubContext.Provider>
@@ -144,22 +148,20 @@ export const DropdownSubTrigger: React.FC<DropdownSubTriggerProps> = ({
   const { isOpen, setIsOpen } = useDropdownSub();
 
   return (
-    <div onMouseEnter={() => setIsOpen(true)}>
-      <DropdownItem
-        icon={icon}
-        label={label}
-        rightElement={<ChevronRight size={16} className="text-gray-400" />}
-        onClick={
-          onClick
-            ? () => {
-                onClick();
-                setIsOpen(!isOpen);
-              }
-            : () => setIsOpen(!isOpen)
-        }
-        className={className}
-      />
-    </div>
+    <DropdownItem
+      icon={icon}
+      label={label}
+      rightElement={<ChevronRight size={16} className="text-gray-400" />}
+      onClick={
+        onClick
+          ? () => {
+              onClick();
+              setIsOpen(!isOpen);
+            }
+          : () => setIsOpen(!isOpen)
+      }
+      className={className}
+    />
   );
 };
 
@@ -179,7 +181,7 @@ export const DropdownSubContent: React.FC<DropdownSubContentProps> = ({
 
   return (
     <div
-      className={`absolute left-[calc(100%-4px)] top-[-4px] z-50 w-max bg-white/95 backdrop-blur-md rounded-dropdown shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-gray-100/30 p-[4px] text-gray-600 text-left font-medium animate-in fade-in zoom-in-95 duration-100 select-none ${className}`}
+      className={`absolute left-full top-0 -ml-1 z-[60] w-max overflow-hidden bg-white/95 backdrop-blur-md rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-gray-100/30 p-1 text-gray-600 text-left font-medium animate-in fade-in zoom-in-95 duration-100 select-none ${className}`}
     >
       {children}
     </div>
