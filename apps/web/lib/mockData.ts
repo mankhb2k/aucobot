@@ -223,6 +223,27 @@ export const initialChats: Chat[] = [
         time: "19:35",
         read: true,
       },
+      {
+        id: "vc16",
+        sender: "me",
+        text: "Bọn em chạy ads giá như này thì bọn em không bù nổi chi phí được đâu",
+        time: "12:14",
+        read: true,
+      },
+      {
+        id: "vc17",
+        sender: "me",
+        text: "Em đã review lại toàn bộ chiến dịch quảng cáo tuần trước. ROI đang giảm dần vì CPA tăng cao, team cần điều chỉnh audience và creative trước khi scale thêm.",
+        time: "12:14",
+        read: true,
+      },
+      {
+        id: "vc18",
+        sender: "me",
+        text: "Bù",
+        time: "12:15",
+        read: true,
+      },
     ],
     sharedMedia: [
       "https://images.unsplash.com/photo-1547928576-a4a33237eceb?w=300&auto=format&fit=crop",

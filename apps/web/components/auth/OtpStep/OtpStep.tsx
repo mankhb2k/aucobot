@@ -85,7 +85,7 @@ export function OtpStep({
   return (
     <>
       <h1 className="mb-2 text-xl font-semibold text-text">Enter verification code</h1>
-      <p className="mb-6 text-sm leading-normal text-description">
+      <p className="mb-6 leading-normal text-description">
         We sent a code to{" "}
         <span className="font-semibold text-text">{maskEmail(maskedEmail)}</span>
       </p>
@@ -127,7 +127,7 @@ export function OtpStep({
           Use a different email
         </button>
 
-        <p className="text-center text-sm text-description">
+        <p className="text-center text-description">
           {canResend ? (
             <button
               type="button"

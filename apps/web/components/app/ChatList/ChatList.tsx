@@ -93,7 +93,7 @@ export const ChatList: React.FC<ChatListProps> = ({
                    M
                 </div>
                 <div className="flex flex-col min-w-0 flex-1">
-                  <span className="font-semibold text-base text-gray-900 truncate leading-none">mantv02</span>
+                  <span className="font-semibold text-gray-900 truncate leading-none">mantv02</span>
                 </div>
               </div>
               <DropdownSeparator />
@@ -146,7 +146,7 @@ export const ChatList: React.FC<ChatListProps> = ({
               placeholder="Search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-[#f1f5f9] text-gray-800 rounded-full py-2 pl-10 pr-4 text-base placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#3390ec] transition-all"
+              className="w-full bg-[#f1f5f9] text-gray-800 rounded-full py-2 pl-10 pr-4 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#3390ec] transition-all"
             />
           </div>
           {/* Action Pen Menu */}
@@ -221,7 +221,7 @@ export const ChatList: React.FC<ChatListProps> = ({
               {/* Content */}
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-baseline mb-1">
-                  <h3 className="font-semibold text-base text-gray-900 truncate pr-1">
+                  <h3 className="font-semibold text-gray-900 truncate pr-1">
                     {chat.name}
                   </h3>
                   <span
@@ -232,7 +232,7 @@ export const ChatList: React.FC<ChatListProps> = ({
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <p className="text-md text-gray-500 truncate pr-2">
+                  <p className="text-gray-500 truncate pr-2">
                     {lastMsg ? (
                       lastMsg.sender === "me" ? (
                         <span>

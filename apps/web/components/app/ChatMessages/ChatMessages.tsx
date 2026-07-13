@@ -36,10 +36,13 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
           if (isSingleEmoji) {
             const trimmedText = message.text.trim();
             const emojis = Array.from(trimmedText.replace(/\s+/g, ""));
-            const canAnimateAll = emojis.length > 0 && emojis.every((emoji) => LOCAL_EMOJIS.has(emoji));
-            
+            const canAnimateAll =
+              emojis.length > 0 &&
+              emojis.every((emoji) => LOCAL_EMOJIS.has(emoji));
+
             const emojiItems = emojis.map((emoji, idx) => {
-              const relativePath = emojiListMap[emoji as keyof typeof emojiListMap] || "";
+              const relativePath =
+                emojiListMap[emoji as keyof typeof emojiListMap] || "";
               return {
                 emoji,
                 key: `${message.id}-${idx}`,
@@ -85,33 +88,41 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
             );
           }
 
+          const metaClassName = `absolute bottom-[4px] right-[7px] flex items-center gap-0.5 text-[11px] leading-none select-none pointer-events-none ${
+            isMe ? "text-[#6c9c63]" : "text-gray-400"
+          }`;
+
           return (
             <div
               key={message.id}
-              className={`flex w-full mb-1 ${isMe ? "justify-end" : "justify-start"}`}
+              className={`flex w-full mb-0.5 ${isMe ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[75%] px-3.5 py-1.5 relative shadow-xs text-base leading-[1.4] select-text break-words 
+                className={`relative w-fit max-w-[75%] shadow-xs select-text px-[9px] pt-[5px] pb-[5px]
                   ${
                     isMe
                       ? "bg-[#eeffde] text-gray-900 rounded-2xl rounded-br-[4px]"
                       : "bg-white text-gray-900 rounded-2xl rounded-bl-[4px]"
                   }`}
               >
-                <div className="pb-1.5 pr-12">{message.text}</div>
+                <div className="leading-[1.3125] whitespace-pre-wrap break-words">
+                  {message.text}
+                  {/* Reserve bottom-right corner so meta never overlaps text */}
+                  <span
+                    aria-hidden
+                    className="inline-block w-[48px] h-[1.15em] align-bottom ml-1 pointer-events-none select-none"
+                  />
+                </div>
 
-                {/* Timestamp + status */}
-                <div
-                  className={`absolute bottom-1 right-2.5 flex items-center gap-1 text-xs select-none ${isMe ? "text-[#53864a]" : "text-gray-400"}`}
-                >
+                <span className={metaClassName}>
                   <span>{message.time}</span>
                   {isMe &&
                     (message.read ? (
-                      <DoubleCheck className="text-[#53864a] w-[13px] h-[13px]" />
+                      <DoubleCheck className="text-[#6c9c63] w-[13px] h-[13px]" />
                     ) : (
                       <SingleCheck className="text-gray-400 w-[13px] h-[13px]" />
                     ))}
-                </div>
+                </span>
               </div>
             </div>
           );

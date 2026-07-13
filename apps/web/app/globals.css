@@ -205,11 +205,11 @@ html[data-theme="dark"] {
 
 @layer base {
   html {
-    @apply h-full;
+    @apply h-full text-md;
   }
 
   body {
-    @apply relative min-w-[320px] font-sans text-md text-text antialiased;
+    @apply relative min-w-[320px] font-sans text-text antialiased;
     background: var(--landing-bg-gradient);
     background-attachment: fixed;
   }

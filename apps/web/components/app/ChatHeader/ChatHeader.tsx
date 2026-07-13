@@ -51,7 +51,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
           size="sm"
         />
         <div className="flex flex-col min-w-0 gap-[1.5px] justify-center">
-          <span className="font-bold text-base text-[#08060d] leading-none truncate">
+          <span className="font-bold text-[#08060d] leading-none truncate">
             {activeChat.name}
           </span>
           <span className="text-xs text-[#6b6375] font-normal leading-none truncate">

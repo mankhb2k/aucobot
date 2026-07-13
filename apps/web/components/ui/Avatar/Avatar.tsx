@@ -25,7 +25,7 @@ export const Avatar: React.FC<AvatarProps> = ({
   // Map size prop to specific dimensions and text sizes
   const sizeClasses = {
     sm: "w-[38px] h-[38px] text-[15px]",
-    md: "w-[48px] h-[48px] text-lg",
+    md: "w-[48px] h-[48px] text-md",
     lg: "w-[100px] h-[100px] text-3xl",
   };
 

@@ -35,7 +35,7 @@ export function DevLoginButton() {
 
       <button
         type="button"
-        className="w-full cursor-pointer rounded-md border border-dashed border-border bg-transparent px-4 py-2.5 font-mono text-sm text-description transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full cursor-pointer rounded-md border border-dashed border-border bg-transparent px-4 py-2.5 font-mono text-description transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-60"
         onClick={() => void handleDevLogin()}
         disabled={busy}
       >

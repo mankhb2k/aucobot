@@ -52,7 +52,7 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyPress}
-          className="flex-1 bg-transparent border-none focus:outline-none px-2 py-2.5 text-lg text-gray-800 placeholder-gray-400"
+          className="flex-1 bg-transparent border-none focus:outline-none px-2 py-2.5 text-gray-800 placeholder-gray-400"
         />
         <button className="text-gray-400 hover:text-gray-600 p-2.5 rounded-full hover:bg-gray-50 transition-colors transform -rotate-45">
           <Paperclip size={21} className="stroke-[1.8]" />

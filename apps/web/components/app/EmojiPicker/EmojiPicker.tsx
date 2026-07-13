@@ -230,7 +230,7 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({
             placeholder="Tìm kiếm biểu tượng..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 bg-transparent border-none text-sm text-gray-800 placeholder-gray-400 focus:outline-none"
+            className="flex-1 bg-transparent border-none text-gray-800 placeholder-gray-400 focus:outline-none"
           />
         </div>
       </div>

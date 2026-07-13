@@ -32,7 +32,7 @@ export const DropdownContent: React.FC<DropdownContentProps> = ({
           align === "right"
             ? "right-0 origin-top-right"
             : "left-0 origin-top-left"
-        } z-50 w-max bg-white/95 backdrop-blur-md rounded-dropdown shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-gray-100/30 p-[4px] text-sm text-gray-600 text-left font-medium animate-in fade-in zoom-in-95 duration-100 select-none ${className}`}
+        } z-50 w-max bg-white/95 backdrop-blur-md rounded-dropdown shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-gray-100/30 p-[4px] text-gray-600 text-left font-medium animate-in fade-in zoom-in-95 duration-100 select-none ${className}`}
       >
         {children}
       </div>
@@ -179,7 +179,7 @@ export const DropdownSubContent: React.FC<DropdownSubContentProps> = ({
 
   return (
     <div
-      className={`absolute left-[calc(100%-4px)] top-[-4px] z-50 w-max bg-white/95 backdrop-blur-md rounded-dropdown shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-gray-100/30 p-[4px] text-sm text-gray-600 text-left font-medium animate-in fade-in zoom-in-95 duration-100 select-none ${className}`}
+      className={`absolute left-[calc(100%-4px)] top-[-4px] z-50 w-max bg-white/95 backdrop-blur-md rounded-dropdown shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-gray-100/30 p-[4px] text-gray-600 text-left font-medium animate-in fade-in zoom-in-95 duration-100 select-none ${className}`}
     >
       {children}
     </div>

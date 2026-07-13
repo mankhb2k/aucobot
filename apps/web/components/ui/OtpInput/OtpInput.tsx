@@ -17,7 +17,7 @@ interface OtpInputProps {
 }
 
 const digitClassName =
-  "h-12 w-11 rounded-md border border-border bg-white text-center text-lg text-text outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-60";
+  "h-12 w-11 rounded-md border border-border bg-white text-center text-text outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-60";
 
 export function OtpInput({
   value,
@@ -81,7 +81,7 @@ export function OtpInput({
       id={labelId}
       className={
         showLabel
-          ? "mb-2 block text-center text-sm text-description"
+          ? "mb-2 block text-center text-description"
           : undefined
       }
     >

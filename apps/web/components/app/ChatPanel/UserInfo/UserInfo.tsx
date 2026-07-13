@@ -90,7 +90,7 @@ export const UserInfo: React.FC<UserInfoProps> = ({
               <PhoneIcon />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-base text-gray-900 font-medium truncate">
+              <p className="text-gray-900 font-medium truncate">
                 {activeChat.phone || "Hidden"}
               </p>
               <p className="text-sm text-gray-400 font-normal">Phone</p>
@@ -103,7 +103,7 @@ export const UserInfo: React.FC<UserInfoProps> = ({
               <div className="flex-shrink-0 text-gray-400">
                 <Bell size={20} className="stroke-[2]" />
               </div>
-              <span className="text-base text-gray-800 font-medium">
+              <span className="text-gray-800 font-medium">
                 Notifications
               </span>
             </div>

@@ -50,7 +50,7 @@ export function EmailStep({ mode, busy, error, onSubmit }: EmailStepProps) {
   return (
     <>
       <h1 className="mb-2 text-xl font-semibold text-text">{copy.title}</h1>
-      <p className="mb-6 text-sm leading-normal text-description">
+      <p className="mb-6 leading-normal text-description">
         We&apos;ll send a 6-digit code to your inbox.
       </p>
 
@@ -62,7 +62,7 @@ export function EmailStep({ mode, busy, error, onSubmit }: EmailStepProps) {
 
       <form onSubmit={handleSubmit}>
         <label className="mb-4 flex flex-col gap-2">
-          <span className="text-sm font-medium text-description">Email</span>
+          <span className="font-medium text-description">Email</span>
           <input
             type="email"
             className={authFieldClassName}
@@ -93,7 +93,7 @@ export function EmailStep({ mode, busy, error, onSubmit }: EmailStepProps) {
         Continue with Google
       </a>
 
-      <p className="mt-6 text-center text-sm text-description">
+      <p className="mt-6 text-center text-description">
         {copy.crossText}{" "}
         <Link href={copy.crossHref} className="font-semibold text-primary no-underline hover:text-primary-hover">
           {copy.crossLabel}
