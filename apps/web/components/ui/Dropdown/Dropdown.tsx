@@ -1,335 +1,189 @@
-"use client";
+import { ChevronRight, Check } from "lucide-react";
+import React, { createContext, useContext, useState } from "react";
 
-import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
-import { Check, ChevronRight } from "lucide-react";
-import * as React from "react";
-
-import styles from "./Dropdown.module.css";
-
-/**
- * Theo dõi thao tác gần nhất là bàn phím hay chuột.
- * Dùng để chỉ hiện focus ring (viền) khi đóng menu bằng bàn phím,
- * còn đóng bằng chuột thì không trả focus về trigger → không hiện viền.
- */
-let lastInputWasKeyboard = false;
-if (typeof window !== "undefined") {
-  window.addEventListener("keydown", () => (lastInputWasKeyboard = true), true);
-  window.addEventListener(
-    "pointerdown",
-    () => (lastInputWasKeyboard = false),
-    true,
-  );
+export interface DropdownContentProps {
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+  align?: "left" | "right";
+  className?: string;
 }
 
-/** Bật chế độ single-select cho submenu (hiện dấu tick). */
-const DropdownMenuSubSelectContext = React.createContext(false);
-
-function useDropdownMenuSubSelect() {
-  return React.useContext(DropdownMenuSubSelectContext);
-}
-
-export const DropdownMenu = DropdownMenuPrimitive.Root;
-
-export type DropdownIconSize = "sm" | "lg";
-
-/** Đồng bộ với Dropdown stories (`iconProps`: size 18, strokeWidth 2). */
-const DROPDOWN_ICON_SIZE = 18;
-const DROPDOWN_ICON_STROKE = 2;
-
-function getIconTriggerClassName(size: DropdownIconSize = "sm") {
-  return `${styles.iconTrigger} ${size === "lg" ? styles.iconTriggerLg : ""}`.trim();
-}
-
-/** Chuẩn hóa icon Lucide — kích thước/nét vẽ cố định, CSS chỉ scale vùng bấm. */
-function normalizeTriggerIcon(icon: React.ReactNode) {
-  if (!React.isValidElement(icon)) {
-    return icon;
-  }
-
-  return React.cloneElement(
-    icon as React.ReactElement<{
-      size?: number;
-      strokeWidth?: number;
-      "aria-hidden"?: boolean;
-    }>,
-    {
-      size: DROPDOWN_ICON_SIZE,
-      strokeWidth: DROPDOWN_ICON_STROKE,
-      "aria-hidden": true,
-    },
-  );
-}
-
-export type DropdownIconButtonProps =
-  React.ButtonHTMLAttributes<HTMLButtonElement> & {
-    icon: React.ReactNode;
-    size?: DropdownIconSize;
-  };
-
-/** Nút-icon dùng chung style với `DropdownMenuTrigger variant="icon"` (khi không cần menu). */
-export const DropdownIconButton = React.forwardRef<
-  HTMLButtonElement,
-  DropdownIconButtonProps
->(({ className, icon, size = "sm", type = "button", ...props }, ref) => (
-  <button
-    ref={ref}
-    type={type}
-    className={`${getIconTriggerClassName(size)} ${className ?? ""}`.trim()}
-    {...props}
-  >
-    {normalizeTriggerIcon(icon)}
-  </button>
-));
-DropdownIconButton.displayName = "DropdownIconButton";
-
-export type DropdownMenuTriggerProps =
-  DropdownMenuPrimitive.DropdownMenuTriggerProps & {
-    /**
-     * Kiểu nút mở menu:
-     * - `default`: nút có viền + nhãn chữ.
-     * - `icon`: nút-icon (icon qua prop `icon` hoặc children).
-     * - `unstyled`: không style, tự tùy biến hoàn toàn.
-     */
-    variant?: "default" | "icon" | "unstyled";
-    /** Kích thước nút-icon (`sm` = 34px, `lg` = sidebar header). Chỉ áp dụng `variant="icon"`. */
-    size?: DropdownIconSize;
-    /** Icon hiển thị — thay cho children khi `variant="icon"`. */
-    icon?: React.ReactNode;
-    children?: React.ReactNode;
-  };
-
-export const DropdownMenuTrigger = React.forwardRef<
-  HTMLButtonElement,
-  DropdownMenuTriggerProps
->(
-  (
-    {
-      className,
-      variant = "default",
-      size = "sm",
-      icon,
-      children,
-      style,
-      ...props
-    },
-    ref,
-  ) => {
-    const variantClass =
-      variant === "icon"
-        ? getIconTriggerClassName(size)
-        : variant === "default"
-          ? styles.defaultTrigger
-          : "";
-
-    const triggerContent =
-      variant === "icon"
-        ? normalizeTriggerIcon(icon ?? children)
-        : children;
-
-    return (
-      <DropdownMenuPrimitive.Trigger
-        ref={ref}
-        className={`${variantClass} ${className ?? ""}`.trim()}
-        style={style}
-        {...props}
-      >
-        {triggerContent}
-      </DropdownMenuPrimitive.Trigger>
-    );
-  },
-);
-DropdownMenuTrigger.displayName = DropdownMenuPrimitive.Trigger.displayName;
-
-export type DropdownMenuContentProps = React.ComponentPropsWithoutRef<
-  typeof DropdownMenuPrimitive.Content
-> & {
-  /** Chiều rộng tối thiểu của menu (number = px, string = CSS length). */
-  width?: number | string;
-  /** Hiệu ứng kính mờ (glassmorphism) — blur nền phía sau. */
-  glass?: boolean;
-};
-
-export const DropdownMenuContent = React.forwardRef<
-  HTMLDivElement,
-  DropdownMenuContentProps
->(
-  (
-    { className, sideOffset = 4, width, glass, style, onCloseAutoFocus, ...props },
-    ref,
-  ) => {
-    const widthStyle =
-      width !== undefined
-        ? { minWidth: typeof width === "number" ? `${width}px` : width }
-        : undefined;
-
-    return (
-      <DropdownMenuPrimitive.Portal>
-        <DropdownMenuPrimitive.Content
-          ref={ref}
-          sideOffset={sideOffset}
-          className={`${styles.content} ${glass ? styles.contentGlass : ""} ${className ?? ""}`.trim()}
-          style={{ ...widthStyle, ...style }}
-          onCloseAutoFocus={(event) => {
-            // Đóng bằng chuột: không trả focus về trigger → không hiện viền.
-            // Đóng bằng bàn phím: giữ mặc định (trả focus + viền) cho a11y.
-            if (!lastInputWasKeyboard) event.preventDefault();
-            onCloseAutoFocus?.(event);
-          }}
-          {...props}
-        />
-      </DropdownMenuPrimitive.Portal>
-    );
-  },
-);
-DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName;
-
-export type DropdownMenuItemProps = React.ComponentPropsWithoutRef<
-  typeof DropdownMenuPrimitive.Item
-> & {
-  variant?: "default" | "danger";
-  /** Hiện dấu tick khi được chọn (dùng trong `DropdownMenuSub select`). */
-  selected?: boolean;
-};
-
-export const DropdownMenuItem = React.forwardRef<
-  HTMLDivElement,
-  DropdownMenuItemProps
->(
-  (
-    { className, variant = "default", selected, asChild, children, ...props },
-    ref,
-  ) => {
-    const subSelect = useDropdownMenuSubSelect();
-    const isSelectable = subSelect && selected !== undefined && !asChild;
-
-    return (
-      <DropdownMenuPrimitive.Item
-        ref={ref}
-        asChild={asChild}
-        className={`${styles.item} ${isSelectable ? styles.itemSelectable : ""} ${
-          variant === "danger" ? styles.danger : ""
-        } ${className ?? ""}`.trim()}
-        aria-checked={isSelectable ? selected : undefined}
-        {...props}
-      >
-        {asChild ? (
-          children
-        ) : (
-          <>
-            {children}
-            {isSelectable && selected ? (
-              <span className={styles.itemIndicator} aria-hidden>
-                <Check size={16} />
-              </span>
-            ) : null}
-          </>
-        )}
-      </DropdownMenuPrimitive.Item>
-    );
-  },
-);
-DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
-
-export const DropdownMenuLabel = React.forwardRef<
-  HTMLDivElement,
-  DropdownMenuPrimitive.DropdownMenuLabelProps
->(({ className, ...props }, ref) => (
-  <DropdownMenuPrimitive.Label
-    ref={ref}
-    className={`${styles.label} ${className ?? ""}`.trim()}
-    {...props}
-  />
-));
-DropdownMenuLabel.displayName = DropdownMenuPrimitive.Label.displayName;
-
-export const DropdownMenuSeparator = React.forwardRef<
-  HTMLDivElement,
-  DropdownMenuPrimitive.DropdownMenuSeparatorProps
->(({ className, ...props }, ref) => (
-  <DropdownMenuPrimitive.Separator
-    ref={ref}
-    className={`${styles.separator} ${className ?? ""}`.trim()}
-    {...props}
-  />
-));
-DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName;
-
-export type DropdownMenuSubProps = React.ComponentPropsWithoutRef<
-  typeof DropdownMenuPrimitive.Sub
-> & {
-  /** Submenu single-select — item con dùng `selected` để hiện tick. Mặc định false. */
-  select?: boolean;
-};
-
-export function DropdownMenuSub({
-  select = false,
+export const DropdownContent: React.FC<DropdownContentProps> = ({
+  isOpen,
+  onClose,
   children,
-  ...props
-}: DropdownMenuSubProps) {
+  align = "right",
+  className = "",
+}) => {
+  if (!isOpen) return null;
   return (
-    <DropdownMenuSubSelectContext.Provider value={select}>
-      <DropdownMenuPrimitive.Sub {...props}>
+    <>
+      <div
+        className="fixed inset-0 z-40 bg-transparent cursor-default"
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
+      ></div>
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className={`absolute top-[calc(100%+6px)] ${
+          align === "right"
+            ? "right-0 origin-top-right"
+            : "left-0 origin-top-left"
+        } z-50 w-max overflow-visible bg-white/95 backdrop-blur-md rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-gray-100/30 p-1 text-gray-600 text-left font-medium animate-in fade-in zoom-in-95 duration-100 select-none ${className}`}
+      >
         {children}
-      </DropdownMenuPrimitive.Sub>
-    </DropdownMenuSubSelectContext.Provider>
+      </div>
+    </>
   );
+};
+
+export interface DropdownItemProps {
+  icon?: React.ReactNode;
+  label: React.ReactNode;
+  onClick?: () => void;
+  className?: string;
+  danger?: boolean;
+  checked?: boolean;
+  rightElement?: React.ReactNode;
 }
 
-export type DropdownMenuSubContentProps = React.ComponentPropsWithoutRef<
-  typeof DropdownMenuPrimitive.SubContent
-> & {
-  width?: number | string;
-  /** Hiệu ứng kính mờ (glassmorphism) — blur nền phía sau. */
-  glass?: boolean;
+export const DropdownItem: React.FC<DropdownItemProps> = ({
+  icon,
+  label,
+  onClick,
+  className = "",
+  danger = false,
+  checked = false,
+  rightElement,
+}) => {
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full pl-3 pr-1.5 py-2 flex items-center justify-between rounded-lg transition-all cursor-pointer border-none bg-transparent text-left font-medium ${
+        danger
+          ? "hover:bg-red-50 active:bg-red-100 text-red-500"
+          : "hover:bg-black/5 active:bg-black/10 text-gray-700"
+      } ${className}`}
+    >
+      <div className="flex items-center gap-3.5 flex-1 min-w-0 pr-8">
+        {icon && (
+          <span
+            className={`${danger ? "text-red-500" : "text-gray-500"} [&>svg]:stroke-[2] flex-shrink-0`}
+          >
+            {icon}
+          </span>
+        )}
+        <span className="truncate">{label}</span>
+      </div>
+      {rightElement ? (
+        <span className="text-gray-400 flex-shrink-0 flex items-center justify-center [&>svg]:stroke-[2]">
+          {rightElement}
+        </span>
+      ) : (
+        <span
+          className={`text-[#3390ec] flex-shrink-0 flex items-center justify-center ${
+            checked ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}
+        >
+          <Check size={16} className="stroke-[2.5]" />
+        </span>
+      )}
+    </button>
+  );
 };
 
-export const DropdownMenuSubContent = React.forwardRef<
-  HTMLDivElement,
-  DropdownMenuSubContentProps
->(({ className, sideOffset = 4, width, glass, style, ...props }, ref) => {
-  const widthStyle =
-    width !== undefined
-      ? { minWidth: typeof width === "number" ? `${width}px` : width }
-      : undefined;
+export const DropdownSeparator = () => (
+  <div className="h-px bg-gray-100 my-1.5 mx-1"></div>
+);
+
+// Submenu Context
+interface DropdownSubContextProps {
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+}
+
+const DropdownSubContext = createContext<DropdownSubContextProps | undefined>(
+  undefined,
+);
+
+const useDropdownSub = () => {
+  const context = useContext(DropdownSubContext);
+  if (!context) {
+    throw new Error(
+      "DropdownSub components must be rendered within a <DropdownSub /> provider",
+    );
+  }
+  return context;
+};
+
+// Submenu Container
+export const DropdownSub: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <DropdownSubContext.Provider value={{ isOpen, setIsOpen }}>
+      <div
+        className="relative w-full"
+        onMouseEnter={() => setIsOpen(true)}
+        onMouseLeave={() => setIsOpen(false)}
+      >
+        {children}
+      </div>
+    </DropdownSubContext.Provider>
+  );
+};
+
+export type DropdownSubTriggerProps = DropdownItemProps;
+
+export const DropdownSubTrigger: React.FC<DropdownSubTriggerProps> = ({
+  icon,
+  label,
+  className = "",
+  onClick,
+}) => {
+  const { isOpen, setIsOpen } = useDropdownSub();
 
   return (
-    <DropdownMenuPrimitive.SubContent
-      ref={ref}
-      sideOffset={sideOffset}
-      className={`${styles.content} ${glass ? styles.contentGlass : ""} ${className ?? ""}`.trim()}
-      style={{ ...widthStyle, ...style }}
-      {...props}
+    <DropdownItem
+      icon={icon}
+      label={label}
+      rightElement={<ChevronRight size={16} className="text-gray-400" />}
+      onClick={
+        onClick
+          ? () => {
+              onClick();
+              setIsOpen(!isOpen);
+            }
+          : () => setIsOpen(!isOpen)
+      }
+      className={className}
     />
   );
-});
-DropdownMenuSubContent.displayName =
-  DropdownMenuPrimitive.SubContent.displayName;
-
-export type DropdownMenuSubItemProps = React.ComponentPropsWithoutRef<
-  typeof DropdownMenuPrimitive.SubTrigger
-> & {
-  /** Nhãn phụ trước chevron (vd "Light"). */
-  detail?: React.ReactNode;
 };
 
-export const DropdownMenuSubItem = React.forwardRef<
-  HTMLDivElement,
-  DropdownMenuSubItemProps
->(({ className, children, detail, ...props }, ref) => (
-  <DropdownMenuPrimitive.SubTrigger
-    ref={ref}
-    className={`${styles.item} ${styles.itemExtend} ${className ?? ""}`.trim()}
-    {...props}
-  >
-    <span className={styles.itemExtendMain}>{children}</span>
-    {detail != null && detail !== "" ? (
-      <span className={styles.itemExtendDetail}>{detail}</span>
-    ) : null}
-    <ChevronRight
-      size={16}
-      className={styles.itemExtendChevron}
-      aria-hidden
-    />
-  </DropdownMenuPrimitive.SubTrigger>
-));
-DropdownMenuSubItem.displayName = "DropdownMenuSubItem";
+// Submenu Content Panel
+export interface DropdownSubContentProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+export const DropdownSubContent: React.FC<DropdownSubContentProps> = ({
+  children,
+  className = "",
+}) => {
+  const { isOpen } = useDropdownSub();
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className={`absolute left-full top-0 -ml-1 z-[60] w-max overflow-hidden bg-white/95 backdrop-blur-md rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-gray-100/30 p-1 text-gray-600 text-left font-medium animate-in fade-in zoom-in-95 duration-100 select-none ${className}`}
+    >
+      {children}
+    </div>
+  );
+};

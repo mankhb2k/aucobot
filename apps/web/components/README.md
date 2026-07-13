@@ -6,9 +6,10 @@ UI **dumb** — nhận props hoặc đọc store qua hook ở `app/` / `ClientXx
 
 | Folder | Vai trò |
 |--------|---------|
+| [`app/`](./app/README.md) | UI app chat — TelegramAppShell, ChatList, ChatComposer, … |
 | [`ui/`](./ui/README.md) | Design system — Button, Input, Spinner |
-| [`layout/`](./layout/README.md) | AppShell, SplitPane, Composer chrome |
-| [`chat/`](./chat/README.md) | MessageList, Bubble, StreamText, ApprovalInline |
+| [`auth/`](./auth/) | Email OTP login/register flow |
+| [`marketing/`](./marketing/) | Landing page sections |
 
 ## Quy ước
 

@@ -3,9 +3,13 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import {
+  authAlertClassName,
+  authFieldClassName,
+  authPrimaryButtonClassName,
+  authSecondaryLinkClassName,
+} from "@/components/auth/auth-classes";
 import { authApi } from "@/lib/api/auth";
-
-import styles from "./EmailStep.module.css";
 
 import type { AuthFlowMode } from "@/stores/auth-flow/auth-flow.store";
 
@@ -45,42 +49,55 @@ export function EmailStep({ mode, busy, error, onSubmit }: EmailStepProps) {
 
   return (
     <>
-      <h1 className={styles.title}>{copy.title}</h1>
-      <p className={styles.lead}>We&apos;ll send a 6-digit code to your inbox.</p>
+      <h1 className="mb-2 text-xl font-semibold text-text">{copy.title}</h1>
+      <p className="mb-6 leading-normal text-description">
+        We&apos;ll send a 6-digit code to your inbox.
+      </p>
 
       {error && (
-        <p className={styles.error} role="alert">
+        <p className={authAlertClassName} role="alert">
           {error}
         </p>
       )}
 
       <form onSubmit={handleSubmit}>
-        <label className={styles.field}>
-          <span className={styles.label}>Email</span>
+        <label className="mb-4 flex flex-col gap-2">
+          <span className="font-medium text-description">Email</span>
           <input
             type="email"
-            className={styles.input}
+            className={authFieldClassName}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             autoComplete="email"
+            placeholder="you@example.com"
             required
           />
         </label>
 
-        <button type="submit" className={styles.btnPrimary} disabled={busy}>
+        <button
+          type="submit"
+          className={authPrimaryButtonClassName}
+          disabled={busy}
+        >
           {busy ? "Sending…" : copy.cta}
         </button>
       </form>
 
-      <div className={styles.divider}>or</div>
+      <div className="my-6 flex items-center gap-3 text-xs text-description">
+        <span className="h-px flex-1 bg-border" aria-hidden="true" />
+        or
+        <span className="h-px flex-1 bg-border" aria-hidden="true" />
+      </div>
 
-      <a href={`${apiUrl}/api/auth/google`} className={styles.btnGoogle}>
+      <a href={`${apiUrl}/api/auth/google`} className={authSecondaryLinkClassName}>
         Continue with Google
       </a>
 
-      <p className={styles.crossLink}>
+      <p className="mt-6 text-center text-description">
         {copy.crossText}{" "}
-        <Link href={copy.crossHref}>{copy.crossLabel}</Link>
+        <Link href={copy.crossHref} className="font-semibold text-primary no-underline hover:text-primary-hover">
+          {copy.crossLabel}
+        </Link>
       </p>
     </>
   );

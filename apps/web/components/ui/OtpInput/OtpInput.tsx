@@ -4,8 +4,6 @@ import * as Label from "@radix-ui/react-label";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { useId, useRef } from "react";
 
-import styles from "./OtpInput.module.css";
-
 interface OtpInputProps {
   value: string;
   onChange: (value: string) => void;
@@ -17,6 +15,9 @@ interface OtpInputProps {
   className?: string;
   showLabel?: boolean;
 }
+
+const digitClassName =
+  "h-12 w-11 rounded-md border border-border bg-white text-center text-text outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-60";
 
 export function OtpInput({
   value,
@@ -78,7 +79,11 @@ export function OtpInput({
   const labelNode = (
     <Label.Root
       id={labelId}
-      className={showLabel ? styles.visibleLabel : undefined}
+      className={
+        showLabel
+          ? "mb-2 block text-center text-description"
+          : undefined
+      }
     >
       {label}
     </Label.Root>
@@ -91,14 +96,14 @@ export function OtpInput({
       ) : (
         <VisuallyHidden.Root asChild>{labelNode}</VisuallyHidden.Root>
       )}
-      <div className={styles.otpRow} role="group" aria-labelledby={labelId}>
+      <div className="flex justify-center gap-2" role="group" aria-labelledby={labelId}>
         {slots.map((index) => (
           <input
             key={index}
             ref={(el) => {
               inputsRef.current[index] = el;
             }}
-            className={styles.digit}
+            className={digitClassName}
             inputMode="numeric"
             autoComplete={index === 0 ? "one-time-code" : "off"}
             maxLength={1}

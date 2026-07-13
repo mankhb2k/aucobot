@@ -177,6 +177,8 @@ Trong mỗi **Room**, user có **Agent user** (linh hoạt, Mother đẻ) và **
 | Ví dụ | "Viết 5 caption Tết theo brand kit rồi lên lịch" | "Mỗi 9h sáng lấy post nhiều like nhất tuần → gửi báo cáo" |
 | Ẩn dụ | Nhân viên biết nghĩ | Macro / dây chuyền tự động |
 
+**✅ Đã chốt — Vai trò AI Agent: hỗ trợ thực thi, KHÔNG ra quyết định.** Định vị sản phẩm: AI Agent (kể cả khi "lắp ráp Bot") là công cụ hỗ trợ **công việc chân tay** (viết, tính toán, ghép Block, gọi tool) theo **ý tưởng do user đưa ra** — Agent **không tự quyết định thay** user về việc có tác động thật (tạo/sửa/kích hoạt Bot, đăng bài, gửi tin ra ngoài…). "Tự quyết" ở dòng *Cách chạy* trong bảng trên chỉ nói tới việc Agent tự chọn *tool nào* để hoàn thành yêu cầu đang làm — **không** áp dụng cho quyết định có tác động ra ngoài phòng/hệ thống hoặc cấu trúc Bot vừa dựng. Mọi quyết định cuối cùng thuộc về **con người**. Áp dụng cụ thể ở mục *Bot Workflow* ngay dưới — diagram trực quan + duyệt trước khi chạy.
+
 Bot mới ở mức **ý tưởng**. Toàn bộ thiết kế "Agent xây Bot" được gom vào một khối mở rộng bên dưới để tránh nói lại nhiều lần.
 
 ##### Thuật ngữ chốt — Block vs Bot (tránh chồng nghĩa)
@@ -197,12 +199,15 @@ Bot mới ở mức **ý tưởng**. Toàn bộ thiết kế "Agent xây Bot" đ
 
 > **Đây là ý tưởng tham khảo cho tương lai — KHÔNG phải MVP, không cam kết implement.** Ghi lại các quyết định thiết kế đã bàn để khi mở rộng "Agent xây Bot" thành nền tảng automation (nuôi traffic affiliate, cào–render–đăng video…) không phải nghĩ lại từ đầu. Tất cả bám các seam đã có: *Agent vs Bot*, `Bot`/`BotTemplate`, core+features plugin, thang 5 nấc tách DB, `ownerId` trên mọi bảng.
 
+**✅ Đã chốt — Diagram trực quan là bắt buộc, không ẩn.** AI Agent chỉ **hỗ trợ thiết kế và dựng** Bot theo ý tưởng user (công việc chân tay: ghép Block, sinh glue) — **Agent không có quyền quyết định**. User **luôn thấy diagram các khối Block** đang ghép trên UI trực quan trong lúc dựng, không phải hộp đen chỉ tóm tắt bằng lời. Người ra quyết định cuối — duyệt cấu trúc, duyệt kết quả, bật/tắt — luôn là **con người**. Mức độ tương tác trên diagram (chỉ xem để duyệt, hay cho phép chỉnh tay nhẹ như bật/tắt từng Block/đổi thứ tự, hay full kéo-thả) là seam mở — xem [`workflow-plan.md`](./workflow-plan.md).
+
 **Mô hình "compiler" — tách compile-time và runtime.** Đây là ý tưởng nền, mọi quyết định phía dưới suy ra từ đây: Agent làm việc ở *compile-time* (đắt, chậm, 1 lần); Bot chạy ở *runtime* (rẻ, nhanh, lặp vô hạn, **không gọi LLM**).
 
 ```text
-compile-time (Agent):   User mô tả → chọn Bot Template → sinh glue JS điền template
+compile-time (Agent):   User mô tả ý tưởng → chọn Bot Template → Agent sinh glue JS điền template
+                        → hiển thị DIAGRAM các Block đã ghép (UI trực quan, không ẩn)
                         → dry-run 1–2 record thật (không side-effect)
-                        → user DUYỆT KẾT QUẢ (không duyệt code)
+                        → user xem diagram + kết quả → DUYỆT (không duyệt code, duyệt diagram + kết quả)
                         → lưu thành BotVersion bất biến
 runtime (Bot):          Executor chạy BotVersion đã duyệt — deterministic, KHÔNG đụng LLM,
                         chạy độc lập trong sandbox cô lập
@@ -288,7 +293,7 @@ Model dữ liệu (💡) — cũng liệt kê ở [Schema DB](#schema-db--ý-tư
 - **Self-healing:** output lệch schema → Agent **re-generate glue** từ artifact cũ + sample data mới → `BotVersion` mới → dry-run + user duyệt → active.
 - **Bán tự động:** hệ thống phát hiện + đề xuất; **user duyệt version mới** trước khi chạy (giữ human-in-the-loop, không full-auto).
 
-**Thư viện Block định sẵn — 4 nhóm Lego (💡):** mỗi **Block** là một khối single-responsibility do **hệ thống** cung cấp (vetted); Agent đóng vai người lắp ráp, chỉ sinh glue nối đầu ra Block này vào đầu vào Block kia. Kết quả lắp ráp = một **Bot**.
+**Thư viện Block định sẵn — 4 nhóm Lego (💡):** mỗi **Block** là một khối single-responsibility do **hệ thống** cung cấp (vetted); Agent đóng vai người **hỗ trợ lắp ráp theo ý tưởng user**, chỉ sinh glue nối đầu ra Block này vào đầu vào Block kia — kết quả lắp ráp luôn **hiển thị dưới dạng diagram trực quan** cho user xem & quyết định, không tự động kích hoạt. Kết quả lắp ráp = một **Bot**.
 
 | Nhóm | Block ví dụ | Vai trò |
 |------|-------------|---------|

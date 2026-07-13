@@ -1,3 +1,3 @@
-# App ChatPanel Components
+# App ChatPanel
 
-This directory contains detail/metadata panel components for the chat application.
+`UserInfo/` — panel metadata bên phải (avatar, phone, notifications, shared media).
