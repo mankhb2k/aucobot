@@ -1,6 +1,6 @@
 import { Smile, Paperclip, Send, Mic } from "lucide-react";
 import React, { useState } from "react";
-import { EmojiPicker } from "./EmojiPicker";
+import { EmojiPicker } from "@/components/app/EmojiPicker/EmojiPicker";
 
 export interface ChatComposerProps {
   onSendMessage: (text: string) => void;

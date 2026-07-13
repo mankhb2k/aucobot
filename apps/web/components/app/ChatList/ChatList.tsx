@@ -1,11 +1,13 @@
 import { Menu, Search, Plus, User, Bookmark, Users, Settings, MoreVertical, SquarePen, Moon, HelpCircle, Palette } from "lucide-react";
 import React, { useState } from "react";
-import { DoubleCheck, SingleCheck } from "./icons";
-import { Avatar } from "./ui/Avatar/Avatar";
-import { DropdownContent, DropdownItem, DropdownSeparator, DropdownSub, DropdownSubTrigger, DropdownSubContent } from "./ui/Dropdown/Dropdown";
-import { Tabs, TabsList, TabsTrigger } from "./ui/Tabs/Tabs";
+import { DoubleCheck, SingleCheck } from "@/components/app/icons/icons";
+import { Avatar } from "@/components/ui/Avatar/Avatar";
+import { DropdownContent, DropdownItem, DropdownSeparator, DropdownSub, DropdownSubTrigger, DropdownSubContent } from "@/components/ui/Dropdown/Dropdown";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs/Tabs";
+import { useDocumentTheme } from "@/hooks/theme/use-document-theme";
 
 import type { Chat } from "@/types/chat";
+import type { ThemeAppearance } from "@/utils/theme/resolve-document-theme";
 
 export interface ChatListProps {
   chats: Chat[];
@@ -23,7 +25,26 @@ export const ChatList: React.FC<ChatListProps> = ({
   const [isSidebarMenuOpen, setIsSidebarMenuOpen] = useState(false);
   const [isPenMenuOpen, setIsPenMenuOpen] = useState(false);
   const [isNightMode, setIsNightMode] = useState(false);
-  const [appearance, setAppearance] = useState<"system" | "light" | "dark">("system");
+  const [appearance, setAppearance] = useState<ThemeAppearance>("system");
+
+  useDocumentTheme(appearance);
+
+  function setThemeAppearance(next: ThemeAppearance) {
+    setAppearance(next);
+    if (next === "dark") {
+      setIsNightMode(true);
+      return;
+    }
+    if (next === "light") {
+      setIsNightMode(false);
+    }
+  }
+
+  function toggleNightMode() {
+    const nextNightMode = !isNightMode;
+    setIsNightMode(nextNightMode);
+    setAppearance(nextNightMode ? "dark" : "light");
+  }
 
   // Real-time Chat List Filtering
   const filteredChats = chats.filter((chat) => {
@@ -87,17 +108,17 @@ export const ChatList: React.FC<ChatListProps> = ({
                   <DropdownItem
                     label="System"
                     checked={appearance === "system"}
-                    onClick={() => setAppearance("system")}
+                    onClick={() => setThemeAppearance("system")}
                   />
                   <DropdownItem
                     label="Light"
                     checked={appearance === "light"}
-                    onClick={() => setAppearance("light")}
+                    onClick={() => setThemeAppearance("light")}
                   />
                   <DropdownItem
                     label="Dark"
                     checked={appearance === "dark"}
-                    onClick={() => setAppearance("dark")}
+                    onClick={() => setThemeAppearance("dark")}
                   />
                 </DropdownSubContent>
               </DropdownSub>
@@ -108,7 +129,7 @@ export const ChatList: React.FC<ChatListProps> = ({
                   <DropdownItem
                     icon={<Moon size={18} />}
                     label="Night Mode"
-                    onClick={() => setIsNightMode(!isNightMode)}
+                    onClick={toggleNightMode}
                   />
                   <DropdownItem icon={<HelpCircle size={18} />} label="Help" />
                 </DropdownSubContent>

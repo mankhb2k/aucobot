@@ -1,8 +1,8 @@
 import React, { useRef, useEffect } from "react";
 import { isEmojiOnly } from "@/lib/telegramUtils";
-import { AnimatedEmoji } from "./AnimatedEmoji";
+import { AnimatedEmoji } from "@/components/app/AnimatedEmoji/AnimatedEmoji";
+import { DoubleCheck, SingleCheck } from "@/components/app/icons/icons";
 import emojiListMap from "./emoji-list.json";
-import { DoubleCheck, SingleCheck } from "./icons";
 import type { Message } from "@/types/chat";
 
 const LOCAL_EMOJIS = new Set(Object.keys(emojiListMap));

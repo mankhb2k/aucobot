@@ -2,9 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import {
+  authAlertClassName,
+  authGhostButtonClassName,
+  authPrimaryButtonClassName,
+} from "@/components/auth/auth-classes";
 import { OtpInput } from "@/components/ui/OtpInput/OtpInput";
-
-import styles from "./OtpStep.module.css";
 
 const OTP_LENGTH = 6;
 
@@ -81,14 +84,14 @@ export function OtpStep({
 
   return (
     <>
-      <h1 className={styles.title}>Enter verification code</h1>
-      <p className={styles.lead}>
+      <h1 className="mb-2 text-xl font-semibold text-text">Enter verification code</h1>
+      <p className="mb-6 text-sm leading-normal text-description">
         We sent a code to{" "}
-        <span className={styles.emailHighlight}>{maskEmail(maskedEmail)}</span>
+        <span className="font-semibold text-text">{maskEmail(maskedEmail)}</span>
       </p>
 
       {error && (
-        <p className={styles.error} role="alert">
+        <p className={authAlertClassName} role="alert">
           {error}
         </p>
       )}
@@ -105,25 +108,30 @@ export function OtpStep({
         disabled={busy}
       />
 
-      <div className={styles.actions}>
+      <div className="mt-6 flex flex-col gap-3">
         <button
           type="button"
-          className={styles.btnPrimary}
+          className={authPrimaryButtonClassName}
           disabled={busy || code.length !== OTP_LENGTH}
           onClick={() => handleComplete(code)}
         >
           {busy ? "Verifying…" : "Continue"}
         </button>
 
-        <button type="button" className={styles.btnGhost} onClick={onBack} disabled={busy}>
+        <button
+          type="button"
+          className={authGhostButtonClassName}
+          onClick={onBack}
+          disabled={busy}
+        >
           Use a different email
         </button>
 
-        <p className={styles.resendHint}>
+        <p className="text-center text-sm text-description">
           {canResend ? (
             <button
               type="button"
-              className={styles.btnGhost}
+              className={authGhostButtonClassName}
               onClick={onResend}
               disabled={busy}
             >

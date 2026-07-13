@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { initialChats } from "@/lib/mockData";
-import { ChatComposer } from "./ChatComposer";
-import { ChatHeader } from "./ChatHeader";
-import { ChatList } from "./ChatList";
-import { ChatMessages } from "./ChatMessages";
-import { UserInfo } from "./UserInfo";
+import { ChatComposer } from "@/components/app/ChatComposer/ChatComposer";
+import { ChatHeader } from "@/components/app/ChatHeader/ChatHeader";
+import { ChatList } from "@/components/app/ChatList/ChatList";
+import { ChatMessages } from "@/components/app/ChatMessages/ChatMessages";
+import { UserInfo } from "@/components/app/ChatPanel/UserInfo/UserInfo";
 import type { Chat, Message } from "@/types/chat";
 
 export function TelegramAppShell() {

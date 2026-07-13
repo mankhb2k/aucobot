@@ -1,10 +1,10 @@
 import { X, Pen, Bell, ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
-import { PhoneIcon } from "./icons";
-import { Avatar } from "./ui/Avatar/Avatar";
-import { Switch } from "./ui/Switch/Switch";
-import { Tabs, TabsList, TabsTrigger } from "./ui/Tabs/Tabs";
+import { PhoneIcon } from "@/components/app/icons/icons";
+import { Avatar } from "@/components/ui/Avatar/Avatar";
+import { Switch } from "@/components/ui/Switch/Switch";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs/Tabs";
 import type { Chat } from "@/types/chat";
 
 export interface UserInfoProps {

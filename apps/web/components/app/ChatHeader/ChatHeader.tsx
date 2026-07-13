@@ -12,9 +12,9 @@ import {
   PanelRight,
 } from "lucide-react";
 import React, { useState } from "react";
-import { DisableShareIcon } from "./icons";
-import { Avatar } from "./ui/Avatar/Avatar";
-import { DropdownContent, DropdownItem, DropdownSeparator } from "./ui/Dropdown/Dropdown";
+import { DisableShareIcon } from "@/components/app/icons/icons";
+import { Avatar } from "@/components/ui/Avatar/Avatar";
+import { DropdownContent, DropdownItem, DropdownSeparator } from "@/components/ui/Dropdown/Dropdown";
 import type { Chat } from "@/types/chat";
 
 export interface ChatHeaderProps {

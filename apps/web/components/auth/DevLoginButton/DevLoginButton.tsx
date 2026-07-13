@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 
+import { authAlertClassName } from "@/components/auth/auth-classes";
 import { authApi, AuthApiError } from "@/lib/api/auth";
 import { appUrl } from "@/lib/host/urls";
-
-import styles from "./DevLoginButton.module.css";
 
 export function DevLoginButton() {
   const [busy, setBusy] = useState(false);
@@ -27,22 +26,24 @@ export function DevLoginButton() {
   }
 
   return (
-    <div className={styles.wrap}>
+    <div className="mt-6 border-t border-dashed border-border pt-6">
       {error ? (
-        <p className={styles.error} role="alert">
+        <p className={`${authAlertClassName} mb-3`} role="alert">
           {error}
         </p>
       ) : null}
 
       <button
         type="button"
-        className={styles.btn}
+        className="w-full cursor-pointer rounded-md border border-dashed border-border bg-transparent px-4 py-2.5 font-mono text-sm text-description transition-colors hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-60"
         onClick={() => void handleDevLogin()}
         disabled={busy}
       >
         {busy ? "Signing in…" : "Dev login (no OTP)"}
       </button>
-      <p className={styles.hint}>Development only — uses DEV_AUTH_EMAIL on the API.</p>
+      <p className="mt-2 text-center text-xs text-description">
+        Development only — uses DEV_AUTH_EMAIL on the API.
+      </p>
     </div>
   );
 }
