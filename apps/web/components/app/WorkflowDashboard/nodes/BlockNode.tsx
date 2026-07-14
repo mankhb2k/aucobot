@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
 import { Handle, Position, type NodeProps } from "@xyflow/react";
+import React from "react";
 import { Block } from "@/components/app/Block";
 import type { BlockGroup, BlockStatus } from "@/lib/workflowMockGraphs";
 

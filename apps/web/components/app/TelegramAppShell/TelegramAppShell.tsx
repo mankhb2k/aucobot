@@ -1,14 +1,22 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { initialChats } from "@/lib/mockData";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { ChatComposer } from "@/components/app/ChatComposer/ChatComposer";
 import { ChatHeader } from "@/components/app/ChatHeader/ChatHeader";
 import { ChatList } from "@/components/app/ChatList/ChatList";
 import { ChatMessages } from "@/components/app/ChatMessages/ChatMessages";
 import { UserInfo } from "@/components/app/ChatPanel/UserInfo/UserInfo";
+import { useConversationMessages } from "@/hooks/chat/use-conversation-messages";
+import { useMessageStream } from "@/hooks/chat/use-message-stream";
+import { useSendMessage } from "@/hooks/chat/use-send-message";
 import { conversationsApi } from "@/lib/api/conversations";
 import { mapConversationToChat } from "@/lib/conversations/map-conversation";
+import { initialChats } from "@/lib/mockData";
+import {
+  EMPTY_MESSAGES,
+  mergeDisplayMessages,
+  useMessageStore,
+} from "@/stores/message/message.store";
 import type { Chat, Message } from "@/types/chat";
 import type { CreateConversationInput } from "@aucobot/shared";
 
@@ -41,11 +49,34 @@ export function TelegramAppShell() {
   const activeChat =
     chats.find((c) => c.id === activeChatId) ?? chats[0] ?? EMPTY_CHAT;
 
-  // Load Tin nhắn từ API khi mount
+  const isApiSession =
+    activeChat.category === "chat" &&
+    activeChat.conversationType === "session" &&
+    Boolean(activeChat.id);
+
+  useConversationMessages(activeChatId || null, isApiSession);
+  useMessageStream(activeChatId || null, isApiSession);
+  const { send: sendSessionMessage, sending } = useSendMessage(
+    isApiSession ? activeChatId : null,
+  );
+
+  const persistedMessages = useMessageStore(
+    (state) => state.byConversationId[activeChatId] ?? EMPTY_MESSAGES,
+  );
+  const streaming = useMessageStore(
+    (state) => state.streamingByConversationId[activeChatId] ?? null,
+  );
+  const storeMessages = useMemo(
+    () => mergeDisplayMessages(persistedMessages, streaming),
+    [persistedMessages, streaming],
+  );
+
+  const displayMessages = isApiSession ? storeMessages : activeChat.messages;
+
   useEffect(() => {
     let cancelled = false;
 
-    (async () => {
+    void (async () => {
       try {
         const { items } = await conversationsApi.list();
         if (cancelled) return;
@@ -64,7 +95,6 @@ export function TelegramAppShell() {
         });
       } catch (err) {
         if (cancelled) return;
-        // Chưa login / API lỗi → giữ mock
         const mockChats = initialChats.filter((c) => c.category === "chat");
         setChats([...mockChats, ...MOCK_NON_CHAT]);
         setActiveChatId(mockChats[0]?.id ?? MOCK_NON_CHAT[0]?.id ?? "");
@@ -81,9 +111,10 @@ export function TelegramAppShell() {
     };
   }, []);
 
-  useEffect(() => {
+  const selectChat = useCallback((id: string) => {
+    setActiveChatId(id);
     setWorkflowViewMode("chat");
-  }, [activeChatId]);
+  }, []);
 
   const handleCreateConversation = useCallback(
     async (input: CreateConversationInput) => {
@@ -91,6 +122,7 @@ export function TelegramAppShell() {
       const chat = mapConversationToChat(created);
       setChats((prev) => [chat, ...prev.filter((c) => c.id !== chat.id)]);
       setActiveChatId(chat.id);
+      setWorkflowViewMode("chat");
       setListError(null);
     },
     [],
@@ -173,7 +205,7 @@ export function TelegramAppShell() {
     setApprovedMessages((prev) => ({ ...prev, [msgId]: true }));
 
     setTimeout(() => {
-      const scheduleMsgId = "sched_" + Date.now();
+      const scheduleMsgId = `sched_${  Date.now()}`;
       const progressMsg: Message = {
         id: scheduleMsgId,
         sender: "them",
@@ -225,6 +257,13 @@ export function TelegramAppShell() {
   const handleSendMessage = (text: string) => {
     if (!activeChat.id) return;
 
+    if (isApiSession) {
+      void sendSessionMessage(text).catch(() => {
+        // error surface via hook state; keep UI quiet for now
+      });
+      return;
+    }
+
     const newMessage: Message = {
       id: Date.now().toString(),
       sender: "me",
@@ -251,7 +290,7 @@ export function TelegramAppShell() {
 
     if (text.includes("@Trợ Lý")) {
       setTimeout(() => {
-        const workingMsgId = "work_" + Date.now();
+        const workingMsgId = `work_${  Date.now()}`;
         const workingMsg: Message = {
           id: workingMsgId,
           sender: "them",
@@ -279,15 +318,26 @@ export function TelegramAppShell() {
     }
   };
 
+  const chatsForList = useMemo(() => {
+    if (!isApiSession) return chats;
+    return chats.map((chat) => {
+      if (chat.id !== activeChatId) return chat;
+      return {
+        ...chat,
+        messages: storeMessages,
+      };
+    });
+  }, [activeChatId, chats, isApiSession, storeMessages]);
+
   return (
     <div
       className="flex h-screen w-screen bg-[#e7ebf0] p-3 gap-3 overflow-hidden font-sans select-none"
       data-chat-shell
     >
       <ChatList
-        chats={chats}
+        chats={chatsForList}
         activeChatId={activeChatId}
-        setActiveChatId={setActiveChatId}
+        setActiveChatId={selectChat}
         onCreateConversation={handleCreateConversation}
       />
 
@@ -308,7 +358,7 @@ export function TelegramAppShell() {
           setWorkflowViewMode={setWorkflowViewMode}
         />
         <ChatMessages
-          messages={activeChat.messages}
+          messages={displayMessages}
           activeChatId={activeChatId}
           workflowViewMode={workflowViewMode}
           setWorkflowViewMode={setWorkflowViewMode}
@@ -323,6 +373,7 @@ export function TelegramAppShell() {
           onSendMessage={handleSendMessage}
           workflowViewMode={workflowViewMode}
           setWorkflowViewMode={setWorkflowViewMode}
+          disabled={sending && isApiSession}
         />
       </div>
 

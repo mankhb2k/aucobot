@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
 import { Check, Loader2 } from "lucide-react";
+import React from "react";
 
 export type AgentActivityState = "working" | "done" | "error";
 export type AgentStepStatus = "pending" | "running" | "done" | "error";

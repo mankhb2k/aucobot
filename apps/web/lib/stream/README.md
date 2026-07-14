@@ -2,20 +2,19 @@
 
 **WebSocket** — tách khỏi REST (`lib/api`). Đã chốt: không SSE, không GraphQL.
 
-## Endpoint (planned)
+## Endpoint
 
 ```text
-WSS {NEXT_PUBLIC_API_URL}/api/ws/departments/:departmentId
+WSS {NEXT_PUBLIC_API_URL}/api/ws/conversations/:conversationId
 ```
 
 Auth: cookie `httpOnly` lúc HTTP Upgrade (cùng site `app.` / `api.`).
 
-## Planned files
+## Files
 
 | File | Mô tả |
 |------|--------|
-| `agent-stream-client.ts` | Connect, reconnect, subscribe events |
-| `events.ts` | Re-export event types từ `@aucobot/shared` |
+| `agent-stream-client.ts` | Connect, reconnect backoff, ping/pong, parse Zod |
 
 ## Event envelope (server → client)
 

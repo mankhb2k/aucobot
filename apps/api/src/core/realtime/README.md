@@ -1,6 +1,6 @@
 # Giao thức realtime — REST + WebSocket (đã chốt)
 
-> Tóm tắt cho `apps/api` khi implement gateway. Chi tiết: [`aucobot-architecture.md`](../../../../aucobot-architecture.md#giao-thức-client-web-đã-chốt-rest--websocket).
+> Chi tiết: [`aucobot-architecture.md`](../../../../aucobot-architecture.md#giao-thức-client-web-đã-chốt-rest--websocket).
 
 ## Đã chốt
 
@@ -8,26 +8,31 @@
 - **WebSocket** — push realtime (stream agent, job, approval)
 - **Không** GraphQL, **không** SSE
 
-## WebSocket gateway (planned)
+## WebSocket gateway
 
 ```text
-WSS /api/ws/departments/:departmentId
+WSS /api/ws/conversations/:conversationId
 ```
 
-- NestJS `@nestjs/websockets` + `ws`
-- Auth: cookie `httpOnly` lúc Upgrade
-- Event envelope: `{ type, payload, departmentId, timestamp }` — Zod trong `@aucobot/shared`
+- Nest injectable `ConversationsGateway` + package `ws` (HTTP Upgrade trên cùng server)
+- Auth: cookie `access_token` lúc Upgrade — **cấm** JWT trên query
+- Access: `ConversationAccessService.assert`
+- Event envelope: `{ type, payload, conversationId, timestamp }` — Zod trong `@aucobot/shared`
 
-## Event types (draft)
+## Event types
 
 | `type` | Mục đích |
 |--------|----------|
 | `message.chunk` | Agent reply stream |
-| `message.done` | Tin hoàn tất |
-| `approval.updated` | Duyệt / từ chối |
-| `job.status` | Lịch đăng bài |
+| `message.done` | Tin hoàn tất (persist Postgres rồi) |
+| `approval.updated` | Duyệt / từ chối (schema sẵn, emit sau) |
+| `job.status` | Lịch đăng bài (schema sẵn, emit sau) |
 | `ping` / `pong` | Keepalive |
 
-## Chưa implement
+## Files
 
-Folder này chỉ là placeholder doc — gateway sống trong `apps/api/src/core/` hoặc `features/ai-orchestration/` khi có contract.
+| File | Vai trò |
+|------|---------|
+| `conversations.gateway.ts` | Upgrade auth + rooms + emit |
+| `conversation-events.port.ts` | Port inject vào MessagesService |
+| `realtime.module.ts` | Wire DI |

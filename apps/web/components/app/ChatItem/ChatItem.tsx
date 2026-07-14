@@ -1,5 +1,5 @@
-import React from "react";
 import { Pin } from "lucide-react";
+import React from "react";
 import { DoubleCheck, SingleCheck } from "@/components/app/icons/icons";
 import { Avatar } from "@/components/ui/Avatar/Avatar";
 import type { Chat } from "@/types/chat";

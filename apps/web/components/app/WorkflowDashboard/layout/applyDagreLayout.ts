@@ -5,6 +5,8 @@ import { BLOCK_SIZE } from "@/components/app/Block";
 const NODE_WIDTH = BLOCK_SIZE.width;
 const NODE_HEIGHT = BLOCK_SIZE.height;
 
+type DagreNodePos = { x: number; y: number };
+
 export function applyDagreLayout(
   nodes: Node[],
   edges: Edge[],
@@ -28,12 +30,14 @@ export function applyDagreLayout(
     g.setEdge(edge.source, edge.target);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- dagre Graph typings
   dagre.layout(g);
 
   const isHorizontal = direction === "LR";
 
   const layoutedNodes = nodes.map((node) => {
-    const pos = g.node(node.id);
+    const pos = g.node(node.id) as DagreNodePos | undefined;
+    if (!pos) return node;
     return {
       ...node,
       targetPosition: isHorizontal ? Position.Left : Position.Top,

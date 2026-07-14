@@ -1,5 +1,5 @@
 import { createTogetherAI } from "@ai-sdk/togetherai";
-import { generateText } from "ai";
+import { generateText, streamText } from "ai";
 
 export const DEFAULT_TOGETHER_MODEL = "Qwen/Qwen2.5-7B-Instruct-Turbo";
 
@@ -26,6 +26,30 @@ export async function generateChatWithTogether(options: {
   });
 
   return result.text;
+}
+
+export async function streamChatWithTogether(options: {
+  apiKey: string;
+  system: string;
+  messages: ChatMessage[];
+  model?: string;
+  onChunk: (delta: string) => void;
+}): Promise<string> {
+  const together = createTogetherProvider(options.apiKey);
+  const result = streamText({
+    model: together(options.model ?? DEFAULT_TOGETHER_MODEL),
+    system: options.system,
+    messages: options.messages,
+  });
+
+  let full = "";
+  for await (const delta of result.textStream) {
+    if (!delta) continue;
+    full += delta;
+    options.onChunk(delta);
+  }
+
+  return full;
 }
 
 export async function generateTextWithTogether(options: {

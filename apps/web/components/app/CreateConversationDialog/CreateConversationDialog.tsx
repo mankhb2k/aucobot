@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useId, useState } from "react";
 import { ArrowLeft, Loader2 } from "lucide-react";
+import React, { useId, useState } from "react";
 import type { ConversationType } from "@aucobot/shared";
 
 export interface CreateConversationDialogProps {
@@ -35,6 +35,7 @@ const COPY: Record<
 
 /**
  * Form tạo Session (New Chat) / Room (New Group) — kiểu Telegram create channel.
+ * Remount via `key` ở parent khi mở lại để form reset (không dùng effect setState).
  */
 export function CreateConversationDialog({
   open,
@@ -48,14 +49,6 @@ export function CreateConversationDialog({
   const [description, setDescription] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (!open) return;
-    setTitle("");
-    setDescription("");
-    setError(null);
-    setSubmitting(false);
-  }, [open, type]);
 
   if (!open) return null;
 

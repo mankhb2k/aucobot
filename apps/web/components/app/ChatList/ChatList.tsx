@@ -1,13 +1,13 @@
 import { Menu, Search, Plus, User, Bookmark, Users, Settings, MoreVertical, SquarePen, Moon, HelpCircle, Palette, Zap } from "lucide-react";
 import React, { useState } from "react";
+import { ChatItem } from "@/components/app/ChatItem/ChatItem";
+import { CreateConversationDialog } from "@/components/app/CreateConversationDialog/CreateConversationDialog";
 import { DropdownContent, DropdownItem, DropdownSeparator, DropdownSub, DropdownSubTrigger, DropdownSubContent } from "@/components/ui/Dropdown/Dropdown";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs/Tabs";
 import { useDocumentTheme } from "@/hooks/theme/use-document-theme";
-import { CreateConversationDialog } from "@/components/app/CreateConversationDialog/CreateConversationDialog";
 
-import type { Chat } from "@/types/chat";
 import { initialWorkflows } from "@/lib/mockData";
-import { ChatItem } from "@/components/app/ChatItem/ChatItem";
+import type { Chat } from "@/types/chat";
 import type { ThemeAppearance } from "@/utils/theme/resolve-document-theme";
 import type { ConversationType, CreateConversationInput } from "@aucobot/shared";
 
@@ -280,10 +280,11 @@ export const ChatList: React.FC<ChatListProps> = ({
         )}
       </div>
 
-      {onCreateConversation && (
+      {onCreateConversation && createType !== null && (
         <CreateConversationDialog
-          open={createType !== null}
-          type={createType ?? "session"}
+          key={createType}
+          open
+          type={createType}
           onClose={() => setCreateType(null)}
           onSubmit={onCreateConversation}
         />

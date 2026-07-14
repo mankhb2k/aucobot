@@ -1,18 +1,25 @@
+import { randomUUID } from "crypto";
+
 import {
   BadRequestException,
   Inject,
   Injectable,
+  Logger,
   Optional,
   ServiceUnavailableException,
 } from "@nestjs/common";
+
+import { createWsEvent } from "@aucobot/shared";
 
 import { AgentResolverService } from "../../../agents/service/agent-resolver/agent-resolver.service";
 import { PrismaService } from "../../../database/prisma.service";
 import { FeatureFlagsService } from "../../../features/service/feature-flags/feature-flags.service";
 import { LLM_COMPLETION_PORT } from "../../../plugins/llm-completion.port";
+import { CONVERSATION_EVENTS_PORT } from "../../../realtime/conversation-events.port";
 import { ConversationAccessService } from "../conversation-access/conversation-access.service";
 
 import type { LlmCompletionPort } from "../../../plugins/llm-completion.port";
+import type { ConversationEventsPort } from "../../../realtime/conversation-events.port";
 import type { Message, Prisma } from "@aucobot/database";
 import type {
   CreateMessageInput,
@@ -25,6 +32,8 @@ const MESSAGE_HISTORY_LIMIT = 20;
 
 @Injectable()
 export class MessagesService {
+  private readonly logger = new Logger(MessagesService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly access: ConversationAccessService,
@@ -33,6 +42,9 @@ export class MessagesService {
     @Optional()
     @Inject(LLM_COMPLETION_PORT)
     private readonly llmCompletion: LlmCompletionPort | null,
+    @Optional()
+    @Inject(CONVERSATION_EVENTS_PORT)
+    private readonly conversationEvents: ConversationEventsPort | null,
   ) {}
 
   async listForConversation(
@@ -82,36 +94,117 @@ export class MessagesService {
     });
 
     const history = await this.loadChatHistory(conversationId);
+    const shouldStream =
+      Boolean(this.conversationEvents?.hasClients(conversationId)) &&
+      typeof this.llmCompletion.stream === "function";
+
+    if (shouldStream) {
+      void this.runAssistantStream({
+        userId,
+        conversationId,
+        agentId: agent.id,
+        system: agent.instructionsCompiled,
+        history,
+      }).catch((error: unknown) => {
+        this.logger.error(
+          `Stream failed for ${conversationId}: ${
+            error instanceof Error ? error.message : "unknown"
+          }`,
+        );
+      });
+
+      return {
+        userMessage: this.toResponse(userMessage),
+        streaming: true,
+      };
+    }
+
     const reply = await this.llmCompletion.complete({
       system: agent.instructionsCompiled,
       messages: history,
     });
 
-    const assistantMessage = await this.prisma.$transaction(
-      async (tx: Prisma.TransactionClient) => {
-        const created = await tx.message.create({
-          data: {
-            conversationId,
-            ownerId: userId,
-            senderType: "agent",
-            agentId: agent.id,
-            content: reply,
-          },
-        });
-
-        await tx.conversation.update({
-          where: { id: conversationId },
-          data: { lastMessageAt: created.createdAt },
-        });
-
-        return created;
-      },
-    );
+    const assistantMessage = await this.persistAssistantMessage({
+      conversationId,
+      userId,
+      agentId: agent.id,
+      content: reply,
+    });
 
     return {
       userMessage: this.toResponse(userMessage),
       assistantMessage: this.toResponse(assistantMessage),
+      streaming: false,
     };
+  }
+
+  private async runAssistantStream(input: {
+    userId: string;
+    conversationId: string;
+    agentId: string;
+    system: string;
+    history: Array<{ role: "user" | "assistant"; content: string }>;
+  }): Promise<void> {
+    if (!this.llmCompletion?.stream || !this.conversationEvents) {
+      return;
+    }
+
+    const streamingId = randomUUID();
+    const reply = await this.llmCompletion.stream({
+      system: input.system,
+      messages: input.history,
+      onChunk: (delta) => {
+        this.conversationEvents?.emit(
+          input.conversationId,
+          createWsEvent("message.chunk", input.conversationId, {
+            messageId: streamingId,
+            delta,
+          }),
+        );
+      },
+    });
+
+    const assistantMessage = await this.persistAssistantMessage({
+      conversationId: input.conversationId,
+      userId: input.userId,
+      agentId: input.agentId,
+      content: reply,
+    });
+
+    this.conversationEvents.emit(
+      input.conversationId,
+      createWsEvent("message.done", input.conversationId, {
+        messageId: assistantMessage.id,
+        streamingId,
+        content: reply,
+      }),
+    );
+  }
+
+  private async persistAssistantMessage(input: {
+    conversationId: string;
+    userId: string;
+    agentId: string;
+    content: string;
+  }): Promise<Message> {
+    return this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      const created = await tx.message.create({
+        data: {
+          conversationId: input.conversationId,
+          ownerId: input.userId,
+          senderType: "agent",
+          agentId: input.agentId,
+          content: input.content,
+        },
+      });
+
+      await tx.conversation.update({
+        where: { id: input.conversationId },
+        data: { lastMessageAt: created.createdAt },
+      });
+
+      return created;
+    });
   }
 
   private async loadChatHistory(

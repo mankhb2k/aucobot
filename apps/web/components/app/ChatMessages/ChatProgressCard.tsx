@@ -1,6 +1,5 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
 import {
   Sparkles,
   FileText,
@@ -9,6 +8,7 @@ import {
   Clock,
   ArrowRight,
 } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   AgentActivity,
   type AgentActivityStep,
@@ -77,7 +77,7 @@ export const ChatProgressCard: React.FC<ChatProgressCardProps> = ({
 
   useEffect(() => {
     if (currentIndex >= defs.length) {
-      if (!onComplete) return;
+      if (!onComplete) return undefined;
       const timer = setTimeout(onComplete, 800);
       return () => clearTimeout(timer);
     }

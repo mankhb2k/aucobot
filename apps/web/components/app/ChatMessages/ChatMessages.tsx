@@ -1,11 +1,11 @@
-import React, { useRef, useEffect } from "react";
-import { isEmojiOnly } from "@/lib/telegramUtils";
-import { DoubleCheck, SingleCheck } from "@/components/app/icons/icons";
-import { WorkflowDashboard } from "../WorkflowDashboard/WorkflowDashboard";
 import { GitFork } from "lucide-react";
-import type { Message } from "@/types/chat";
+import React, { useRef, useEffect } from "react";
+import { DoubleCheck, SingleCheck } from "@/components/app/icons/icons";
+import { isEmojiOnly } from "@/lib/telegramUtils";
+import { WorkflowDashboard } from "../WorkflowDashboard/WorkflowDashboard";
 import { ChatApprovalButtons } from "./ChatApprovalButtons";
 import { ChatProgressCard } from "./ChatProgressCard";
+import type { Message } from "@/types/chat";
 
 export interface ChatMessagesProps {
   messages: Message[];

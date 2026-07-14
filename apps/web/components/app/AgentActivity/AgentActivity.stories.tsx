@@ -1,5 +1,3 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import type { ReactNode } from "react";
 import {
   Sparkles,
   FileText,
@@ -10,6 +8,8 @@ import {
   Zap,
 } from "lucide-react";
 import { AgentActivity, type AgentActivityStep } from "./AgentActivity";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import type { ReactNode } from "react";
 
 const icon = (node: ReactNode) => node;
 

@@ -6,18 +6,20 @@ export interface ChatComposerProps {
   onSendMessage: (text: string) => void;
   workflowViewMode?: "chat" | "diagram";
   setWorkflowViewMode?: (mode: "chat" | "diagram") => void;
+  disabled?: boolean;
 }
 
 export const ChatComposer: React.FC<ChatComposerProps> = ({
   onSendMessage,
   workflowViewMode,
   setWorkflowViewMode,
+  disabled = false,
 }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
 
   const handleSendMessage = () => {
-    if (!inputValue.trim()) return;
+    if (disabled || !inputValue.trim()) return;
     onSendMessage(inputValue.trim());
     setInputValue("");
     setIsEmojiPickerOpen(false); // Close emoji picker after sending
@@ -68,9 +70,10 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({
           type="text"
           placeholder="Message"
           value={inputValue}
+          disabled={disabled}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyPress}
-          className="flex-1 bg-transparent border-none focus:outline-none px-2 py-2.5 text-gray-800 placeholder-gray-400"
+          className="flex-1 bg-transparent border-none focus:outline-none px-2 py-2.5 text-gray-800 placeholder-gray-400 disabled:opacity-60"
         />
         <button className="text-gray-400 hover:text-gray-600 p-2.5 rounded-full hover:bg-gray-50 transition-colors transform -rotate-45">
           <Paperclip size={21} className="stroke-[1.8]" />
@@ -81,7 +84,8 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({
       {inputValue.trim() ? (
         <button
           onClick={handleSendMessage}
-          className="w-[48px] h-[48px] rounded-full bg-white flex items-center justify-center shadow-sm text-[#3390ec] hover:text-blue-600 flex-shrink-0 transition-all hover:scale-105"
+          disabled={disabled}
+          className="w-[48px] h-[48px] rounded-full bg-white flex items-center justify-center shadow-sm text-[#3390ec] hover:text-blue-600 flex-shrink-0 transition-all hover:scale-105 disabled:opacity-50 disabled:pointer-events-none"
         >
           <Send size={22} className="stroke-[2.2]" />
         </button>

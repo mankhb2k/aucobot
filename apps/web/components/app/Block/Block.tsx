@@ -1,12 +1,12 @@
 "use client";
 
 import React from "react";
-import type { BlockGroup, BlockStatus } from "@/lib/workflowMockGraphs";
 import {
   BLOCK_GROUP_META,
   BLOCK_STATUS_DOT,
   BLOCK_STATUS_LABEL,
 } from "./block.meta";
+import type { BlockGroup, BlockStatus } from "@/lib/workflowMockGraphs";
 
 export interface BlockProps {
   title: string;

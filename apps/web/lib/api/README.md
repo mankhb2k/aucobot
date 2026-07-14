@@ -9,7 +9,7 @@ Mirror **`apps/api` REST** — mỗi file = 1 resource domain.
 | `auth.ts` | `/api/auth/*` | ✅ |
 | `conversations.ts` | `/api/conversations` | ✅ |
 | `agents.ts` | `/api/conversations/:id/agents` | 🔜 |
-| `messages.ts` | chat REST (nếu có) | 🔜 |
+| `messages.ts` | `/api/conversations/:id/messages` | ✅ |
 | `approvals.ts` | `/api/approvals/*` | 🔜 |
 | `scheduled-posts.ts` | `/api/scheduled-posts` | 🔜 |
 | `documents.ts` | upload/list docs | 🔜 defer |

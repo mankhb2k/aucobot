@@ -1,6 +1,5 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
 import {
   Controls,
   ReactFlow,
@@ -12,11 +11,12 @@ import {
   type Node,
   type NodeTypes,
 } from "@xyflow/react";
+import React, { useEffect, useMemo, useState } from "react";
 import "@xyflow/react/dist/style.css";
 
-import type { DiagramData } from "@/lib/workflowMockGraphs";
 import { applyDagreLayout } from "./layout/applyDagreLayout";
 import { BlockNode, type BlockNodeData } from "./nodes/BlockNode";
+import type { DiagramData } from "@/lib/workflowMockGraphs";
 
 const nodeTypes: NodeTypes = {
   block: BlockNode,
@@ -58,25 +58,27 @@ function toFlowElements(diagram: DiagramData): { nodes: Node[]; edges: Edge[] } 
   return applyDagreLayout(nodes, edges, "TB");
 }
 
+function diagramRemountKey(diagram: DiagramData): string {
+  return [
+    ...diagram.nodes.map((n) => n.id),
+    ...diagram.edges.map((e) => e.id),
+  ].join("|");
+}
+
 function CanvasInner({ diagram }: { diagram: DiagramData }) {
   const { fitView } = useReactFlow();
   const layouted = useMemo(() => toFlowElements(diagram), [diagram]);
-  const [nodes, setNodes, onNodesChange] = useNodesState(layouted.nodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(layouted.edges);
+  const [nodes, , onNodesChange] = useNodesState(layouted.nodes);
+  const [edges, , onEdgesChange] = useEdgesState(layouted.edges);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    setReady(false);
-    setNodes(layouted.nodes);
-    setEdges(layouted.edges);
-
-    // Ẩn canvas → fitView tức thì (duration 0) → mới hiện, tránh nháy góc trái → giữa
     let cancelled = false;
     const frame = requestAnimationFrame(() => {
-      fitView({ padding: 0.22, duration: 0 });
+      void fitView({ padding: 0.22, duration: 0 });
       requestAnimationFrame(() => {
         if (cancelled) return;
-        fitView({ padding: 0.22, duration: 0 });
+        void fitView({ padding: 0.22, duration: 0 });
         setReady(true);
       });
     });
@@ -85,7 +87,7 @@ function CanvasInner({ diagram }: { diagram: DiagramData }) {
       cancelled = true;
       cancelAnimationFrame(frame);
     };
-  }, [layouted, setNodes, setEdges, fitView]);
+  }, [fitView]);
 
   return (
     <div
@@ -128,10 +130,12 @@ export interface WorkflowCanvasProps {
 }
 
 export function WorkflowCanvas({ diagram, className = "" }: WorkflowCanvasProps) {
+  const remountKey = diagramRemountKey(diagram);
+
   return (
     <div className={`w-full h-full overflow-hidden ${className}`.trim()}>
       <ReactFlowProvider>
-        <CanvasInner diagram={diagram} />
+        <CanvasInner key={remountKey} diagram={diagram} />
       </ReactFlowProvider>
     </div>
   );

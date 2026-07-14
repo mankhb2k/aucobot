@@ -10,6 +10,7 @@ import { DatabaseModule } from "./database/database.module";
 import { FeaturesModule } from "./features/features.module";
 import { HealthModule } from "./health/health.module";
 import { LoggingModule } from "./logging/logging.module";
+import { RealtimeModule } from "./realtime/realtime.module";
 import { RedisModule } from "./redis/redis.module";
 
 @Module({
@@ -24,6 +25,7 @@ import { RedisModule } from "./redis/redis.module";
     HealthModule,
     AgentsModule,
     ConversationsModule,
+    RealtimeModule,
   ],
 })
 export class CoreModule implements NestModule {

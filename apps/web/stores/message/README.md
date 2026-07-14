@@ -1,16 +1,16 @@
 # `stores/message/`
 
-## Planned: `message.store.ts`
+## `message.store.ts`
 
 | State | Mô tả |
 |-------|--------|
-| `messagesByDepartmentId` | Map id → message[] |
-| `streamingMessageId` | Id tin đang nhận chunk |
-| `streamBuffer` | Partial text |
+| `byConversationId` | Map conversation id → UI messages |
+| `streamingByConversationId` | Partial agent text đang stream |
 
 ## Actions (chỉ projection)
 
-- `setMessages(departmentId, messages)`
-- `appendStreamChunk(messageId, chunk)`
-- `finalizeStream(messageId, fullText)`
-- `patchMessage(id, patch)` — từ WS event (approval, job status)
+- `setMessages(conversationId, messages)`
+- `upsertMessage(conversationId, message)`
+- `appendChunk(conversationId, messageId, delta)`
+- `finalizeStream(conversationId, streamingId, message)`
+- `clearStreaming` / `clearConversation`

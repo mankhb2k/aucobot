@@ -7,4 +7,10 @@ export type LlmChatMessage = {
 
 export interface LlmCompletionPort {
   complete(input: { system: string; messages: LlmChatMessage[] }): Promise<string>;
+
+  stream?(input: {
+    system: string;
+    messages: LlmChatMessage[];
+    onChunk: (delta: string) => void;
+  }): Promise<string>;
 }

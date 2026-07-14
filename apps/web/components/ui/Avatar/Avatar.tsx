@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { Ghost } from "lucide-react";
+import Image from "next/image";
 import React from "react";
 
 import {
@@ -16,7 +16,7 @@ export interface AvatarProps {
   alt?: string;
   text?: string;
   /** Gradient preset key (`blue`), legacy token (`bg-avatar-blue`), or custom Tailwind classes. */
-  bg?: AvatarGradient | string;
+  bg?: string;
   size?: "sm" | "md" | "lg";
   showOnlineStatus?: boolean;
   className?: string;
