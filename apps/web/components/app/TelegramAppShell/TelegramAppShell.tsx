@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { initialChats } from "@/lib/mockData";
 import { ChatComposer } from "@/components/app/ChatComposer/ChatComposer";
 import { ChatHeader } from "@/components/app/ChatHeader/ChatHeader";
@@ -10,11 +10,21 @@ import { UserInfo } from "@/components/app/ChatPanel/UserInfo/UserInfo";
 import type { Chat, Message } from "@/types/chat";
 
 export function TelegramAppShell() {
-  const [activeChatId, setActiveChatId] = useState<string>(initialChats[0]?.id || "room_marketing");
+  const [activeChatId, setActiveChatId] = useState<string>("room_marketing");
   const [isRightPanelOpen, setIsRightPanelOpen] = useState<boolean>(true);
   const [chats, setChats] = useState<Chat[]>(initialChats);
+  const [workflowViewMode, setWorkflowViewMode] = useState<"chat" | "diagram">("chat");
+
+  const [approvedMessages, setApprovedMessages] = useState<Record<string, boolean>>({
+    // rm3 đã duyệt trong lịch sử; rm8 đang chờ duyệt (hiện nút Duyệt / Từ chối / Sửa)
+    rm3: true,
+  });
 
   const activeChat = chats.find((c) => c.id === activeChatId) || chats[0];
+
+  useEffect(() => {
+    setWorkflowViewMode("chat");
+  }, [activeChatId]);
 
   // Toggle notifications status
   const handleToggleNotifications = () => {
@@ -71,6 +81,85 @@ export function TelegramAppShell() {
     }
   };
 
+  // Complete working step simulation
+  const handleCompleteWorking = (msgId: string) => {
+    setChats((prev) =>
+      prev.map((chat) => {
+        if (chat.id === activeChatId) {
+          return {
+            ...chat,
+            messages: chat.messages.map((m) => {
+              if (m.id === msgId) {
+                return {
+                  ...m,
+                  text: "Trợ Lý:\n\nCaption đăng Facebook:\n\nTết sum vầy bắt đầu từ món ngon… 🧧\n\nLên lịch 09:00 ngày 28/1 sau khi bạn duyệt giúp em nhé!"
+                };
+              }
+              return m;
+            })
+          };
+        }
+        return chat;
+      })
+    );
+  };
+
+  // Approve action simulator
+  const handleApproveMessage = (msgId: string) => {
+    setApprovedMessages((prev) => ({ ...prev, [msgId]: true }));
+    
+    // Trigger follow-up scheduling progress
+    setTimeout(() => {
+      const scheduleMsgId = "sched_" + Date.now();
+      const progressMsg: Message = {
+        id: scheduleMsgId,
+        sender: "them",
+        text: "[PROGRESS_SCHEDULING]",
+        time: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        }),
+        read: true,
+      };
+
+      setChats((prev) =>
+        prev.map((chat) => {
+          if (chat.id === activeChatId) {
+            return {
+              ...chat,
+              messages: [...chat.messages, progressMsg],
+            };
+          }
+          return chat;
+        })
+      );
+    }, 800);
+  };
+
+  // Complete scheduling step simulation
+  const handleCompleteScheduling = (msgId: string) => {
+    setChats((prev) =>
+      prev.map((chat) => {
+        if (chat.id === activeChatId) {
+          return {
+            ...chat,
+            messages: chat.messages.map((m) => {
+              if (m.id === msgId) {
+                return {
+                  ...m,
+                  text: "Trợ Lý: Tuyệt vời! Tôi đã lên lịch thành công cho bài viết này vào lúc 09:00 ngày 28/1. 🚀"
+                };
+              }
+              return m;
+            })
+          };
+        }
+        return chat;
+      })
+    );
+  };
+
   // Send message handler
   const handleSendMessage = (text: string) => {
     const newMessage: Message = {
@@ -94,8 +183,38 @@ export function TelegramAppShell() {
           };
         }
         return chat;
-      }),
+      })
     );
+
+    // Trigger mock response if message tags Trợ Lý
+    if (text.includes("@Trợ Lý")) {
+      setTimeout(() => {
+        const workingMsgId = "work_" + Date.now();
+        const workingMsg: Message = {
+          id: workingMsgId,
+          sender: "them",
+          text: "[PROGRESS_WORKING]",
+          time: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          }),
+          read: true,
+        };
+
+        setChats((prev) =>
+          prev.map((chat) => {
+            if (chat.id === activeChatId) {
+              return {
+                ...chat,
+                messages: [...chat.messages, workingMsg],
+              };
+            }
+            return chat;
+          })
+        );
+      }, 1000);
+    }
   };
 
   return (
@@ -116,12 +235,26 @@ export function TelegramAppShell() {
           onRenameChat={handleRenameChat}
           onArchiveChat={handleArchiveChat}
           onDeleteChat={handleDeleteChat}
+          workflowViewMode={workflowViewMode}
+          setWorkflowViewMode={setWorkflowViewMode}
         />
         <ChatMessages
           messages={activeChat.messages}
           activeChatId={activeChatId}
+          workflowViewMode={workflowViewMode}
+          setWorkflowViewMode={setWorkflowViewMode}
+          approvedMessages={approvedMessages}
+          onApproveMessage={handleApproveMessage}
+          onRejectMessage={(msgId) => alert("Đã từ chối đề xuất.")}
+          onEditMessage={(msgId) => alert("Mở trình chỉnh sửa nội dung.")}
+          onCompleteWorking={handleCompleteWorking}
+          onCompleteScheduling={handleCompleteScheduling}
         />
-        <ChatComposer onSendMessage={handleSendMessage} />
+        <ChatComposer 
+          onSendMessage={handleSendMessage} 
+          workflowViewMode={workflowViewMode}
+          setWorkflowViewMode={setWorkflowViewMode}
+        />
       </div>
 
       {/* ================= COLUMN 3: USER INFO PANEL ================= */}

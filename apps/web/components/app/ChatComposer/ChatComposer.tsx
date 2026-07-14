@@ -1,13 +1,17 @@
-import { Smile, Paperclip, Send, Mic } from "lucide-react";
+import { Smile, Paperclip, Send, Mic, MessageSquare } from "lucide-react";
 import React, { useState } from "react";
 import { EmojiPicker } from "@/components/app/EmojiPicker/EmojiPicker";
 
 export interface ChatComposerProps {
   onSendMessage: (text: string) => void;
+  workflowViewMode?: "chat" | "diagram";
+  setWorkflowViewMode?: (mode: "chat" | "diagram") => void;
 }
 
 export const ChatComposer: React.FC<ChatComposerProps> = ({
   onSendMessage,
+  workflowViewMode,
+  setWorkflowViewMode,
 }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
@@ -24,6 +28,20 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({
       handleSendMessage();
     }
   };
+
+  if (workflowViewMode === "diagram") {
+    return (
+      <div className="w-full max-w-[720px] mx-auto px-4 pb-4 pt-1.5 flex flex-col items-center gap-2 flex-shrink-0 z-10 bg-transparent relative">
+        <button
+          onClick={() => setWorkflowViewMode?.("chat")}
+          className="w-full h-[48px] bg-gradient-to-r from-[#0ea5e9] to-[#2563eb] hover:from-[#0284c7] hover:to-[#1d4ed8] text-white rounded-2xl font-semibold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer select-none border-none"
+        >
+          <MessageSquare size={18} />
+          Trò chuyện với Trợ lý để chỉnh sửa Sơ đồ này
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-[720px] mx-auto px-4 pb-4 pt-1.5 flex items-center gap-2 flex-shrink-0 z-10 bg-transparent relative">

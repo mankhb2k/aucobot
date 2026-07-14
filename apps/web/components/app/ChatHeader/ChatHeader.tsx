@@ -10,6 +10,7 @@ import {
   Ban,
   Trash2,
   PanelRight,
+  GitFork,
 } from "lucide-react";
 import React, { useState } from "react";
 import { DisableShareIcon } from "@/components/app/icons/icons";
@@ -24,6 +25,8 @@ export interface ChatHeaderProps {
   onRenameChat: () => void;
   onArchiveChat: () => void;
   onDeleteChat: () => void;
+  workflowViewMode?: "chat" | "diagram";
+  setWorkflowViewMode?: (mode: "chat" | "diagram") => void;
 }
 
 export const ChatHeader: React.FC<ChatHeaderProps> = ({
@@ -33,6 +36,8 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   onRenameChat,
   onArchiveChat,
   onDeleteChat,
+  workflowViewMode,
+  setWorkflowViewMode,
 }) => {
   const [isHeaderMenuOpen, setIsHeaderMenuOpen] = useState(false);
 
@@ -62,6 +67,24 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
 
       {/* Actions group */}
       <div className="flex items-center gap-0.5 text-gray-400 relative">
+        {activeChat.id.startsWith("wf_") && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setWorkflowViewMode?.(workflowViewMode === "chat" ? "diagram" : "chat");
+            }}
+            className={`w-[38px] h-[38px] rounded-full flex items-center justify-center transition-all border-none cursor-pointer flex-shrink-0 ${
+              workflowViewMode === "diagram"
+                ? "bg-[#e4efff] text-[#3390ec]"
+                : "text-gray-500 hover:bg-gray-100 hover:text-[#08060d] active:bg-gray-200/60"
+            }`}
+            aria-label="Xem sơ đồ lắp ráp"
+            title={workflowViewMode === "chat" ? "Xem sơ đồ Workflow" : "Quay lại Chat với Agent"}
+          >
+            <GitFork size={20} className="stroke-[2]" />
+          </button>
+        )}
         <button
           type="button"
           onClick={(e) => {

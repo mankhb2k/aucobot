@@ -1,50 +1,123 @@
 import type { Chat } from "@/types/chat";
 
-export interface WorkflowItem {
-  id: string;
-  name: string;
-  status: 'running' | 'idle' | 'success' | 'failed';
-  lastRun: string;
-  trigger: string;
-  description: string;
-}
-
-export const initialWorkflows: WorkflowItem[] = [
+export const initialChats: Chat[] = [
+  // --- WORKFLOW CHATS ---
   {
     id: "wf_1",
-    name: "Tự động đăng bài Facebook Q1",
+    name: "Tự động đăng bài Facebook Q1 🤖",
     status: "idle",
-    lastRun: "10 phút trước",
+    avatarText: "WF",
+    avatarBg: "bg-avatar-blue",
+    notifications: true,
+    category: "workflow",
+    description: "Tự động soạn thảo nội dung PR và đăng bài viết hàng ngày lên Fanpage.",
     trigger: "Hàng ngày lúc 14:00",
-    description: "Tự động soạn thảo nội dung PR và đăng bài viết hàng ngày lên Fanpage."
+    lastRun: "10 phút trước",
+    messages: [
+      {
+        id: "wfm1_1",
+        sender: "them",
+        text: "Chào sếp! Em là Workflow Assistant. Em đã dựng cấu trúc tự động đăng bài Facebook Q1 theo ý sếp. Sếp xem sơ đồ chi tiết bên dưới nhé.",
+        time: "10:00",
+        read: true
+      },
+      {
+        id: "wfm1_2",
+        sender: "them",
+        text: "[WORKFLOW_PREVIEW] Em đã dựng xong sơ đồ lắp ráp:\nTrigger Lịch Giờ -> Content Creator AI -> Publisher AI.\nSếp xem chi tiết bên dưới nhé.",
+        time: "10:01",
+        read: true
+      }
+    ],
+    sharedMedia: []
   },
   {
     id: "wf_2",
-    name: "Quét tin nhắn Page & Báo cáo",
+    name: "Quét tin nhắn Page & Báo cáo 💬",
     status: "running",
-    lastRun: "Đang chạy...",
+    avatarText: "WF",
+    avatarBg: "bg-avatar-green",
+    notifications: true,
+    category: "workflow",
+    description: "Quét tin nhắn mới của Fanpage, tự động phản hồi và tổng hợp báo cáo.",
     trigger: "Khi có tin nhắn mới",
-    description: "Quét tin nhắn mới của Fanpage, tự động phản hồi và tổng hợp báo cáo."
+    lastRun: "Đang chạy...",
+    messages: [
+      {
+        id: "wfm2_1",
+        sender: "them",
+        text: "Chào sếp! Em đang theo dõi hòm thư Fanpage. Khi có tin nhắn mới, em sẽ kích hoạt CS Bot để trả lời và thông báo cho sếp.",
+        time: "Yesterday",
+        read: true
+      },
+      {
+        id: "wfm2_2",
+        sender: "them",
+        text: "[WORKFLOW_PREVIEW] Em đã dựng xong sơ đồ lắp ráp:\nTrigger Webhook -> CS Bot -> Telegram Node.\nSếp xem chi tiết bên dưới nhé.",
+        time: "Yesterday",
+        read: true
+      }
+    ],
+    sharedMedia: []
   },
   {
     id: "wf_3",
-    name: "Sync Affiliate Clip sang TikTok",
+    name: "Sync Affiliate Clip sang TikTok 🎥",
     status: "success",
-    lastRun: "2 giờ trước",
+    avatarText: "WF",
+    avatarBg: "bg-avatar-orange",
+    notifications: true,
+    category: "workflow",
+    description: "Đồng bộ hóa video quảng cáo và tự động xuất bản lên kênh TikTok.",
     trigger: "Mỗi thứ Hai lúc 08:00",
-    description: "Đồng bộ hóa video quảng cáo và tự động xuất bản lên kênh TikTok."
+    lastRun: "2 giờ trước",
+    messages: [
+      {
+        id: "wfm3_1",
+        sender: "them",
+        text: "Chào sếp! Sơ đồ đồng bộ Clip lên TikTok Affiliate đang hoạt động tốt.",
+        time: "Jul 13",
+        read: true
+      },
+      {
+        id: "wfm3_2",
+        sender: "them",
+        text: "[WORKFLOW_PREVIEW] Em đã dựng xong sơ đồ lắp ráp:\nTrigger Lịch -> Google Drive -> Publisher AI.\nSếp xem chi tiết bên dưới nhé.",
+        time: "Jul 13",
+        read: true
+      }
+    ],
+    sharedMedia: []
   },
   {
     id: "wf_4",
-    name: "Theo dõi giá đối thủ & Cảnh báo",
+    name: "Theo dõi giá đối thủ & Cảnh báo 🔍",
     status: "success",
-    lastRun: "Hôm qua lúc 18:00",
+    avatarText: "WF",
+    avatarBg: "bg-avatar-purple",
+    notifications: true,
+    category: "workflow",
+    description: "Theo dõi giá sản phẩm của đối thủ cạnh tranh và gửi cảnh báo khi có thay đổi.",
     trigger: "Hàng giờ",
-    description: "Theo dõi giá sản phẩm của đối thủ cạnh tranh và gửi cảnh báo khi có thay đổi."
-  }
-];
-
-export const initialChats: Chat[] = [
+    lastRun: "Hôm qua lúc 18:00",
+    messages: [
+      {
+        id: "wfm4_1",
+        sender: "them",
+        text: "Chào sếp! Tôi đang theo dõi giá sản phẩm của đối thủ hàng giờ.",
+        time: "Jul 12",
+        read: true
+      },
+      {
+        id: "wfm4_2",
+        sender: "them",
+        text: "[WORKFLOW_PREVIEW] Em đã dựng xong sơ đồ lắp ráp:\nTrigger Giờ -> Research AI -> Slack Notification.\nSếp xem chi tiết bên dưới nhé.",
+        time: "Jul 12",
+        read: true
+      }
+    ],
+    sharedMedia: []
+  },
   // --- TIN NHẮN (ROOMS & SESSIONS) ---
   {
     id: "room_marketing",
@@ -95,6 +168,20 @@ export const initialChats: Chat[] = [
         sender: "them",
         text: "Publisher AI: Báo cáo sếp, em đã xếp lịch đăng bài thành công lên Facebook Graph API. ✅",
         time: "10:25",
+        read: true
+      },
+      {
+        id: "rm7",
+        sender: "me",
+        text: "@Trợ Lý Soạn caption Tết đăng Facebook giúp em, lịch 09:00 ngày 28/1",
+        time: "13:42",
+        read: true
+      },
+      {
+        id: "rm8",
+        sender: "them",
+        text: "Trợ Lý:\n\nCaption đăng Facebook:\n\nTết sum vầy bắt đầu từ món ngon… 🧧\n\nLên lịch 09:00 ngày 28/1 sau khi bạn duyệt giúp em nhé!",
+        time: "13:50",
         read: true
       }
     ],
@@ -224,6 +311,20 @@ export const initialChats: Chat[] = [
         text: "Content Creator AI: Chào sếp, em chuyên viết copy, bài đăng social, bài PR và dịch thuật. Em có thể điều chỉnh văn phong theo yêu cầu của sếp.",
         time: "11:22",
         read: true
+      },
+      {
+        id: "ac2",
+        sender: "me",
+        text: "Soạn giúp em 1 caption bán hàng cho campaign Tết nhé",
+        time: "13:45",
+        read: true
+      },
+      {
+        id: "ac3",
+        sender: "them",
+        text: "Content Creator AI:\n\nCaption đề xuất:\n\nTết sum vầy bắt đầu từ món ngon… 🧧\nMâm cỗ đủ đầy – nhà cửa ấm cúng – mãi bên nhau!\n\nCTA: Đặt trước combo Tết trước 28/1 để nhận quà.\n\nSếp duyệt giúp em nhé!",
+        time: "13:48",
+        read: true
       }
     ],
     sharedMedia: []
@@ -289,3 +390,5 @@ export const initialChats: Chat[] = [
     sharedMedia: []
   }
 ];
+
+export const initialWorkflows = initialChats.filter(c => c.category === "workflow");
