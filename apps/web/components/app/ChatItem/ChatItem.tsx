@@ -1,6 +1,6 @@
 import { Pin } from "lucide-react";
 import React from "react";
-import { DoubleCheck, SingleCheck } from "@/components/app/icons/icons";
+import { DoubleCheck, SingleCheck, VerifiedBadge } from "@/components/app/icons/icons";
 import { Avatar } from "@/components/ui/Avatar/Avatar";
 import type { Chat } from "@/types/chat";
 
@@ -33,14 +33,16 @@ export const ChatItem: React.FC<ChatItemProps> = ({
         text={chat.avatarText}
         bg={chat.avatarBg}
         size="md"
-        showOnlineStatus={chat.status === "online"}
       />
 
       {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="flex justify-between items-baseline mb-1">
-          <h3 className="font-semibold text-gray-900 truncate pr-1">
-            {chat.name}
+          <h3 className="font-semibold text-gray-900 truncate pr-1 inline-flex items-center gap-1 min-w-0">
+            <span className="truncate">{chat.name}</span>
+            {chat.verified && (
+              <VerifiedBadge className="w-[15px] h-[15px]" title="Verified account" />
+            )}
           </h3>
           <span
             className={`text-sm whitespace-nowrap ${isSelected ? "text-blue font-medium" : "text-gray-400"}`}

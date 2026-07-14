@@ -5,12 +5,13 @@
 | State | Mô tả |
 |-------|--------|
 | `byConversationId` | Map conversation id → UI messages |
-| `streamingByConversationId` | Partial agent text đang stream |
+| `streamingByConversationId` | Agent đang trả lời — UI chỉ hiện typing, ẩn partial text |
 
 ## Actions (chỉ projection)
 
 - `setMessages(conversationId, messages)`
 - `upsertMessage(conversationId, message)`
-- `appendChunk(conversationId, messageId, delta)`
-- `finalizeStream(conversationId, streamingId, message)`
+- `beginStreaming(conversationId)` — bật typing
+- `appendChunk(conversationId, messageId, delta)` — gom token (ẩn)
+- `finalizeStream(conversationId, streamingId, message)` — tắt typing + hiện bubble đủ
 - `clearStreaming` / `clearConversation`

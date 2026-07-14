@@ -7,6 +7,7 @@ export const EMPTY_MESSAGES: Message[] = [];
 
 type StreamingState = {
   messageId: string;
+  /** Accumulated tokens — UI ẩn tới khi finalize (chỉ hiện typing). */
   text: string;
 };
 
@@ -15,6 +16,8 @@ interface MessageStoreState {
   streamingByConversationId: Record<string, StreamingState | null>;
   setMessages: (conversationId: string, messages: Message[]) => void;
   upsertMessage: (conversationId: string, message: Message) => void;
+  /** Bắt đầu chờ agent (typing) — trước/khi stream. */
+  beginStreaming: (conversationId: string, messageId?: string) => void;
   appendChunk: (conversationId: string, messageId: string, delta: string) => void;
   finalizeStream: (
     conversationId: string,
@@ -53,6 +56,17 @@ export const useMessageStore = create<MessageStoreState>((set) => ({
         },
       };
     }),
+
+  beginStreaming: (conversationId, messageId = "pending") =>
+    set((state) => ({
+      streamingByConversationId: {
+        ...state.streamingByConversationId,
+        [conversationId]: {
+          messageId,
+          text: state.streamingByConversationId[conversationId]?.text ?? "",
+        },
+      },
+    })),
 
   appendChunk: (conversationId, messageId, delta) =>
     set((state) => {
@@ -112,30 +126,13 @@ export const useMessageStore = create<MessageStoreState>((set) => ({
     }),
 }));
 
-/** Merge persisted messages + in-flight stream bubble. Call from useMemo — not inside zustand getSnapshot. */
+/**
+ * Display list — không merge partial stream text.
+ * Typing indicator render riêng khi `streamingByConversationId` có giá trị.
+ */
 export function mergeDisplayMessages(
   messages: Message[],
-  streaming: StreamingState | null | undefined,
+  _streaming?: StreamingState | null,
 ): Message[] {
-  if (!streaming) return messages;
-
-  const existing = messages.find((item) => item.id === streaming.messageId);
-  if (existing) {
-    return messages.map((item) =>
-      item.id === streaming.messageId
-        ? { ...item, text: streaming.text }
-        : item,
-    );
-  }
-
-  return [
-    ...messages,
-    {
-      id: streaming.messageId,
-      sender: "them",
-      text: streaming.text,
-      time: "",
-      read: true,
-    },
-  ];
+  return messages;
 }

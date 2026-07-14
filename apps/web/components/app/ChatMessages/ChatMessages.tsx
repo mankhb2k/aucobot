@@ -5,11 +5,14 @@ import { isEmojiOnly } from "@/lib/telegramUtils";
 import { WorkflowDashboard } from "../WorkflowDashboard/WorkflowDashboard";
 import { ChatApprovalButtons } from "./ChatApprovalButtons";
 import { ChatProgressCard } from "./ChatProgressCard";
+import { ChatTypingIndicator } from "./ChatTypingIndicator";
 import type { Message } from "@/types/chat";
 
 export interface ChatMessagesProps {
   messages: Message[];
   activeChatId: string;
+  /** Agent đang chờ / stream token — hiện bubble … */
+  isAgentTyping?: boolean;
   workflowViewMode?: "chat" | "diagram";
   setWorkflowViewMode?: (mode: "chat" | "diagram") => void;
   approvedMessages?: Record<string, boolean>;
@@ -23,6 +26,7 @@ export interface ChatMessagesProps {
 export const ChatMessages: React.FC<ChatMessagesProps> = ({
   messages,
   activeChatId,
+  isAgentTyping = false,
   workflowViewMode,
   setWorkflowViewMode,
   approvedMessages = {},
@@ -40,7 +44,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
 
   useEffect(() => {
     scrollToBottom();
-  }, [activeChatId, messages]);
+  }, [activeChatId, messages, isAgentTyping]);
 
   if (workflowViewMode === "diagram") {
     return (
@@ -86,7 +90,6 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
                     {message.text}
                   </span>
 
-                  {/* Sub-label time overlay */}
                   <span className="absolute -bottom-1 -right-8 bg-black/30 backdrop-blur-xs text-white text-xs px-1.5 py-0.5 rounded-full select-none font-medium flex items-center gap-0.5 opacity-65">
                     {message.time}
                     {isMe &&
@@ -130,7 +133,6 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
                 >
                   <div className="leading-[1.3125] whitespace-pre-wrap break-words">
                     {displayText}
-                    {/* Reserve bottom-right corner so meta never overlaps text */}
                     <span
                       aria-hidden
                       className="inline-block w-[48px] h-[1.15em] align-bottom ml-1 pointer-events-none select-none"
@@ -194,6 +196,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
             </div>
           );
         })}
+        {isAgentTyping && <ChatTypingIndicator />}
         <div ref={messagesEndRef} />
       </div>
     </div>

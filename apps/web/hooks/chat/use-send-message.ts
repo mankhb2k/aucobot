@@ -9,9 +9,12 @@ import { useMessageStore } from "@/stores/message/message.store";
 /**
  * REST send for session conversations. Assistant arrives via WS when streaming;
  * otherwise assistantMessage is upserted from the REST body.
+ * UI: typing indicator trong lúc chờ token; chỉ hiện bubble khi done.
  */
 export function useSendMessage(conversationId: string | null) {
   const upsertMessage = useMessageStore((s) => s.upsertMessage);
+  const beginStreaming = useMessageStore((s) => s.beginStreaming);
+  const clearStreaming = useMessageStore((s) => s.clearStreaming);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,6 +23,7 @@ export function useSendMessage(conversationId: string | null) {
       if (!conversationId || !content.trim()) return;
       setSending(true);
       setError(null);
+      beginStreaming(conversationId);
 
       try {
         const result = await messagesApi.create(conversationId, {
@@ -29,16 +33,19 @@ export function useSendMessage(conversationId: string | null) {
         upsertMessage(conversationId, mapMessageToUi(result.userMessage));
 
         if (result.assistantMessage && !result.streaming) {
+          clearStreaming(conversationId);
           upsertMessage(conversationId, mapMessageToUi(result.assistantMessage));
         }
+        // streaming:true → giữ typing tới message.done trên WSS
       } catch (err) {
+        clearStreaming(conversationId);
         setError(err instanceof Error ? err.message : "Failed to send message");
         throw err;
       } finally {
         setSending(false);
       }
     },
-    [conversationId, upsertMessage],
+    [beginStreaming, clearStreaming, conversationId, upsertMessage],
   );
 
   return { send, sending, error };

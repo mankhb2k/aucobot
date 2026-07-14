@@ -4,6 +4,7 @@ import {
   GitFork,
 } from "lucide-react";
 import React from "react";
+import { VerifiedBadge } from "@/components/app/icons/icons";
 import { Avatar } from "@/components/ui/Avatar/Avatar";
 import type { Chat } from "@/types/chat";
 
@@ -16,6 +17,7 @@ export interface ChatHeaderProps {
   onDeleteChat?: () => void;
   workflowViewMode?: "chat" | "diagram";
   setWorkflowViewMode?: (mode: "chat" | "diagram") => void;
+  isAgentTyping?: boolean;
 }
 
 /** Chuẩn icon action header: active chỉ đổi màu xanh, không tô nền tròn */
@@ -35,6 +37,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   setIsRightPanelOpen,
   workflowViewMode,
   setWorkflowViewMode,
+  isAgentTyping = false,
 }) => {
   return (
     <div className="w-[calc(100%-2rem)] max-w-[720px] mx-auto mt-3 mb-1 p-[4px] bg-white rounded-full shadow-sm flex items-center justify-between z-10 flex-shrink-0 relative select-none">
@@ -51,11 +54,18 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
           size="sm"
         />
         <div className="h-[38px] flex flex-col justify-center gap-[1px] min-w-0">
-          <span className="font-bold text-[#08060d] text-base leading-tight truncate">
-            {activeChat.name}
+          <span className="font-bold text-[#08060d] text-base leading-tight truncate inline-flex items-center gap-1 min-w-0">
+            <span className="truncate">{activeChat.name}</span>
+            {activeChat.verified && (
+              <VerifiedBadge className="w-[16px] h-[16px]" title="Verified account" />
+            )}
           </span>
-          <span className="text-sm text-[#6b6375] font-normal leading-tight truncate">
-            {activeChat.status}
+          <span
+            className={`text-sm font-normal leading-tight truncate ${
+              isAgentTyping ? "text-[#3390ec]" : "text-[#6b6375]"
+            }`}
+          >
+            {isAgentTyping ? "đang nhập tin nhắn..." : activeChat.status}
           </span>
         </div>
       </div>

@@ -9,7 +9,9 @@ import { UserInfo } from "@/components/app/ChatPanel/UserInfo/UserInfo";
 import { useConversationMessages } from "@/hooks/chat/use-conversation-messages";
 import { useMessageStream } from "@/hooks/chat/use-message-stream";
 import { useSendMessage } from "@/hooks/chat/use-send-message";
+import { agentsApi } from "@/lib/api/agents";
 import { conversationsApi } from "@/lib/api/conversations";
+import { mapAgentDmToChat, mapMotherDmToChat } from "@/lib/agents/map-agent";
 import { mapConversationToChat } from "@/lib/conversations/map-conversation";
 import { initialChats } from "@/lib/mockData";
 import {
@@ -18,12 +20,25 @@ import {
   useMessageStore,
 } from "@/stores/message/message.store";
 import type { Chat, Message } from "@/types/chat";
-import type { CreateConversationInput } from "@aucobot/shared";
+import type { CreateAgentInput, CreateConversationInput } from "@aucobot/shared";
 
-/** Agent + Workflow vẫn mock; Tin nhắn lấy từ API */
-const MOCK_NON_CHAT = initialChats.filter(
-  (c) => c.category === "agent" || c.category === "workflow",
-);
+/** Fallback Mother UI nếu API mother/dm chưa sẵn sàng; Workflow vẫn mock */
+const MOTHER_FALLBACK: Chat =
+  initialChats.find((c) => c.id === "mother") ?? {
+    id: "mother",
+    name: "AucoMother",
+    status: "online",
+    avatarText: "AM",
+    avatarBg: "bg-avatar-purple",
+    notifications: true,
+    category: "agent",
+    pinned: true,
+    verified: true,
+    description: "Giúp bạn tuyển agent cho phòng marketing ảo",
+    messages: [],
+    sharedMedia: [],
+  };
+const WORKFLOW_MOCKS = initialChats.filter((c) => c.category === "workflow");
 
 const EMPTY_CHAT: Chat = {
   id: "",
@@ -38,9 +53,10 @@ const EMPTY_CHAT: Chat = {
 export function TelegramAppShell() {
   const [activeChatId, setActiveChatId] = useState<string>("");
   const [isRightPanelOpen, setIsRightPanelOpen] = useState<boolean>(true);
-  const [chats, setChats] = useState<Chat[]>([...MOCK_NON_CHAT]);
+  const [chats, setChats] = useState<Chat[]>([MOTHER_FALLBACK, ...WORKFLOW_MOCKS]);
   const [workflowViewMode, setWorkflowViewMode] = useState<"chat" | "diagram">("chat");
   const [listError, setListError] = useState<string | null>(null);
+  const [motherConversationId, setMotherConversationId] = useState<string | null>(null);
 
   const [approvedMessages, setApprovedMessages] = useState<Record<string, boolean>>({
     rm3: true,
@@ -49,10 +65,9 @@ export function TelegramAppShell() {
   const activeChat =
     chats.find((c) => c.id === activeChatId) ?? chats[0] ?? EMPTY_CHAT;
 
+  /** Session Tin nhắn + Mother DM + user-agent DM → Together Qwen */
   const isApiSession =
-    activeChat.category === "chat" &&
-    activeChat.conversationType === "session" &&
-    Boolean(activeChat.id);
+    activeChat.conversationType === "session" && Boolean(activeChat.id);
 
   useConversationMessages(activeChatId || null, isApiSession);
   useMessageStream(activeChatId || null, isApiSession);
@@ -66,6 +81,8 @@ export function TelegramAppShell() {
   const streaming = useMessageStore(
     (state) => state.streamingByConversationId[activeChatId] ?? null,
   );
+  const isAgentTyping = isApiSession && streaming !== null;
+
   const storeMessages = useMemo(
     () => mergeDisplayMessages(persistedMessages, streaming),
     [persistedMessages, streaming],
@@ -78,26 +95,53 @@ export function TelegramAppShell() {
 
     void (async () => {
       try {
-        const { items } = await conversationsApi.list();
+        const [conversations, agents, motherDm] = await Promise.all([
+          conversationsApi.list(),
+          agentsApi.list().catch(() => ({ items: [] })),
+          agentsApi.ensureMotherDm().catch(() => null),
+        ]);
         if (cancelled) return;
-        const apiChats = items.map(mapConversationToChat);
-        setChats([...apiChats, ...MOCK_NON_CHAT]);
+
+        const motherChat = motherDm ? mapMotherDmToChat(motherDm) : MOTHER_FALLBACK;
+        const motherId = motherDm?.conversation.id ?? null;
+        setMotherConversationId(motherId);
+
+        const agentDms = await Promise.all(
+          agents.items.map((agent) =>
+            agentsApi.ensureDm(agent.id).catch(() => null),
+          ),
+        );
+        if (cancelled) return;
+
+        const apiAgents = agentDms
+          .filter((dm): dm is NonNullable<typeof dm> => dm !== null)
+          .map(mapAgentDmToChat);
+        const agentDmIds = new Set(apiAgents.map((c) => c.id));
+        if (motherId) agentDmIds.add(motherId);
+
+        const apiChats = conversations.items
+          .filter((c) => !agentDmIds.has(c.id))
+          .map(mapConversationToChat);
+        const agentTab = [motherChat, ...apiAgents];
+        setChats([...apiChats, ...agentTab, ...WORKFLOW_MOCKS]);
         setListError(null);
         setActiveChatId((prev) => {
           if (
             prev &&
             (apiChats.some((c) => c.id === prev) ||
-              MOCK_NON_CHAT.some((c) => c.id === prev))
+              agentTab.some((c) => c.id === prev) ||
+              WORKFLOW_MOCKS.some((c) => c.id === prev))
           ) {
             return prev;
           }
-          return apiChats[0]?.id ?? MOCK_NON_CHAT[0]?.id ?? "";
+          return apiChats[0]?.id ?? agentTab[0]?.id ?? "";
         });
       } catch (err) {
         if (cancelled) return;
         const mockChats = initialChats.filter((c) => c.category === "chat");
-        setChats([...mockChats, ...MOCK_NON_CHAT]);
-        setActiveChatId(mockChats[0]?.id ?? MOCK_NON_CHAT[0]?.id ?? "");
+        const mockAgents = initialChats.filter((c) => c.category === "agent");
+        setChats([...mockChats, ...mockAgents, ...WORKFLOW_MOCKS]);
+        setActiveChatId(mockChats[0]?.id ?? mockAgents[0]?.id ?? "");
         setListError(
           err instanceof Error
             ? err.message
@@ -127,6 +171,34 @@ export function TelegramAppShell() {
     },
     [],
   );
+
+  const handleCreateAgent = useCallback(async (input: CreateAgentInput) => {
+    const created = await agentsApi.create(input);
+    const dm = await agentsApi.ensureDm(created.id);
+    const chat = mapAgentDmToChat(dm);
+    setChats((prev) => {
+      const without = prev.filter(
+        (c) => c.id !== chat.id && c.agentId !== created.id,
+      );
+      const motherIdx = without.findIndex(
+        (c) =>
+          c.id === motherConversationId ||
+          c.id === MOTHER_FALLBACK.id ||
+          (c.category === "agent" && c.verified && c.pinned),
+      );
+      if (motherIdx === -1) {
+        return [chat, ...without];
+      }
+      return [
+        ...without.slice(0, motherIdx + 1),
+        chat,
+        ...without.slice(motherIdx + 1),
+      ];
+    });
+    setActiveChatId(chat.id);
+    setWorkflowViewMode("chat");
+    setListError(null);
+  }, [motherConversationId]);
 
   const handleToggleNotifications = () => {
     setChats((prev) =>
@@ -339,6 +411,7 @@ export function TelegramAppShell() {
         activeChatId={activeChatId}
         setActiveChatId={selectChat}
         onCreateConversation={handleCreateConversation}
+        onCreateAgent={handleCreateAgent}
       />
 
       <div className="min-w-0 flex-1 chat-wallpaper rounded-2xl shadow-xl flex flex-col overflow-hidden relative">
@@ -356,10 +429,12 @@ export function TelegramAppShell() {
           onDeleteChat={handleDeleteChat}
           workflowViewMode={workflowViewMode}
           setWorkflowViewMode={setWorkflowViewMode}
+          isAgentTyping={isAgentTyping}
         />
         <ChatMessages
           messages={displayMessages}
           activeChatId={activeChatId}
+          isAgentTyping={isAgentTyping}
           workflowViewMode={workflowViewMode}
           setWorkflowViewMode={setWorkflowViewMode}
           approvedMessages={approvedMessages}

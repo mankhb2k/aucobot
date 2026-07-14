@@ -18,7 +18,6 @@ export interface AvatarProps {
   /** Gradient preset key (`blue`), legacy token (`bg-avatar-blue`), or custom Tailwind classes. */
   bg?: string;
   size?: "sm" | "md" | "lg";
-  showOnlineStatus?: boolean;
   className?: string;
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
@@ -29,7 +28,6 @@ export const Avatar: React.FC<AvatarProps> = ({
   text = "",
   bg = "gray",
   size = "md",
-  showOnlineStatus = false,
   className = "",
   onClick,
 }) => {
@@ -76,10 +74,6 @@ export const Avatar: React.FC<AvatarProps> = ({
         >
           {text}
         </div>
-      )}
-
-      {showOnlineStatus && (
-        <div className="absolute bottom-0 right-0 w-[12px] h-[12px] bg-green border-2 border-white rounded-full" />
       )}
     </div>
   );

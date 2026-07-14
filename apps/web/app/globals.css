@@ -82,6 +82,28 @@
       opacity: 0.15;
     }
   }
+
+  @keyframes chat-typing-bounce {
+    0%,
+    60%,
+    100% {
+      transform: translateY(0);
+      opacity: 0.35;
+    }
+    30% {
+      transform: translateY(-3px);
+      opacity: 1;
+    }
+  }
+}
+
+.chat-typing-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: #94a3b8;
+  animation: chat-typing-bounce 1s ease-in-out infinite;
 }
 
 /* Bridge :root semantic tokens → Tailwind utilities (bg-*, text-*, border-*, …) */

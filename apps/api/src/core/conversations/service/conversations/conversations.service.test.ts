@@ -35,6 +35,7 @@ describe("ConversationsService", () => {
 
   const systemAgents = {
     getQuickAssistant: jest.fn(),
+    getOrchestrator: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -71,8 +72,22 @@ describe("ConversationsService", () => {
   });
 
   describe("createForUser", () => {
-    it("creates a room with optional description", async () => {
-      prisma.conversation.create.mockResolvedValue(mockConversation());
+    it("creates a room and auto-binds @Trợ Lý", async () => {
+      systemAgents.getOrchestrator.mockResolvedValue({ id: "orch-1" });
+      const memberCreate = jest.fn().mockResolvedValue(undefined);
+      prisma.$transaction.mockImplementation(
+        async (callback: (tx: unknown) => Promise<Conversation>) => {
+          const tx = {
+            conversation: {
+              create: jest.fn().mockResolvedValue(mockConversation()),
+            },
+            conversationMember: {
+              create: memberCreate,
+            },
+          };
+          return callback(tx);
+        },
+      );
 
       const result = await service.createForUser("user-1", {
         type: "room",
@@ -80,12 +95,12 @@ describe("ConversationsService", () => {
         description: "Campaign Q1",
       });
 
-      expect(prisma.conversation.create).toHaveBeenCalledWith({
+      expect(systemAgents.getOrchestrator).toHaveBeenCalled();
+      expect(memberCreate).toHaveBeenCalledWith({
         data: {
-          userId: "user-1",
-          type: "room",
-          title: "Team TikTok",
-          description: "Campaign Q1",
+          conversationId: "conv-1",
+          agentId: "orch-1",
+          isDefault: true,
         },
       });
       expect(result.title).toBe("Team TikTok");

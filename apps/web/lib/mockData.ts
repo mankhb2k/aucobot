@@ -276,19 +276,20 @@ export const initialChats: Chat[] = [
   // --- AGENT TAB DMs ---
   {
     id: "mother",
-    name: "Mother Agent 👑",
+    name: "AucoMother",
     status: "online",
-    avatarText: "MA",
+    avatarText: "AM",
     avatarBg: "bg-avatar-purple",
     notifications: true,
     category: "agent",
     pinned: true,
+    verified: true,
     description: "Khởi tạo, cấu hình và quản lý các Agent trong hệ thống",
     messages: [
       {
         id: "mth1",
         sender: "them",
-        text: "Chào sếp! Em là Mother Agent. Em chịu trách nhiệm khởi tạo, cấu hình và phân phối công việc cho các Agent khác trong phòng marketing. Sếp có muốn thiết lập thêm trợ lý mới nào không?",
+        text: "Chào sếp! Em là AucoMother. Em chịu trách nhiệm khởi tạo, cấu hình và phân phối công việc cho các Agent khác trong phòng marketing. Sếp có muốn thiết lập thêm trợ lý mới nào không?",
         time: "13:38",
         read: true
       }

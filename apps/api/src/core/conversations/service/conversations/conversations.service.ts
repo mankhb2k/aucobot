@@ -61,13 +61,27 @@ export class ConversationsService {
       return this.toResponse(row);
     }
 
-    const row = await this.prisma.conversation.create({
-      data: {
-        userId,
-        type: input.type,
-        title: input.title.trim(),
-        description,
-      },
+    const orchestrator = await this.systemAgents.getOrchestrator();
+
+    const row = await this.prisma.$transaction(async (tx) => {
+      const conversation = await tx.conversation.create({
+        data: {
+          userId,
+          type: input.type,
+          title: input.title.trim(),
+          description,
+        },
+      });
+
+      await tx.conversationMember.create({
+        data: {
+          conversationId: conversation.id,
+          agentId: orchestrator.id,
+          isDefault: true,
+        },
+      });
+
+      return conversation;
     });
 
     return this.toResponse(row);

@@ -1,4 +1,21 @@
 export {
+  agentDmResponseSchema,
+  agentListResponseSchema,
+  agentResponseSchema,
+  agentTonePresetSchema,
+  createAgentSchema,
+  motherDmResponseSchema,
+  SYSTEM_AGENT_PRESET_IDS,
+  type AgentDmResponse,
+  type AgentListResponse,
+  type AgentResponse,
+  type AgentTonePreset,
+  type CreateAgentInput,
+  type MotherDmResponse,
+  type SystemAgentPresetId,
+} from "./agents";
+
+export {
   conversationListResponseSchema,
   conversationResponseSchema,
   conversationTypeSchema,
