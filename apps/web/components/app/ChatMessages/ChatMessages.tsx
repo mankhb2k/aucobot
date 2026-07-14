@@ -43,7 +43,12 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
   }, [activeChatId, messages]);
 
   if (workflowViewMode === "diagram") {
-    return <WorkflowDashboard workflowId={activeChatId} />;
+    return (
+      <WorkflowDashboard
+        workflowId={activeChatId}
+        onBackToChat={() => setWorkflowViewMode?.("chat")}
+      />
+    );
   }
 
   return (
@@ -168,16 +173,19 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
                         id: "approve",
                         label: "Duyệt",
                         onClick: () => onApproveMessage?.(message.id),
+                        variant: "approve",
                       },
                       {
                         id: "reject",
                         label: "Từ chối",
                         onClick: () => onRejectMessage?.(message.id),
+                        variant: "reject",
                       },
                       {
                         id: "edit",
                         label: "Sửa",
                         onClick: () => onEditMessage?.(message.id),
+                        variant: "edit",
                       },
                     ]}
                   />

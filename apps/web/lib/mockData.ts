@@ -53,7 +53,7 @@ export const initialChats: Chat[] = [
       {
         id: "wfm2_2",
         sender: "them",
-        text: "[WORKFLOW_PREVIEW] Em đã dựng xong sơ đồ lắp ráp:\nTrigger Webhook -> CS Bot -> Telegram Node.\nSếp xem chi tiết bên dưới nhé.",
+        text: "[WORKFLOW_PREVIEW] Em đã dựng xong sơ đồ lắp ráp có nhánh If/Else:\nTin nhắn mới → Phân loại → If/Else → (Có) Trả lời tự động | (Không) Báo sếp duyệt.\nSếp xem chi tiết bên dưới nhé.",
         time: "Yesterday",
         read: true
       }
