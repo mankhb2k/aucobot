@@ -196,44 +196,54 @@ export const ChatList: React.FC<ChatListProps> = ({
         {activeTab === "Workflow" ? (
           initialWorkflows
             .filter((wf) => wf.name.toLowerCase().includes(searchQuery.toLowerCase()))
-            .map((wf) => (
-              <div
-                key={wf.id}
-                className="mx-3 my-1 p-3.5 bg-gray-50 border border-gray-100 rounded-xl hover:bg-gray-100 hover:shadow-xs transition-all flex flex-col gap-1.5 select-none"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="p-1.5 bg-[#e0f2fe] text-[#0ea5e9] rounded-lg">
-                      <Zap size={14} className="fill-current text-[#0ea5e9]" />
-                    </div>
-                    <span className="font-semibold text-gray-900 text-sm">{wf.name}</span>
+            .map((wf) => {
+              const isSelected = wf.id === activeChatId;
+              return (
+                <div
+                  key={wf.id}
+                  onClick={() => setActiveChatId(wf.id)}
+                  className={`flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl cursor-pointer transition-all relative ${
+                    isSelected 
+                      ? "bg-blue-light text-gray-900" 
+                      : "hover:bg-gray-100/70 bg-white text-gray-900"
+                  }`}
+                >
+                  {/* Default Icon Avatar with Blue Gradient Background */}
+                  <div className="w-[38px] h-[38px] rounded-full flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-[#0ea5e9] to-[#2563eb] text-white shadow-sm select-none">
+                    <Zap size={18} className="fill-current text-white" />
                   </div>
-                  {/* Status indicator */}
-                  <div className="flex items-center gap-1.5">
-                    {wf.status === "running" && (
-                      <span className="flex h-2 w-2 relative">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-baseline mb-1">
+                      <h3 className="font-semibold text-gray-900 truncate pr-1">
+                        {wf.name}
+                      </h3>
+                      <span
+                        className={`text-sm whitespace-nowrap ${isSelected ? "text-blue font-medium" : "text-gray-400"}`}
+                      >
+                        {wf.lastRun}
                       </span>
-                    )}
-                    {wf.status === "success" && (
-                      <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                    )}
-                    {wf.status === "idle" && (
-                      <span className="h-2 w-2 rounded-full bg-gray-400" />
-                    )}
-                    {wf.status === "failed" && (
-                      <span className="h-2 w-2 rounded-full bg-rose-500" />
-                    )}
-                    <span className="text-[10px] font-medium text-gray-500 capitalize">{wf.status}</span>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <p className="text-gray-500 truncate pr-2 text-xs">
+                        {wf.description}
+                      </p>
+
+                      {/* Status indicator: 2 states: run (green) vs stop (gray) */}
+                      <div className="flex items-center flex-shrink-0 pl-1">
+                        {wf.status === "running" ? (
+                          <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                        ) : (
+                          <span className="h-2 w-2 rounded-full bg-gray-300" />
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center justify-between text-[11px] text-gray-400 mt-1">
-                  <span>Trigger: {wf.trigger}</span>
-                  <span>{wf.lastRun}</span>
-                </div>
-              </div>
-            ))
+              );
+            })
         ) : (
           filteredChats.map((chat) => (
             <ChatItem

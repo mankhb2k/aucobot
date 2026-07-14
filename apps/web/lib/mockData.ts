@@ -6,6 +6,7 @@ export interface WorkflowItem {
   status: 'running' | 'idle' | 'success' | 'failed';
   lastRun: string;
   trigger: string;
+  description: string;
 }
 
 export const initialWorkflows: WorkflowItem[] = [
@@ -14,28 +15,32 @@ export const initialWorkflows: WorkflowItem[] = [
     name: "Tự động đăng bài Facebook Q1",
     status: "idle",
     lastRun: "10 phút trước",
-    trigger: "Hàng ngày lúc 14:00"
+    trigger: "Hàng ngày lúc 14:00",
+    description: "Tự động soạn thảo nội dung PR và đăng bài viết hàng ngày lên Fanpage."
   },
   {
     id: "wf_2",
     name: "Quét tin nhắn Page & Báo cáo",
     status: "running",
     lastRun: "Đang chạy...",
-    trigger: "Khi có tin nhắn mới"
+    trigger: "Khi có tin nhắn mới",
+    description: "Quét tin nhắn mới của Fanpage, tự động phản hồi và tổng hợp báo cáo."
   },
   {
     id: "wf_3",
     name: "Sync Affiliate Clip sang TikTok",
     status: "success",
     lastRun: "2 giờ trước",
-    trigger: "Mỗi thứ Hai lúc 08:00"
+    trigger: "Mỗi thứ Hai lúc 08:00",
+    description: "Đồng bộ hóa video quảng cáo và tự động xuất bản lên kênh TikTok."
   },
   {
     id: "wf_4",
     name: "Theo dõi giá đối thủ & Cảnh báo",
     status: "success",
     lastRun: "Hôm qua lúc 18:00",
-    trigger: "Hàng giờ"
+    trigger: "Hàng giờ",
+    description: "Theo dõi giá sản phẩm của đối thủ cạnh tranh và gửi cảnh báo khi có thay đổi."
   }
 ];
 
