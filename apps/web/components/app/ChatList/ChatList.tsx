@@ -3,22 +3,27 @@ import React, { useState } from "react";
 import { DropdownContent, DropdownItem, DropdownSeparator, DropdownSub, DropdownSubTrigger, DropdownSubContent } from "@/components/ui/Dropdown/Dropdown";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs/Tabs";
 import { useDocumentTheme } from "@/hooks/theme/use-document-theme";
+import { CreateConversationDialog } from "@/components/app/CreateConversationDialog/CreateConversationDialog";
 
 import type { Chat } from "@/types/chat";
 import { initialWorkflows } from "@/lib/mockData";
 import { ChatItem } from "@/components/app/ChatItem/ChatItem";
 import type { ThemeAppearance } from "@/utils/theme/resolve-document-theme";
+import type { ConversationType, CreateConversationInput } from "@aucobot/shared";
 
 export interface ChatListProps {
   chats: Chat[];
   activeChatId: string;
   setActiveChatId: (id: string) => void;
+  /** Gọi API tạo session/room từ shell */
+  onCreateConversation?: (input: CreateConversationInput) => Promise<void>;
 }
 
 export const ChatList: React.FC<ChatListProps> = ({
   chats,
   activeChatId,
   setActiveChatId,
+  onCreateConversation,
 }) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [activeTab, setActiveTab] = useState<string>("Tin nhắn");
@@ -26,6 +31,7 @@ export const ChatList: React.FC<ChatListProps> = ({
   const [isPenMenuOpen, setIsPenMenuOpen] = useState(false);
   const [isNightMode, setIsNightMode] = useState(false);
   const [appearance, setAppearance] = useState<ThemeAppearance>("system");
+  const [createType, setCreateType] = useState<ConversationType | null>(null);
 
   useDocumentTheme(appearance);
 
@@ -74,7 +80,7 @@ export const ChatList: React.FC<ChatListProps> = ({
     });
 
   return (
-    <div className="w-[22.5rem] md:w-[23.75rem] bg-white rounded-2xl shadow-xl flex flex-col flex-shrink-0">
+    <div className="relative w-[22.5rem] md:w-[23.75rem] bg-white rounded-2xl shadow-xl flex flex-col flex-shrink-0 overflow-hidden">
       {/* Top Header */}
       <div className="p-3 pb-2 flex flex-col gap-2.5">
         <div className="flex items-center gap-3">
@@ -171,11 +177,19 @@ export const ChatList: React.FC<ChatListProps> = ({
             >
               <DropdownItem
                 label="New Chat"
-                onClick={() => setIsPenMenuOpen(false)}
+                onClick={() => {
+                  setIsPenMenuOpen(false);
+                  setCreateType("session");
+                  setActiveTab("Tin nhắn");
+                }}
               />
               <DropdownItem
                 label="New Group"
-                onClick={() => setIsPenMenuOpen(false)}
+                onClick={() => {
+                  setIsPenMenuOpen(false);
+                  setCreateType("room");
+                  setActiveTab("Tin nhắn");
+                }}
               />
             </DropdownContent>
           </div>
@@ -265,6 +279,15 @@ export const ChatList: React.FC<ChatListProps> = ({
           </div>
         )}
       </div>
+
+      {onCreateConversation && (
+        <CreateConversationDialog
+          open={createType !== null}
+          type={createType ?? "session"}
+          onClose={() => setCreateType(null)}
+          onSubmit={onCreateConversation}
+        />
+      )}
     </div>
   );
 };

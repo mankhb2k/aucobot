@@ -62,6 +62,10 @@ export const ChatItem: React.FC<ChatItemProps> = ({
               ) : (
                 lastMsg.text
               )
+            ) : chat.conversationType === "room" ? (
+              `Tạo mới nhóm ${chat.name}`
+            ) : chat.conversationType === "session" ? (
+              `Tạo mới phiên làm việc ${chat.name}`
             ) : (
               ""
             )}

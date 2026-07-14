@@ -19,6 +19,8 @@ export interface Chat {
   messages: Message[];
   sharedMedia: string[];
   category?: "chat" | "agent" | "workflow";
+  /** API conversation kind — có khi lấy từ /api/conversations */
+  conversationType?: "room" | "session";
   pinned?: boolean;
   description?: string;
   trigger?: string;
