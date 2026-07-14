@@ -18,4 +18,7 @@ export interface Chat {
   notifications: boolean;
   messages: Message[];
   sharedMedia: string[];
+  category?: "chat" | "agent";
+  pinned?: boolean;
+  description?: string;
 }

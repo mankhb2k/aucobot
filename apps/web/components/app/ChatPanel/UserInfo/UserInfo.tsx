@@ -62,7 +62,7 @@ export const UserInfo: React.FC<UserInfoProps> = ({
 
       <div
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto thin-scrollbar pb-3"
+        className="chat-scroll-view flex-1 thin-scrollbar pb-3"
       >
         {/* Large Avatar & Contact Name */}
         <div className="flex flex-col items-center pt-2 pb-6">

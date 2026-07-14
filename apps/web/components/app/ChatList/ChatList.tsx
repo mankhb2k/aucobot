@@ -1,12 +1,12 @@
-import { Menu, Search, Plus, User, Bookmark, Users, Settings, MoreVertical, SquarePen, Moon, HelpCircle, Palette } from "lucide-react";
+import { Menu, Search, Plus, User, Bookmark, Users, Settings, MoreVertical, SquarePen, Moon, HelpCircle, Palette, Zap } from "lucide-react";
 import React, { useState } from "react";
-import { DoubleCheck, SingleCheck } from "@/components/app/icons/icons";
-import { Avatar } from "@/components/ui/Avatar/Avatar";
 import { DropdownContent, DropdownItem, DropdownSeparator, DropdownSub, DropdownSubTrigger, DropdownSubContent } from "@/components/ui/Dropdown/Dropdown";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs/Tabs";
 import { useDocumentTheme } from "@/hooks/theme/use-document-theme";
 
 import type { Chat } from "@/types/chat";
+import { initialWorkflows } from "@/lib/mockData";
+import { ChatItem } from "@/components/app/ChatItem/ChatItem";
 import type { ThemeAppearance } from "@/utils/theme/resolve-document-theme";
 
 export interface ChatListProps {
@@ -21,7 +21,7 @@ export const ChatList: React.FC<ChatListProps> = ({
   setActiveChatId,
 }) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [activeTab, setActiveTab] = useState<string>("All");
+  const [activeTab, setActiveTab] = useState<string>("Tin nhắn");
   const [isSidebarMenuOpen, setIsSidebarMenuOpen] = useState(false);
   const [isPenMenuOpen, setIsPenMenuOpen] = useState(false);
   const [isNightMode, setIsNightMode] = useState(false);
@@ -47,29 +47,31 @@ export const ChatList: React.FC<ChatListProps> = ({
   }
 
   // Real-time Chat List Filtering
-  const filteredChats = chats.filter((chat) => {
-    const nameMatches = chat.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const messageMatches = chat.messages.some((m) =>
-      m.text.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    const matchesQuery = nameMatches || messageMatches;
+  const filteredChats = chats
+    .filter((chat) => {
+      const nameMatches = chat.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const messageMatches = chat.messages.some((m) =>
+        m.text.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      const matchesQuery = nameMatches || messageMatches;
 
-    // Optional tab-based categorization
-    if (activeTab === "All") return matchesQuery;
-    if (activeTab === "Video")
-      return matchesQuery && (chat.id === "van_chay" || chat.id === "edit_f5");
-    if (activeTab === "Demo 2")
-      return matchesQuery && (chat.id === "ds_uid" || chat.id === "me");
-    if (activeTab === "Demo 3")
-      return matchesQuery && (chat.id === "giang" || chat.id === "c_tuyet");
-    if (activeTab === "Demo 4")
-      return matchesQuery && chat.id.startsWith("deleted_");
-    if (activeTab === "Demo 6") return matchesQuery && chat.id === "van_chay";
+      if (activeTab === "Tin nhắn") {
+        return matchesQuery && chat.category === "chat";
+      }
+      if (activeTab === "Agent") {
+        return matchesQuery && chat.category === "agent";
+      }
 
-    return matchesQuery;
-  });
+      return matchesQuery;
+    })
+    .sort((a, b) => {
+      // Sort pinned items to the top
+      if (a.pinned && !b.pinned) return -1;
+      if (!a.pinned && b.pinned) return 1;
+      return 0;
+    });
 
   return (
     <div className="w-[22.5rem] md:w-[23.75rem] bg-white rounded-2xl shadow-xl flex flex-col flex-shrink-0">
@@ -182,89 +184,74 @@ export const ChatList: React.FC<ChatListProps> = ({
         {/* Folder Tabs with Pill Styles */}
         <Tabs value={activeTab} onValueChange={setActiveTab} variant="pills">
           <TabsList>
-            <TabsTrigger value="All">All</TabsTrigger>
-            <TabsTrigger value="Video">Video</TabsTrigger>
-            <TabsTrigger value="Demo 2">Demo 2</TabsTrigger>
-            <TabsTrigger value="Demo 3">Demo 3</TabsTrigger>
-            <TabsTrigger value="Demo 4">Demo 4</TabsTrigger>
-            <TabsTrigger value="Demo 6">Demo 6</TabsTrigger>
+            <TabsTrigger value="Tin nhắn">Tin nhắn</TabsTrigger>
+            <TabsTrigger value="Agent">Agent</TabsTrigger>
+            <TabsTrigger value="Workflow">Workflow</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
 
       {/* Chat List Scroll Container */}
-      <div className="flex-1 overflow-y-auto thin-scrollbar pt-1.5 pb-3 mb-3 flex flex-col gap-0.5 mr-[3px]">
-        {filteredChats.map((chat) => {
-          const isSelected = chat.id === activeChatId;
-          const lastMsg = chat.messages[chat.messages.length - 1];
-
-          return (
-            <div
-              key={chat.id}
-              onClick={() => setActiveChatId(chat.id)}
-              className={`flex items-center gap-3 px-3 py-2.5 mx-2 rounded-xl cursor-pointer transition-all relative ${
-                isSelected 
-                  ? "bg-blue-light text-gray-900" 
-                  : "hover:bg-gray-100/70 bg-white text-gray-900"
-              }`}
-            >
-              {/* Avatar / Icon */}
-              <Avatar
-                src={chat.avatarUrl}
-                alt={chat.name}
-                text={chat.avatarText}
-                bg={chat.avatarBg}
-                size="md"
-                showOnlineStatus={chat.status === "online"}
-              />
-
-              {/* Content */}
-              <div className="flex-1 min-w-0">
-                <div className="flex justify-between items-baseline mb-1">
-                  <h3 className="font-semibold text-gray-900 truncate pr-1">
-                    {chat.name}
-                  </h3>
-                  <span
-                    className={`text-sm whitespace-nowrap ${isSelected ? "text-blue font-medium" : "text-gray-400"}`}
-                  >
-                    {lastMsg ? lastMsg.time : ""}
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <p className="text-gray-500 truncate pr-2">
-                    {lastMsg ? (
-                      lastMsg.sender === "me" ? (
-                        <span>
-                          <span className="opacity-95 mr-1">You:</span>
-                          {lastMsg.text}
-                        </span>
-                      ) : (
-                        lastMsg.text
-                      )
-                    ) : (
-                      ""
+      <div className="chat-scroll-view flex-1 thin-scrollbar pt-1.5 pb-3 mb-3 flex flex-col gap-0.5 mr-[3px] scrollbar-thin scrollbar-thumb-black/14 hover:scrollbar-thumb-black/26 active:scrollbar-thumb-black/8 scrollbar-track-transparent">
+        {activeTab === "Workflow" ? (
+          initialWorkflows
+            .filter((wf) => wf.name.toLowerCase().includes(searchQuery.toLowerCase()))
+            .map((wf) => (
+              <div
+                key={wf.id}
+                className="mx-3 my-1 p-3.5 bg-gray-50 border border-gray-100 rounded-xl hover:bg-gray-100 hover:shadow-xs transition-all flex flex-col gap-1.5 select-none"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 bg-[#e0f2fe] text-[#0ea5e9] rounded-lg">
+                      <Zap size={14} className="fill-current text-[#0ea5e9]" />
+                    </div>
+                    <span className="font-semibold text-gray-900 text-sm">{wf.name}</span>
+                  </div>
+                  {/* Status indicator */}
+                  <div className="flex items-center gap-1.5">
+                    {wf.status === "running" && (
+                      <span className="flex h-2 w-2 relative">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                      </span>
                     )}
-                  </p>
-
-                  {/* Read icons */}
-                  {lastMsg && lastMsg.sender === "me" && (
-                    <span className="flex-shrink-0">
-                      {lastMsg.read ? (
-                        <DoubleCheck className="text-green" />
-                      ) : (
-                        <SingleCheck className="text-gray-400" />
-                      )}
-                    </span>
-                  )}
+                    {wf.status === "success" && (
+                      <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                    )}
+                    {wf.status === "idle" && (
+                      <span className="h-2 w-2 rounded-full bg-gray-400" />
+                    )}
+                    {wf.status === "failed" && (
+                      <span className="h-2 w-2 rounded-full bg-rose-500" />
+                    )}
+                    <span className="text-[10px] font-medium text-gray-500 capitalize">{wf.status}</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between text-[11px] text-gray-400 mt-1">
+                  <span>Trigger: {wf.trigger}</span>
+                  <span>{wf.lastRun}</span>
                 </div>
               </div>
-            </div>
-          );
-        })}
-        {filteredChats.length === 0 && (
+            ))
+        ) : (
+          filteredChats.map((chat) => (
+            <ChatItem
+              key={chat.id}
+              chat={chat}
+              isSelected={chat.id === activeChatId}
+              onClick={() => setActiveChatId(chat.id)}
+            />
+          ))
+        )}
+        {activeTab !== "Workflow" && filteredChats.length === 0 && (
           <div className="text-center py-8 text-gray-400 text-sm">
-            No chats found
+            Không tìm thấy cuộc trò chuyện nào
+          </div>
+        )}
+        {activeTab === "Workflow" && initialWorkflows.filter((wf) => wf.name.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+          <div className="text-center py-8 text-gray-400 text-sm">
+            Không tìm thấy workflow nào
           </div>
         )}
       </div>

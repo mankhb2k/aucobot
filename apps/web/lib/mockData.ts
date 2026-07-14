@@ -1,551 +1,286 @@
 import type { Chat } from "@/types/chat";
 
+export interface WorkflowItem {
+  id: string;
+  name: string;
+  status: 'running' | 'idle' | 'success' | 'failed';
+  lastRun: string;
+  trigger: string;
+}
+
+export const initialWorkflows: WorkflowItem[] = [
+  {
+    id: "wf_1",
+    name: "Tự động đăng bài Facebook Q1",
+    status: "idle",
+    lastRun: "10 phút trước",
+    trigger: "Hàng ngày lúc 14:00"
+  },
+  {
+    id: "wf_2",
+    name: "Quét tin nhắn Page & Báo cáo",
+    status: "running",
+    lastRun: "Đang chạy...",
+    trigger: "Khi có tin nhắn mới"
+  },
+  {
+    id: "wf_3",
+    name: "Sync Affiliate Clip sang TikTok",
+    status: "success",
+    lastRun: "2 giờ trước",
+    trigger: "Mỗi thứ Hai lúc 08:00"
+  },
+  {
+    id: "wf_4",
+    name: "Theo dõi giá đối thủ & Cảnh báo",
+    status: "success",
+    lastRun: "Hôm qua lúc 18:00",
+    trigger: "Hàng giờ"
+  }
+];
+
 export const initialChats: Chat[] = [
+  // --- TIN NHẮN (ROOMS & SESSIONS) ---
   {
-    id: "vlogo",
-    name: "Telegram News & Tips Channel",
-    status: "154,200 subscribers",
-    avatarText: "T",
-    avatarBg: "bg-avatar-blue",
-    isChannel: true,
-    phone: "Channel Link: t.me/telegram_tips",
-    notifications: false,
-    messages: [
-      {
-        id: "m1",
-        sender: "them",
-        text: "How would you rate the quality of today's discussion?",
-        time: "Apr 1",
-        read: true,
-      },
-    ],
-    sharedMedia: [
-      "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=300&auto=format&fit=crop",
-    ],
-  },
-  {
-    id: "deleted_1",
-    name: "Deleted Account",
-    status: "last seen a long time ago",
-    avatarText: "👤",
-    avatarBg: "bg-avatar-gray",
-    phone: "Hidden",
-    notifications: false,
-    messages: [
-      {
-        id: "d1",
-        sender: "them",
-        text: "Deleted Account joined Telegram",
-        time: "Apr 1",
-        read: true,
-      },
-    ],
-    sharedMedia: [],
-  },
-  {
-    id: "deleted_2",
-    name: "Deleted Account",
-    status: "last seen a long time ago",
-    avatarText: "👤",
-    avatarBg: "bg-avatar-gray",
-    phone: "Hidden",
-    notifications: false,
-    messages: [
-      {
-        id: "d2_1",
-        sender: "them",
-        text: "Hello, is the project ready yet?",
-        time: "Mar 30",
-        read: true,
-      },
-    ],
-    sharedMedia: [],
-  },
-  {
-    id: "c_tuyet",
-    name: "Sarah Watson",
-    status: "last seen 3 days ago",
-    avatarText: "SW",
-    avatarBg: "bg-avatar-pink",
-    phone: "+1 202 555 0143",
-    notifications: true,
-    messages: [
-      {
-        id: "ct1",
-        sender: "them",
-        text: "Sarah Watson joined Telegram",
-        time: "Mar 19",
-        read: true,
-      },
-    ],
-    sharedMedia: [],
-  },
-  {
-    id: "giang",
-    name: "David Smith",
-    status: "online",
-    avatarText: "DS",
-    avatarBg: "bg-avatar-green",
-    phone: "+1 202 555 0192",
-    notifications: true,
-    messages: [
-      {
-        id: "g1",
-        sender: "them",
-        text: "David Smith joined Telegram",
-        time: "Jan 12",
-        read: true,
-      },
-    ],
-    sharedMedia: [],
-  },
-  {
-    id: "me",
-    name: "Mom",
-    status: "last seen 5 minutes ago",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=100&auto=format&fit=crop",
-    phone: "+1 202 555 0115",
-    notifications: true,
-    messages: [
-      {
-        id: "m_me1",
-        sender: "them",
-        text: "Mom joined Telegram. Take care!",
-        time: "Dec 19",
-        read: true,
-      },
-    ],
-    sharedMedia: [
-      "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300&auto=format&fit=crop",
-    ],
-  },
-  {
-    id: "van_chay",
-    name: "Michael Scott",
-    status: "last seen a long time ago",
-    avatarText: "MS",
-    avatarBg: "bg-avatar-purple",
-    phone: "+1 202 555 0184",
-    notifications: true,
-    messages: [
-      {
-        id: "vc1",
-        sender: "them",
-        text: "I am running Facebook ads for our client",
-        time: "18:01",
-        read: true,
-      },
-      {
-        id: "vc2",
-        sender: "me",
-        text: "Are you moving to California next year?",
-        time: "18:07",
-        read: true,
-      },
-      {
-        id: "vc3",
-        sender: "me",
-        text: "Our team lead has already arrived there",
-        time: "18:07",
-        read: true,
-      },
-      {
-        id: "vc4",
-        sender: "them",
-        text: "Yes, I am!",
-        time: "18:07",
-        read: true,
-      },
-      {
-        id: "vc5",
-        sender: "them",
-        text: "Haha we should totally catch up then! :p",
-        time: "18:07",
-        read: true,
-      },
-      { id: "vc6", sender: "them", text: "😂 😆", time: "18:07", read: true },
-      {
-        id: "vc7",
-        sender: "me",
-        text: "Let me know when you arrive",
-        time: "18:08",
-        read: true,
-      },
-      {
-        id: "vc8",
-        sender: "me",
-        text: "He's been there for a few months now",
-        time: "18:08",
-        read: true,
-      },
-      {
-        id: "vc9",
-        sender: "me",
-        text: "They said it is highly profitable there",
-        time: "18:08",
-        read: true,
-      },
-      {
-        id: "vc10",
-        sender: "them",
-        text: "Haha are you going too?",
-        time: "18:08",
-        read: true,
-      },
-      {
-        id: "vc11",
-        sender: "me",
-        text: "No, I need to take it slow",
-        time: "19:34",
-        read: true,
-      },
-      {
-        id: "vc12",
-        sender: "me",
-        text: "They keep inviting me to join them",
-        time: "19:34",
-        read: true,
-      },
-      {
-        id: "vc13",
-        sender: "me",
-        text: "I told them I'll wait to see how it goes first :))",
-        time: "19:34",
-        read: true,
-      },
-      { id: "vc14", sender: "them", text: "😂", time: "19:35", read: true },
-      {
-        id: "vc15",
-        sender: "them",
-        text: "Yeah, definitely",
-        time: "19:35",
-        read: true,
-      },
-      {
-        id: "vc16",
-        sender: "me",
-        text: "Bọn em chạy ads giá như này thì bọn em không bù nổi chi phí được đâu",
-        time: "12:14",
-        read: true,
-      },
-      {
-        id: "vc17",
-        sender: "me",
-        text: "Em đã review lại toàn bộ chiến dịch quảng cáo tuần trước. ROI đang giảm dần vì CPA tăng cao, team cần điều chỉnh audience và creative trước khi scale thêm.",
-        time: "12:14",
-        read: true,
-      },
-      {
-        id: "vc18",
-        sender: "me",
-        text: "Bù",
-        time: "12:15",
-        read: true,
-      },
-    ],
-    sharedMedia: [
-      "https://images.unsplash.com/photo-1547928576-a4a33237eceb?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1472214222555-d4001e1e905c?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1501854140801-50d01698950b?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1518770660439-4636190af475?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=300&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=300&auto=format&fit=crop",
-    ],
-  },
-  {
-    id: "ds_uid",
-    name: "Marketing Support",
-    status: "last seen within a week",
+    id: "room_marketing",
+    name: "Phòng Marketing Tổng Lực 🚀",
+    status: "4 agents active",
     avatarText: "M",
-    avatarBg: "bg-avatar-cyan",
-    phone: "+1 202 555 0103",
-    notifications: false,
-    messages: [
-      {
-        id: "ds1",
-        sender: "me",
-        text: "ORGANIC TREATMENT FOR PLANTS - DISCOUNTS ON FIRST PURCHASE...",
-        time: "Oct 25",
-        read: true,
-      },
-    ],
-    sharedMedia: [
-      "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=300&auto=format&fit=crop",
-    ],
-  },
-  {
-    id: "edit_f5",
-    name: "F5 Photo Editors",
-    status: "last seen within a month",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?w=100&auto=format&fit=crop",
-    phone: "+1 202 555 0157",
-    notifications: true,
-    messages: [
-      {
-        id: "ed1",
-        sender: "me",
-        text: "DecalDesign.psd",
-        time: "Jul 25",
-        read: true,
-      },
-    ],
-    sharedMedia: [
-      "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?w=300&auto=format&fit=crop",
-    ],
-  },
-  {
-    id: "deleted_3",
-    name: "Deleted Account",
-    status: "last seen a long time ago",
-    avatarText: "👤",
-    avatarBg: "bg-avatar-gray",
-    phone: "Hidden",
-    notifications: false,
-    messages: [
-      {
-        id: "d3_1",
-        sender: "them",
-        text: "Deleted Account Joined Telegram",
-        time: "Jul 25",
-        read: true,
-      },
-    ],
-    sharedMedia: [],
-  },
-  {
-    id: "deleted_4",
-    name: "Deleted Account",
-    status: "last seen a long time ago",
-    avatarText: "👤",
-    avatarBg: "bg-avatar-gray",
-    phone: "Hidden",
-    notifications: false,
-    messages: [
-      {
-        id: "d4_1",
-        sender: "them",
-        text: "Photo message received",
-        time: "Jul 23",
-        read: true,
-      },
-    ],
-    sharedMedia: [],
-  },
-  {
-    id: "john_doe",
-    name: "John Doe",
-    status: "online",
-    avatarText: "JD",
-    avatarBg: "bg-avatar-orange",
-    phone: "+1 202 555 0101",
-    notifications: true,
-    messages: [
-      {
-        id: "jd1",
-        sender: "them",
-        text: "Hey, are you free for a call?",
-        time: "15:30",
-        read: false,
-      },
-    ],
-    sharedMedia: [],
-  },
-  {
-    id: "alice_williams",
-    name: "Alice Williams",
-    status: "last seen 2 hours ago",
-    avatarText: "AW",
-    avatarBg: "bg-avatar-green",
-    phone: "+1 202 555 0102",
-    notifications: false,
-    messages: [
-      {
-        id: "aw1",
-        sender: "me",
-        text: "I sent over the revised design proposal",
-        time: "14:15",
-        read: true,
-      },
-    ],
-    sharedMedia: [],
-  },
-  {
-    id: "bob_johnson",
-    name: "Bob Johnson",
-    status: "last seen yesterday",
-    avatarText: "BJ",
     avatarBg: "bg-avatar-blue",
-    phone: "+1 202 555 0104",
     notifications: true,
+    category: "chat",
     messages: [
       {
-        id: "bj1",
+        id: "rm1",
         sender: "them",
-        text: "Check out this link when you have a moment",
+        text: "Hệ thống: Phòng Marketing Tổng Lực đã khởi tạo thành công.",
+        time: "10:00",
+        read: true
+      },
+      {
+        id: "rm2",
+        sender: "them",
+        text: "CS Bot: Chào sếp, em đã kết nối API fanpage và sẵn sàng phản hồi khách hàng.",
+        time: "10:02",
+        read: true
+      },
+      {
+        id: "rm3",
+        sender: "them",
+        text: "Content Creator AI: Em vừa soạn xong bài viết nháp về tính năng mới của sản phẩm. Sếp duyệt giúp em nhé!",
+        time: "10:15",
+        read: true
+      },
+      {
+        id: "rm4",
+        sender: "me",
+        text: "Duyệt em nhé. Nội dung rất tốt! Hãy lên lịch đăng lên Page lúc 14:00 hôm nay.",
+        time: "10:20",
+        read: true
+      },
+      {
+        id: "rm5",
+        sender: "them",
+        text: "Trợ Lý: @Content Creator AI Đã duyệt bài viết. @Publisher AI Bắt đầu lên lịch đăng bài lúc 14:00.",
+        time: "10:21",
+        read: true
+      },
+      {
+        id: "rm6",
+        sender: "them",
+        text: "Publisher AI: Báo cáo sếp, em đã xếp lịch đăng bài thành công lên Facebook Graph API. ✅",
+        time: "10:25",
+        read: true
+      }
+    ],
+    sharedMedia: []
+  },
+  {
+    id: "room_tiktok",
+    name: "TikTok Video Campaign 🎬",
+    status: "3 agents active",
+    avatarText: "T",
+    avatarBg: "bg-avatar-orange",
+    notifications: true,
+    category: "chat",
+    messages: [
+      {
+        id: "rt1",
+        sender: "them",
+        text: "System: Khởi tạo phòng biên tập clip ngắn TikTok.",
         time: "Yesterday",
-        read: true,
+        read: true
       },
-    ],
-    sharedMedia: [],
-  },
-  {
-    id: "charlie_brown",
-    name: "Charlie Brown",
-    status: "online",
-    avatarText: "CB",
-    avatarBg: "bg-avatar-purple",
-    phone: "+1 202 555 0105",
-    notifications: true,
-    messages: [
       {
-        id: "cb1",
+        id: "rt2",
         sender: "them",
-        text: "Great job on the presentation today!",
-        time: "12:10",
-        read: true,
+        text: "Designer AI: Em đã render xong ảnh bìa cho video review ngày hôm nay.",
+        time: "Yesterday",
+        read: true
       },
-    ],
-    sharedMedia: [],
-  },
-  {
-    id: "emily_davis",
-    name: "Emily Davis",
-    status: "last seen 45 minutes ago",
-    avatarText: "ED",
-    avatarBg: "bg-avatar-red",
-    phone: "+1 202 555 0106",
-    notifications: true,
-    messages: [
       {
-        id: "ed1",
-        sender: "me",
-        text: "Thanks, I will review it shortly",
-        time: "11:45",
-        read: true,
-      },
-    ],
-    sharedMedia: [],
-  },
-  {
-    id: "frank_miller",
-    name: "Frank Miller",
-    status: "last seen within a week",
-    avatarText: "FM",
-    avatarBg: "bg-avatar-cyan",
-    phone: "+1 202 555 0107",
-    notifications: false,
-    messages: [
-      {
-        id: "fm1",
+        id: "rt3",
         sender: "them",
-        text: "Can we schedule a sync for next Monday?",
-        time: "Jul 21",
-        read: true,
-      },
+        text: "Publisher AI: Video review đã được đăng lên tài khoản TikTok Affiliate. Link click đang tăng mạnh ạ!",
+        time: "Yesterday",
+        read: true
+      }
     ],
-    sharedMedia: [],
+    sharedMedia: []
   },
   {
-    id: "grace_wilson",
-    name: "Grace Wilson",
-    status: "online",
-    avatarText: "GW",
+    id: "session_translate",
+    name: "Dịch thuật nhanh 💬",
+    status: "Quick Assistant",
+    avatarText: "QA",
     avatarBg: "bg-avatar-pink",
-    phone: "+1 202 555 0108",
-    notifications: true,
-    messages: [
-      {
-        id: "gw1",
-        sender: "them",
-        text: "Happy Birthday! Hope you have a great day!",
-        time: "09:00",
-        read: true,
-      },
-    ],
-    sharedMedia: [],
-  },
-  {
-    id: "henry_jones",
-    name: "Henry Jones",
-    status: "last seen a long time ago",
-    avatarText: "HJ",
-    avatarBg: "bg-avatar-gray",
-    phone: "+1 202 555 0109",
     notifications: false,
+    category: "chat",
     messages: [
       {
-        id: "hj1",
-        sender: "them",
-        text: "Henry Jones joined Telegram",
-        time: "Jun 15",
-        read: true,
-      },
-    ],
-    sharedMedia: [],
-  },
-  {
-    id: "isabella_taylor",
-    name: "Isabella Taylor",
-    status: "online",
-    avatarText: "IT",
-    avatarBg: "bg-avatar-orange",
-    phone: "+1 202 555 0110",
-    notifications: true,
-    messages: [
-      {
-        id: "it1",
-        sender: "them",
-        text: "I finished coding the login layout",
-        time: "08:15",
-        read: false,
-      },
-    ],
-    sharedMedia: [],
-  },
-  {
-    id: "jack_thomas",
-    name: "Jack Thomas",
-    status: "last seen 3 days ago",
-    avatarText: "JT",
-    avatarBg: "bg-avatar-blue",
-    phone: "+1 202 555 0111",
-    notifications: false,
-    messages: [
-      {
-        id: "jt1",
+        id: "st1",
         sender: "me",
-        text: "Did you push the code to git?",
-        time: "Jul 18",
-        read: true,
+        text: "Dịch giúp mình câu này sang tiếng Anh: 'Xây dựng phòng marketing ảo của riêng bạn'",
+        time: "09:30",
+        read: true
       },
+      {
+        id: "st2",
+        sender: "them",
+        text: "Quick Assistant: 'Build your own virtual marketing department.'",
+        time: "09:31",
+        read: true
+      }
     ],
-    sharedMedia: [],
+    sharedMedia: []
   },
+  {
+    id: "session_copywriting",
+    name: "Viết bài PR mẫu ✍️",
+    status: "Quick Assistant",
+    avatarText: "PR",
+    avatarBg: "bg-avatar-green",
+    notifications: false,
+    category: "chat",
+    messages: [
+      {
+        id: "sc1",
+        sender: "me",
+        text: "Gợi ý cho mình 3 tiêu đề giật gân bán khóa học AI.",
+        time: "Friday",
+        read: true
+      },
+      {
+        id: "sc2",
+        sender: "them",
+        text: "Quick Assistant:\n1. 'Đừng để bị sa thải: Học AI hoặc bị thay thế trong 6 tháng tới!'\n2. 'Bí mật x10 hiệu suất làm việc bằng AI chỉ với 2 giờ học'\n3. 'Làm chủ AI ngay hôm nay: Kỹ năng bắt buộc để dẫn đầu năm 2026'",
+        time: "Friday",
+        read: true
+      }
+    ],
+    sharedMedia: []
+  },
+
+  // --- AGENT TAB DMs ---
+  {
+    id: "mother",
+    name: "Mother Agent 👑",
+    status: "online",
+    avatarText: "MA",
+    avatarBg: "bg-avatar-purple",
+    notifications: true,
+    category: "agent",
+    pinned: true,
+    description: "Khởi tạo, cấu hình và quản lý các Agent trong hệ thống",
+    messages: [
+      {
+        id: "mth1",
+        sender: "them",
+        text: "Chào sếp! Em là Mother Agent. Em chịu trách nhiệm khởi tạo, cấu hình và phân phối công việc cho các Agent khác trong phòng marketing. Sếp có muốn thiết lập thêm trợ lý mới nào không?",
+        time: "13:38",
+        read: true
+      }
+    ],
+    sharedMedia: []
+  },
+  {
+    id: "agent_content",
+    name: "Content Creator AI 📝",
+    status: "last seen recently",
+    avatarText: "CA",
+    avatarBg: "bg-avatar-pink",
+    notifications: false,
+    category: "agent",
+    description: "Chuyên viết copy, viết bài PR, biên dịch và sáng tạo nội dung",
+    messages: [
+      {
+        id: "ac1",
+        sender: "them",
+        text: "Content Creator AI: Chào sếp, em chuyên viết copy, bài đăng social, bài PR và dịch thuật. Em có thể điều chỉnh văn phong theo yêu cầu của sếp.",
+        time: "11:22",
+        read: true
+      }
+    ],
+    sharedMedia: []
+  },
+  {
+    id: "agent_designer",
+    name: "Designer AI 🎨",
+    status: "last seen recently",
+    avatarText: "DA",
+    avatarBg: "bg-avatar-blue",
+    notifications: false,
+    category: "agent",
+    description: "Thiết kế banner, ảnh bìa, infographic và hình ảnh chiến dịch",
+    messages: [
+      {
+        id: "ad1",
+        sender: "them",
+        text: "Designer AI: Em chuyên thiết kế banner, ảnh bìa, infographic và thumbnail Youtube bằng các model sinh ảnh tốt nhất. Sếp cần làm ấn phẩm gì ạ?",
+        time: "10:15",
+        read: true
+      }
+    ],
+    sharedMedia: []
+  },
+  {
+    id: "agent_research",
+    name: "Research AI 🔍",
+    status: "online",
+    avatarText: "RA",
+    avatarBg: "bg-avatar-green",
+    notifications: false,
+    category: "agent",
+    description: "Tìm kiếm web, đọc hiểu tài liệu và phân tích đối thủ cạnh tranh",
+    messages: [
+      {
+        id: "ar1",
+        sender: "them",
+        text: "Research AI: Em hỗ trợ tìm kiếm web, tổng hợp tài liệu, phân tích đối thủ cạnh tranh và lập báo cáo. Hãy gửi từ khóa hoặc link tài liệu cho em nhé.",
+        time: "Yesterday",
+        read: true
+      }
+    ],
+    sharedMedia: []
+  },
+  {
+    id: "agent_publisher",
+    name: "Publisher AI ✈️",
+    status: "last seen recently",
+    avatarText: "PA",
+    avatarBg: "bg-avatar-orange",
+    notifications: false,
+    category: "agent",
+    description: "Lên lịch đăng bài và tự động xuất bản lên Facebook/TikTok",
+    messages: [
+      {
+        id: "ap1",
+        sender: "them",
+        text: "Publisher AI: Em kết nối trực tiếp với các kênh Facebook Page, TikTok Shop, Group và Telegram. Em sẽ lên lịch đăng bài và tự động xuất bản theo lệnh của sếp.",
+        time: "Jul 12",
+        read: true
+      }
+    ],
+    sharedMedia: []
+  }
 ];

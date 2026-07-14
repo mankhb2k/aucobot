@@ -10,7 +10,7 @@ import { UserInfo } from "@/components/app/ChatPanel/UserInfo/UserInfo";
 import type { Chat, Message } from "@/types/chat";
 
 export function TelegramAppShell() {
-  const [activeChatId, setActiveChatId] = useState<string>("van_chay");
+  const [activeChatId, setActiveChatId] = useState<string>(initialChats[0]?.id || "room_marketing");
   const [isRightPanelOpen, setIsRightPanelOpen] = useState<boolean>(true);
   const [chats, setChats] = useState<Chat[]>(initialChats);
 
@@ -100,20 +100,6 @@ export function TelegramAppShell() {
 
   return (
     <div className="flex h-screen w-screen bg-[#e7ebf0] p-3 gap-3 overflow-hidden font-sans select-none" data-chat-shell>
-      {/* Styles for custom backgrounds and bubbles */}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-        .chat-wallpaper {
-          background-color: #95c391;
-          background-image: url("/telegram-doodle.svg");
-          background-size: 375px 812px;
-          background-repeat: repeat;
-        }
-      `,
-        }}
-      />
-
       {/* ================= COLUMN 1: SIDEBAR (CHAT LIST) ================= */}
       <ChatList
         chats={chats}

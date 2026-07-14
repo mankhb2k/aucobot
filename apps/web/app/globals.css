@@ -276,10 +276,62 @@ html[data-theme="dark"] {
     @apply top-[20%] right-[20%] h-[300px] w-[300px] opacity-60;
     background: var(--landing-blob-3);
   }
+
+  /* Chat wallpaper */
+  .chat-wallpaper {
+    --chat-wallpaper-solid: #a4cbd6;
+
+    background: linear-gradient(135deg, #a4cbd6 0%, #d5e9bf 50%, #f6f0cf 100%);
+    background-image: url("/telegram-doodle.svg"), linear-gradient(135deg, #a4cbd6 0%, #d5e9bf 50%, #f6f0cf 100%);
+    background-size: 375px 812px, cover;
+    background-repeat: repeat, no-repeat;
+  }
 }
 
 /* Utilities */
 
 @utility thin-scrollbar {
   scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.16) transparent;
+}
+
+/* Custom scrollbars disabled temporarily for evaluation */
+
+/* Overlay scroll: thumb floats on wallpaper instead of reserving gutter */
+.chat-scroll-view {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.16) transparent;
+}
+
+@supports (overflow: overlay) {
+  .chat-scroll-view {
+    overflow-y: overlay;
+  }
+}
+
+/* Chat scroll fade — outside @layer so mask/gradients are not stripped */
+.chat-fade-mask {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 20px,
+    black 64px,
+    black calc(100% - 68px),
+    transparent calc(100% - 20px),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 20px,
+    black 64px,
+    black calc(100% - 68px),
+    transparent calc(100% - 20px),
+    transparent 100%
+  );
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
 }
