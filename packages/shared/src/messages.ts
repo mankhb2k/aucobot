@@ -23,7 +23,10 @@ export type MessageResponse = z.infer<typeof messageResponseSchema>;
 
 export const sendMessageResponseSchema = z.object({
   userMessage: messageResponseSchema,
-  assistantMessage: messageResponseSchema,
+  /** Present when reply was generated inline (non-stream / no WS clients). */
+  assistantMessage: messageResponseSchema.optional(),
+  /** True when assistant reply is delivered via WebSocket stream. */
+  streaming: z.boolean().optional(),
 });
 
 export type SendMessageResponse = z.infer<typeof sendMessageResponseSchema>;

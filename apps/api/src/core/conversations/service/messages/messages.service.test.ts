@@ -125,7 +125,8 @@ describe("MessagesService", () => {
         messages: [{ role: "user", content: "Hello" }],
       });
       expect(result.userMessage.content).toBe("Hello");
-      expect(result.assistantMessage.content).toBe("Hi there!");
+      expect(result.assistantMessage?.content).toBe("Hi there!");
+      expect(result.streaming).toBe(false);
     });
 
     it("rejects room conversations", async () => {

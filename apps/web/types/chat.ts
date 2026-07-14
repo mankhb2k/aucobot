@@ -14,8 +14,19 @@ export interface Chat {
   avatarBg?: string;
   avatarUrl?: string;
   isChannel?: boolean;
+  /** Telegram-style verified badge (system agents như AucoMother). */
+  verified?: boolean;
   phone?: string;
   notifications: boolean;
   messages: Message[];
   sharedMedia: string[];
+  category?: "chat" | "agent" | "workflow";
+  /** API conversation kind — có khi lấy từ /api/conversations hoặc agent/Mother DM */
+  conversationType?: "room" | "session";
+  /** Agent entity id — khi sidebar chat là DM của agent */
+  agentId?: string;
+  pinned?: boolean;
+  description?: string;
+  trigger?: string;
+  lastRun?: string;
 }

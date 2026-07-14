@@ -12,6 +12,98 @@
   /* Between text-sm (0.875rem) and text-base (1rem) */
   --text-md: 0.9375rem;
   --text-md--line-height: calc(1.375 / 0.9375);
+
+  /* AgentActivity — khớp chat-simulator */
+  --animate-agent-pulse: agent-pulse 1.3s ease-in-out infinite;
+  --animate-agent-ring: agent-ring 1.6s ease-out infinite;
+  --animate-agent-shimmer: agent-shimmer 1.5s ease-in-out infinite;
+  --animate-agent-flow: agent-flow 1.2s ease-in-out infinite;
+  --animate-agent-flow-dot: agent-flow-dot 1.1s ease-in-out infinite;
+
+  @keyframes agent-pulse {
+    0%,
+    100% {
+      opacity: 0.4;
+      transform: scale(0.8);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes agent-ring {
+    0% {
+      box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4);
+    }
+    70% {
+      box-shadow: 0 0 0 6px transparent;
+    }
+    100% {
+      box-shadow: 0 0 0 0 transparent;
+    }
+  }
+
+  @keyframes agent-shimmer {
+    0%,
+    100% {
+      opacity: 0.55;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes agent-flow {
+    0% {
+      transform: scaleY(0);
+      opacity: 0.35;
+    }
+    45% {
+      transform: scaleY(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scaleY(1);
+      opacity: 0.2;
+    }
+  }
+
+  @keyframes agent-flow-dot {
+    0% {
+      top: 0;
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    100% {
+      top: calc(100% - 3px);
+      opacity: 0.15;
+    }
+  }
+
+  @keyframes chat-typing-bounce {
+    0%,
+    60%,
+    100% {
+      transform: translateY(0);
+      opacity: 0.35;
+    }
+    30% {
+      transform: translateY(-3px);
+      opacity: 1;
+    }
+  }
+}
+
+.chat-typing-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: #94a3b8;
+  animation: chat-typing-bounce 1s ease-in-out infinite;
 }
 
 /* Bridge :root semantic tokens → Tailwind utilities (bg-*, text-*, border-*, …) */
@@ -276,10 +368,62 @@ html[data-theme="dark"] {
     @apply top-[20%] right-[20%] h-[300px] w-[300px] opacity-60;
     background: var(--landing-blob-3);
   }
+
+  /* Chat wallpaper */
+  .chat-wallpaper {
+    --chat-wallpaper-solid: #a4cbd6;
+
+    background: linear-gradient(135deg, #a4cbd6 0%, #d5e9bf 50%, #f6f0cf 100%);
+    background-image: url("/telegram-doodle.svg"), linear-gradient(135deg, #a4cbd6 0%, #d5e9bf 50%, #f6f0cf 100%);
+    background-size: 375px 812px, cover;
+    background-repeat: repeat, no-repeat;
+  }
 }
 
 /* Utilities */
 
 @utility thin-scrollbar {
   scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.16) transparent;
+}
+
+/* Custom scrollbars disabled temporarily for evaluation */
+
+/* Overlay scroll: thumb floats on wallpaper instead of reserving gutter */
+.chat-scroll-view {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.16) transparent;
+}
+
+@supports (overflow: overlay) {
+  .chat-scroll-view {
+    overflow-y: overlay;
+  }
+}
+
+/* Chat scroll fade — outside @layer so mask/gradients are not stripped */
+.chat-fade-mask {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 20px,
+    black 64px,
+    black calc(100% - 68px),
+    transparent calc(100% - 20px),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 20px,
+    black 64px,
+    black calc(100% - 68px),
+    transparent calc(100% - 20px),
+    transparent 100%
+  );
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
 }

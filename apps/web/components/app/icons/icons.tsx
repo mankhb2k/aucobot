@@ -1,4 +1,4 @@
-
+import Image from "next/image";
 import { Share2, Check, CheckCheck } from "lucide-react";
 
 export const DoubleCheck = ({ className = "text-[#4ec163]" }) => (
@@ -8,6 +8,26 @@ export const DoubleCheck = ({ className = "text-[#4ec163]" }) => (
 export const SingleCheck = ({ className = "text-gray-400" }) => (
   <Check className={`w-[15px] h-[15px] inline-block ${className} stroke-[2.5]`} />
 );
+
+/** Telegram-blue verified seal — `/public/icons/verified-check.svg`. */
+export function VerifiedBadge({
+  className = "w-[16px] h-[16px]",
+  title = "Verified",
+}: {
+  className?: string;
+  title?: string;
+}) {
+  return (
+    <Image
+      src="/icons/verified-check.svg"
+      alt={title}
+      width={16}
+      height={16}
+      unoptimized
+      className={`inline-block flex-shrink-0 align-middle ${className}`}
+    />
+  );
+}
 
 // Phone Icon to match Telegram style
 export const PhoneIcon = () => (

@@ -54,16 +54,25 @@ model Agent {
   isSystem             Boolean  @default(false) @map("is_system")
   presetId             String   @map("preset_id")
   name                 String
+  avatarUrl            String?  @map("avatar_url")
+  bio                  String?
+  role                 String   @default("")
+  description          String?  @db.Text
+  tonePreset           String   @default("friendly") @map("tone_preset")
+  toneNotes            String?  @map("tone_notes") @db.Text
+  enabledSkillGroups   String[] @default([]) @map("enabled_skill_groups")
+  instructionsSource   Json?    @map("instructions_source")
   instructionsCompiled String   @map("instructions_compiled") @db.Text
   createdAt            DateTime @default(now()) @map("created_at")
   updatedAt            DateTime @updatedAt @map("updated_at")
 
-  owner   User?                  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  members ConversationMember[]
+  owner    User?                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  members  ConversationMember[]
   messages Message[]
 
-  @@unique([presetId])
   @@index([ownerId])
+  @@index([presetId])
+  @@index([isSystem, presetId])
   @@map("agents")
 }
 

@@ -1,19 +1,17 @@
 # `hooks/chat/`
 
-## Planned files
-
 | File | Vai trò |
 |------|---------|
-| `use-message-stream.ts` | `lib/stream` (WebSocket) → `onEvent` → `messageStore.appendChunk` |
-| `use-send-message.ts` | Composer → `lib/api/messages.send()` (REST) → chờ WS events |
+| `use-conversation-messages.ts` | REST list → `messageStore.setMessages` |
+| `use-message-stream.ts` | `lib/stream` → `appendChunk` / `finalizeStream` |
+| `use-send-message.ts` | Composer → `messagesApi.create` (REST) |
 
 ## Pattern
 
 ```text
 REST POST  → API bắt đầu agent
 WS message.chunk / message.done  → store patch
-WS job.status / approval.updated   → store patch (cùng socket)
-disconnect / reconnect → connectionStore
+disconnect / reconnect → client backoff trong agent-stream-client
 ```
 
 Không merge agent logic; không tự approve.

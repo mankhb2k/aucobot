@@ -1,4 +1,21 @@
 export {
+  agentDmResponseSchema,
+  agentListResponseSchema,
+  agentResponseSchema,
+  agentTonePresetSchema,
+  createAgentSchema,
+  motherDmResponseSchema,
+  SYSTEM_AGENT_PRESET_IDS,
+  type AgentDmResponse,
+  type AgentListResponse,
+  type AgentResponse,
+  type AgentTonePreset,
+  type CreateAgentInput,
+  type MotherDmResponse,
+  type SystemAgentPresetId,
+} from "./agents";
+
+export {
   conversationListResponseSchema,
   conversationResponseSchema,
   conversationTypeSchema,
@@ -21,6 +38,18 @@ export {
   type MessageSenderType,
   type SendMessageResponse,
 } from "./messages";
+
+export {
+  createWsEvent,
+  messageChunkPayloadSchema,
+  messageDonePayloadSchema,
+  wsEventEnvelopeSchema,
+  wsEventTypeSchema,
+  type MessageChunkPayload,
+  type MessageDonePayload,
+  type WsEventEnvelope,
+  type WsEventType,
+} from "./realtime";
 
 export {
   emailOtpPurposeSchema,

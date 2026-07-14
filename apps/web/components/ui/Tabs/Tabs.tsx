@@ -43,108 +43,102 @@ export interface TabsListProps {
   className?: string;
 }
 
+/**
+ * Capsule — px tuyệt đối (tránh rem: p-1 → 3.75px khi root 15px):
+ * - track: 40px
+ * - pad:   4px
+ * - pill:  32px  → 4 + 32 + 4 = 40
+ */
 export const TabsList: React.FC<TabsListProps> = ({
   children,
   className = "",
 }) => {
   const { value, variant } = useTabs();
   const containerRef = useRef<HTMLDivElement>(null);
-  const [backdropStyle, setBackdropStyle] = useState({
-    left: 0,
-    width: 0,
-    height: 0,
-    top: 0,
-  });
+  const [backdropStyle, setBackdropStyle] = useState({ left: 0, width: 0 });
   const [mounted, setMounted] = useState(false);
 
-  // Measure and update the sliding backdrop's coordinates
   const updateBackdrop = useCallback(() => {
     const container = containerRef.current;
-    if (container) {
-      const activeEl = container.querySelector("[data-state='active']") as HTMLElement;
-      if (activeEl) {
-        setBackdropStyle({
-          left: activeEl.offsetLeft,
-          width: activeEl.clientWidth,
-          height: activeEl.clientHeight,
-          top: activeEl.offsetTop,
-        });
-      }
-    }
+    if (!container) return;
+
+    const activeEl = container.querySelector(
+      "[data-state='active']",
+    ) as HTMLElement | null;
+    if (!activeEl) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const activeRect = activeEl.getBoundingClientRect();
+
+    setBackdropStyle({
+      left: activeRect.left - containerRect.left + container.scrollLeft,
+      width: activeRect.width,
+    });
   }, []);
 
   useEffect(() => {
     updateBackdrop();
     if (!mounted) {
-      // Prevent transition animation on first mount
       const timer = setTimeout(() => setMounted(true), 50);
       return () => clearTimeout(timer);
     }
     return undefined;
   }, [value, mounted, updateBackdrop]);
 
-  // Handle container resizing and layouts
   useEffect(() => {
     const container = containerRef.current;
-    if (container) {
-      window.addEventListener("resize", updateBackdrop);
-      const resizeObserver = new ResizeObserver(() => updateBackdrop());
-      resizeObserver.observe(container);
+    if (!container) return undefined;
 
-      return () => {
-        window.removeEventListener("resize", updateBackdrop);
-        resizeObserver.disconnect();
-      };
-    }
-    return undefined;
+    window.addEventListener("resize", updateBackdrop);
+    const resizeObserver = new ResizeObserver(() => updateBackdrop());
+    resizeObserver.observe(container);
+
+    return () => {
+      window.removeEventListener("resize", updateBackdrop);
+      resizeObserver.disconnect();
+    };
   }, [updateBackdrop]);
 
-  // Scroll active tab into view centered inside the container
   useEffect(() => {
     const container = containerRef.current;
-    if (container) {
-      const activeEl = container.querySelector("[data-state='active']") as HTMLElement;
-      if (activeEl) {
-        const containerWidth = container.clientWidth;
-        const activeLeft = activeEl.offsetLeft;
-        const activeWidth = activeEl.clientWidth;
+    if (!container) return;
 
-        const targetScrollLeft = activeLeft - containerWidth / 2 + activeWidth / 2;
-        container.scrollTo({
-          left: targetScrollLeft,
-          behavior: "smooth",
-        });
-      }
-    }
+    const activeEl = container.querySelector(
+      "[data-state='active']",
+    ) as HTMLElement | null;
+    if (!activeEl) return;
+
+    const containerWidth = container.clientWidth;
+    const activeLeft = activeEl.offsetLeft;
+    const activeWidth = activeEl.clientWidth;
+    const targetScrollLeft = activeLeft - containerWidth / 2 + activeWidth / 2;
+    container.scrollTo({
+      left: targetScrollLeft,
+      behavior: "smooth",
+    });
   }, [value]);
 
-  const containerClasses =
-    variant === "capsule"
-      ? "relative flex gap-0.5 p-1 overflow-x-auto scrollbar-none text-md font-semibold text-gray-500"
-      : "relative flex gap-2 overflow-x-auto scrollbar-none text-md font-semibold text-gray-500 py-1";
+  const isCapsule = variant === "capsule";
 
-  const wrapperClasses =
-    variant === "capsule"
-      ? "relative bg-white rounded-full shadow-sm overflow-hidden"
-      : "relative";
+  const containerClasses = isCapsule
+    ? "relative flex h-[40px] items-center gap-0.5 overflow-x-auto overflow-y-hidden p-[4px] scrollbar-none"
+    : "relative flex items-center gap-2 overflow-x-auto overflow-y-hidden py-[4px] scrollbar-none";
+
+  const wrapperClasses = isCapsule
+    ? "relative h-[40px] overflow-hidden rounded-full bg-white shadow-sm"
+    : "relative";
 
   return (
     <div className={wrapperClasses}>
-      <div
-        ref={containerRef}
-        className={`${containerClasses} ${className}`}
-      >
-        {/* Sliding Backdrop */}
+      <div ref={containerRef} className={`${containerClasses} ${className}`}>
         {backdropStyle.width > 0 && (
           <div
-            className={`absolute bg-blue-light rounded-full pointer-events-none z-10 ${
-              mounted ? "transition-all duration-200 ease-out" : ""
-            }`}
+            className={`pointer-events-none absolute z-10 rounded-full bg-blue-light ${
+              isCapsule ? "top-[4px] bottom-[4px]" : "top-[4px] bottom-[4px]"
+            } ${mounted ? "transition-all duration-200 ease-out" : ""}`}
             style={{
               left: `${backdropStyle.left}px`,
               width: `${backdropStyle.width}px`,
-              height: `${backdropStyle.height}px`,
-              top: `${backdropStyle.top}px`,
             }}
           />
         )}
@@ -170,14 +164,13 @@ export const TabsTrigger: React.FC<TabsTriggerProps> = ({
 
   const getTriggerClasses = () => {
     if (variant === "capsule") {
-      return `relative px-4 py-1.5 rounded-full whitespace-nowrap cursor-pointer transition-colors z-20 ${
-        isActive ? "text-blue" : "hover:text-gray-700 text-gray-400"
-      }`;
-    } else {
-      return `relative px-3.5 py-1.5 rounded-full transition-all whitespace-nowrap cursor-pointer z-20 ${
-        isActive ? "text-blue" : "hover:bg-gray-100 text-gray-500"
+      return `relative z-20 inline-flex h-[32px] items-center justify-center whitespace-nowrap rounded-full px-4 text-md font-semibold leading-none cursor-pointer transition-colors ${
+        isActive ? "text-blue" : "text-gray-400 hover:text-gray-700"
       }`;
     }
+    return `relative z-20 inline-flex h-[32px] items-center justify-center whitespace-nowrap rounded-full px-3.5 text-md font-semibold leading-none cursor-pointer transition-all ${
+      isActive ? "text-blue" : "text-gray-500 hover:bg-gray-100"
+    }`;
   };
 
   return (

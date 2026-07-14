@@ -1,7 +1,7 @@
 import { X, Pen, Bell, ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
-import { PhoneIcon } from "@/components/app/icons/icons";
+import { PhoneIcon, VerifiedBadge } from "@/components/app/icons/icons";
 import { Avatar } from "@/components/ui/Avatar/Avatar";
 import { Switch } from "@/components/ui/Switch/Switch";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs/Tabs";
@@ -62,7 +62,7 @@ export const UserInfo: React.FC<UserInfoProps> = ({
 
       <div
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto thin-scrollbar pb-3"
+        className="chat-scroll-view flex-1 thin-scrollbar pb-3"
       >
         {/* Large Avatar & Contact Name */}
         <div className="flex flex-col items-center pt-2 pb-6">
@@ -74,8 +74,11 @@ export const UserInfo: React.FC<UserInfoProps> = ({
             size="lg"
             className="shadow-sm mb-3.5"
           />
-          <h2 className="font-bold text-2xl text-gray-900 text-center px-4 leading-tight">
-            {activeChat.name}
+          <h2 className="font-bold text-2xl text-gray-900 text-center px-4 leading-tight inline-flex items-center justify-center gap-1.5">
+            <span>{activeChat.name}</span>
+            {activeChat.verified && (
+              <VerifiedBadge className="w-[20px] h-[20px]" title="Verified account" />
+            )}
           </h2>
           <p className="text-sm text-gray-400 mt-1">
             {activeChat.status}

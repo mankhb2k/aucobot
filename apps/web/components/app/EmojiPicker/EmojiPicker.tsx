@@ -11,7 +11,6 @@ import {
   Flag,
   Search,
 } from "lucide-react";
-import Image from "next/image";
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import emojiDataRaw from "./picker-emojis.json";
 
@@ -286,25 +285,9 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({
                     className="aspect-square flex items-center justify-center p-1 rounded-lg hover:bg-gray-100 transition-all active:scale-90 cursor-pointer"
                     title={item.name}
                   >
-                    <Image
-                      src={`/emoji/${item.relativePath}`}
-                      alt={item.emoji}
-                      width={28}
-                      height={28}
-                      unoptimized
-                      className="object-contain select-none pointer-events-none"
-                      loading="lazy"
-                      onError={(e) => {
-                        const target = e.currentTarget;
-                        const parent = target.parentElement;
-                        if (parent) {
-                          const span = document.createElement("span");
-                          span.className = "text-xl leading-none select-none";
-                          span.innerText = item.emoji;
-                          parent.replaceChild(span, target);
-                        }
-                      }}
-                    />
+                    <span className="text-2xl leading-none select-none">
+                      {item.emoji}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -336,25 +319,9 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({
                       className="aspect-square flex items-center justify-center p-1 rounded-lg hover:bg-gray-100 transition-all active:scale-90 cursor-pointer"
                       title={item.name}
                     >
-                      <Image
-                        src={`/emoji/${item.relativePath}`}
-                        alt={item.emoji}
-                        width={28}
-                        height={28}
-                        unoptimized
-                        className="object-contain select-none pointer-events-none"
-                        loading="lazy"
-                        onError={(e) => {
-                          const target = e.currentTarget;
-                          const parent = target.parentElement;
-                          if (parent) {
-                            const span = document.createElement("span");
-                            span.className = "text-xl leading-none select-none";
-                            span.innerText = item.emoji;
-                            parent.replaceChild(span, target);
-                          }
-                        }}
-                      />
+                      <span className="text-2xl leading-none select-none">
+                        {item.emoji}
+                      </span>
                     </button>
                   ))}
                 </div>

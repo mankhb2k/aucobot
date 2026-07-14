@@ -1,16 +1,17 @@
 # `stores/message/`
 
-## Planned: `message.store.ts`
+## `message.store.ts`
 
 | State | Mô tả |
 |-------|--------|
-| `messagesByDepartmentId` | Map id → message[] |
-| `streamingMessageId` | Id tin đang nhận chunk |
-| `streamBuffer` | Partial text |
+| `byConversationId` | Map conversation id → UI messages |
+| `streamingByConversationId` | Agent đang trả lời — UI chỉ hiện typing, ẩn partial text |
 
 ## Actions (chỉ projection)
 
-- `setMessages(departmentId, messages)`
-- `appendStreamChunk(messageId, chunk)`
-- `finalizeStream(messageId, fullText)`
-- `patchMessage(id, patch)` — từ WS event (approval, job status)
+- `setMessages(conversationId, messages)`
+- `upsertMessage(conversationId, message)`
+- `beginStreaming(conversationId)` — bật typing
+- `appendChunk(conversationId, messageId, delta)` — gom token (ẩn)
+- `finalizeStream(conversationId, streamingId, message)` — tắt typing + hiện bubble đủ
+- `clearStreaming` / `clearConversation`

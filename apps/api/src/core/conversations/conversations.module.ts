@@ -1,7 +1,8 @@
-import { Module } from "@nestjs/common";
+import { Module, forwardRef } from "@nestjs/common";
 
 import { AgentsModule } from "../agents/agents.module";
 import { DatabaseModule } from "../database/database.module";
+import { RealtimeModule } from "../realtime/realtime.module";
 
 import { ConversationsController } from "./conversations.controller";
 import { MessagesController } from "./messages.controller";
@@ -10,7 +11,7 @@ import { ConversationsService } from "./service/conversations/conversations.serv
 import { MessagesService } from "./service/messages/messages.service";
 
 @Module({
-  imports: [DatabaseModule, AgentsModule],
+  imports: [DatabaseModule, AgentsModule, forwardRef(() => RealtimeModule)],
   controllers: [ConversationsController, MessagesController],
   providers: [ConversationsService, ConversationAccessService, MessagesService],
   exports: [ConversationsService, ConversationAccessService, MessagesService],

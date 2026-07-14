@@ -2,14 +2,17 @@
 
 Thư mục plugin theo domain — **chưa implement code**, chỉ giữ layout đã thống nhất.
 
-| Thư mục | Vai trò |
-|---------|---------|
-| `tools/` | MCP tools thuần app |
-| `integrations/` | API key platform (Tavily, …) |
-| `channels/` | OAuth social (Facebook, TikTok, …) |
-| `workflow/` | Queue / jobs (publish, approvals, …) |
-| `ai-orchestration/` | LLM / agent chat |
+| Thư mục | Vai trò (một câu) |
+|---------|-------------------|
+| [`tools/`](./tools/README.md) | Tool Agent gọi **khi đang chat** (builtin, wire mcp-core, gate duyệt) |
+| [`integrations/`](./integrations/README.md) | Vendor **platform API key** (nhóm); plugin vd. `web-search` / Tavily |
+| [`channels/`](./channels/README.md) | Social **OAuth của user** (`facebook`, `tiktok`) + MCP social |
+| [`workflow/`](./workflow/README.md) | **Control plane** Bot/job nền (queue, run, approval kết quả) |
+| [`ai-orchestration/`](./ai-orchestration/README.md) | Runtime LLM (generate/stream) — không định nghĩa Agent |
 
-**MVP hiện tại:** API chỉ có `core/auth` + `core/health`. Thêm plugin khi được yêu cầu — đăng ký qua `core/plugins` (planned).
+**Không nhầm:** catalog Block Lego = [`packages/blocks`](../../../../packages/blocks/README.md) + [`block-core`](../../../../packages/block-core/README.md).  
+**Plugin id** trong `ENABLED_FEATURES` = tên feature cụ thể (`web-search`, `facebook`), không phải tên folder nhóm (`integrations`).
+
+**MVP hiện tại:** core auth/health + ai-orchestration (messages). Thêm plugin khi được yêu cầu — đăng ký qua `ENABLED_FEATURES` / `core/features`.
 
 Xem `aucobot-architecture.md`.
