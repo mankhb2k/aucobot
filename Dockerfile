@@ -31,19 +31,18 @@ RUN pnpm install --frozen-lockfile
 # --- build: compile @aucobot/api and workspace deps ---
 FROM deps AS build
 
-COPY tsconfig.json ./
+COPY tsconfig.json turbo.json ./
 COPY apps/api ./apps/api
 COPY packages/database ./packages/database
 COPY packages/shared ./packages/shared
 COPY packages/llm-services ./packages/llm-services
+COPY packages/social-providers ./packages/social-providers
+COPY packages/mcp-core ./packages/mcp-core
 
 ENV DATABASE_URL="postgresql://build:build@localhost:5432/build?schema=public"
 
 RUN pnpm db:generate \
-  && pnpm --filter @aucobot/database build \
-  && pnpm --filter @aucobot/shared build \
-  && pnpm --filter @aucobot/llm-services build \
-  && pnpm --filter @aucobot/api build
+  && pnpm turbo run build --filter=@aucobot/api
 
 # --- runner: production image ---
 FROM base AS runner
@@ -61,12 +60,18 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/api/package.json ./apps/api/
 COPY packages/database/package.json ./packages/database/
 COPY packages/shared/package.json ./packages/shared/
+COPY packages/llm-services/package.json ./packages/llm-services/
+COPY packages/mcp-core/package.json ./packages/mcp-core/
+COPY packages/social-providers/package.json ./packages/social-providers/
 
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/apps/api/dist ./apps/api/dist
 COPY --from=build /app/packages/database/dist ./packages/database/dist
 COPY --from=build /app/packages/database/prisma ./packages/database/prisma
 COPY --from=build /app/packages/shared/dist ./packages/shared/dist
+COPY --from=build /app/packages/llm-services/dist ./packages/llm-services/dist
+COPY --from=build /app/packages/mcp-core/dist ./packages/mcp-core/dist
+COPY --from=build /app/packages/social-providers/dist ./packages/social-providers/dist
 
 COPY docker/api-entrypoint.sh /app/docker/api-entrypoint.sh
 RUN sed -i 's/\r$//' /app/docker/api-entrypoint.sh && chmod +x /app/docker/api-entrypoint.sh

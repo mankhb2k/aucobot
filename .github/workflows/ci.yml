@@ -42,7 +42,7 @@ jobs:
         run: pnpm db:generate
 
       - name: Build workspace packages for ESLint
-        run: pnpm --filter @aucobot/shared --filter @aucobot/database --filter @aucobot/llm-services build
+        run: pnpm --filter @aucobot/shared --filter @aucobot/database --filter @aucobot/llm-services --filter @aucobot/mcp-core build
 
       - name: Lint API
         run: pnpm --filter @aucobot/api lint:ci
@@ -104,7 +104,7 @@ jobs:
         run: pnpm db:generate
 
       - name: Build workspace packages
-        run: pnpm --filter @aucobot/shared --filter @aucobot/database --filter @aucobot/llm-services build
+        run: pnpm --filter @aucobot/shared --filter @aucobot/database --filter @aucobot/llm-services --filter @aucobot/mcp-core build
 
       - name: Test API
         run: pnpm --filter @aucobot/api test
