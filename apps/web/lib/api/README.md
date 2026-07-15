@@ -12,7 +12,8 @@ Mirror **`apps/api` REST** — mỗi file = 1 resource domain.
 | `messages.ts` | `/api/conversations/:id/messages` | ✅ |
 | `approvals.ts` | `/api/approvals/*` | 🔜 |
 | `scheduled-posts.ts` | `/api/scheduled-posts` | 🔜 |
-| `documents.ts` | upload/list docs | 🔜 defer |
+| `documents.ts` | upload/list docs | ✅ |
+
 
 ## Pattern
 

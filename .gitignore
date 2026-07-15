@@ -9,6 +9,9 @@ dist
 *.log
 coverage
 .DS_Store
+/n8n
+/telegram-clone
+/openclaw
 
 # Chỉ dùng pnpm — không commit lockfile npm/yarn
 package-lock.json

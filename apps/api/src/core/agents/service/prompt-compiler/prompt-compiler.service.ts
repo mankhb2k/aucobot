@@ -17,9 +17,7 @@ export type CompileAgentPromptInput = Pick<
 export class PromptCompilerService {
   compile(input: CompileAgentPromptInput): string {
     const tone =
-      input.toneNotes?.trim() ||
-      TONE_LABELS[input.tonePreset] ||
-      TONE_LABELS.friendly;
+      input.toneNotes?.trim() || TONE_LABELS[input.tonePreset] || TONE_LABELS.friendly;
 
     const sections = [
       `## Identity\n${input.name.trim()}`,

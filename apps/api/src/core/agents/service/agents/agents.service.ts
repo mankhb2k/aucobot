@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 
 import {
   SYSTEM_AGENT_PRESET_IDS,
@@ -15,17 +11,13 @@ import {
 } from "@aucobot/shared";
 
 import { PrismaService } from "../../../database/prisma.service";
-import {
-  MOTHER_DM_DESCRIPTION,
-  MOTHER_DM_TITLE,
-} from "../../agent.constants";
+import { MOTHER_DM_DESCRIPTION, MOTHER_DM_TITLE } from "../../agent.constants";
 import { PromptCompilerService } from "../prompt-compiler/prompt-compiler.service";
 import { SystemAgentsService } from "../system-agents/system-agents.service";
 
 import type { Agent, Conversation } from "@aucobot/database";
 
 const SYSTEM_PRESET_SET = new Set<string>(SYSTEM_AGENT_PRESET_IDS);
-
 
 @Injectable()
 export class AgentsService {
@@ -196,9 +188,7 @@ export class AgentsService {
     });
   }
 
-  private toConversationResponse(
-    row: Conversation,
-  ): MotherDmResponse["conversation"] {
+  private toConversationResponse(row: Conversation): MotherDmResponse["conversation"] {
     return {
       id: row.id,
       type: "session",

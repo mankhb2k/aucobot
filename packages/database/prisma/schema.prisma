@@ -21,6 +21,8 @@ model User {
   refreshTokens RefreshToken[]
   conversations Conversation[]
   agents        Agent[]
+  documents     Document[]
+  agentMemories AgentMemory[]
 
   @@map("users")
 }
@@ -43,6 +45,8 @@ model Conversation {
   user     User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   members  ConversationMember[]
   messages Message[]
+  documents Document[]
+  agentMemories AgentMemory[]
 
   @@index([userId, updatedAt(sort: Desc)])
   @@map("conversations")
@@ -69,6 +73,7 @@ model Agent {
   owner    User?                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   members  ConversationMember[]
   messages Message[]
+  agentMemories AgentMemory[]
 
   @@index([ownerId])
   @@index([presetId])
@@ -109,6 +114,49 @@ model Message {
 
   @@index([conversationId, createdAt])
   @@map("messages")
+}
+
+enum DocumentExtractStatus {
+  pending
+  ready
+  failed
+}
+
+model Document {
+  id              String                @id @default(cuid())
+  ownerId         String                @map("owner_id")
+  conversationId  String                @map("conversation_id")
+  title           String
+  mimeType        String                @map("mime_type")
+  sizeBytes       Int                   @map("size_bytes")
+  r2Key           String                @map("r2_key")
+  extractedText   String?               @map("extracted_text") @db.Text
+  extractStatus   DocumentExtractStatus @default(pending) @map("extract_status")
+  createdAt       DateTime              @default(now()) @map("created_at")
+
+  owner        User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@index([ownerId])
+  @@map("documents")
+}
+
+model AgentMemory {
+  id             String   @id @default(cuid())
+  ownerId        String   @map("owner_id")
+  conversationId String?  @map("conversation_id")
+  agentId        String   @map("agent_id")
+  content        String   @db.Text
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  owner        User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  conversation Conversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  agent        Agent         @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([ownerId, agentId, createdAt])
+  @@index([conversationId])
+  @@map("agent_memories")
 }
 
 model RefreshToken {

@@ -2,17 +2,27 @@ import { GitFork } from "lucide-react";
 import React, { useRef, useEffect } from "react";
 import { DoubleCheck, SingleCheck } from "@/components/app/icons/icons";
 import { isEmojiOnly } from "@/lib/telegramUtils";
+import { AgentActivity } from "../AgentActivity/AgentActivity";
 import { WorkflowDashboard } from "../WorkflowDashboard/WorkflowDashboard";
-import { ChatApprovalButtons } from "./ChatApprovalButtons";
-import { ChatProgressCard } from "./ChatProgressCard";
-import { ChatTypingIndicator } from "./ChatTypingIndicator";
+import { ChatActionButtons } from "./ChatActionButton/ChatActionButton";
+import { ChatProgressCard } from "./ChatProgressCard/ChatProgressCard";
+import { ChatTypingIndicator } from "./ChatTypingIndicator/ChatTypingIndicator";
 import type { Message } from "@/types/chat";
+import type {
+  AgentActivityState,
+  AgentActivityStep,
+} from "../AgentActivity/AgentActivity";
 
 export interface ChatMessagesProps {
   messages: Message[];
   activeChatId: string;
   /** Agent đang chờ / stream token — hiện bubble … */
   isAgentTyping?: boolean;
+  /** Live tool-calling progress (API sessions) */
+  toolActivity?: {
+    state: AgentActivityState;
+    steps: AgentActivityStep[];
+  } | null;
   workflowViewMode?: "chat" | "diagram";
   setWorkflowViewMode?: (mode: "chat" | "diagram") => void;
   approvedMessages?: Record<string, boolean>;
@@ -27,6 +37,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
   messages,
   activeChatId,
   isAgentTyping = false,
+  toolActivity = null,
   workflowViewMode,
   setWorkflowViewMode,
   approvedMessages = {},
@@ -44,7 +55,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
 
   useEffect(() => {
     scrollToBottom();
-  }, [activeChatId, messages, isAgentTyping]);
+  }, [activeChatId, messages, isAgentTyping, toolActivity]);
 
   if (workflowViewMode === "diagram") {
     return (
@@ -151,7 +162,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
                 </div>
 
                 {isWorkflowPreview && (
-                  <ChatApprovalButtons
+                  <ChatActionButtons
                     buttons={[
                       {
                         id: "view-diagram",
@@ -164,7 +175,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
                 )}
 
                 {showApprovalButtons && (
-                  <ChatApprovalButtons
+                  <ChatActionButtons
                     statusText={
                       approvedMessages[message.id]
                         ? "Bạn đã duyệt lịch đăng này"
@@ -175,19 +186,16 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
                         id: "approve",
                         label: "Duyệt",
                         onClick: () => onApproveMessage?.(message.id),
-                        variant: "approve",
                       },
                       {
                         id: "reject",
                         label: "Từ chối",
                         onClick: () => onRejectMessage?.(message.id),
-                        variant: "reject",
                       },
                       {
                         id: "edit",
                         label: "Sửa",
                         onClick: () => onEditMessage?.(message.id),
-                        variant: "edit",
                       },
                     ]}
                   />
@@ -196,7 +204,15 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
             </div>
           );
         })}
-        {isAgentTyping && <ChatTypingIndicator />}
+        {toolActivity && toolActivity.steps.length > 0 ? (
+          <AgentActivity
+            state={toolActivity.state}
+            steps={toolActivity.steps}
+            avatar={{ text: "AA", className: "bg-[#3390ec]" }}
+          />
+        ) : (
+          isAgentTyping && <ChatTypingIndicator />
+        )}
         <div ref={messagesEndRef} />
       </div>
     </div>

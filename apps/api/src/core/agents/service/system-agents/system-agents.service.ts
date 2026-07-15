@@ -1,5 +1,7 @@
 import { Injectable, OnModuleInit } from "@nestjs/common";
 
+import { SKILL_GROUP_KNOWLEDGE } from "@aucobot/shared";
+
 import { PrismaService } from "../../../database/prisma.service";
 import {
   AUCO_AGENT_INSTRUCTIONS,
@@ -31,6 +33,7 @@ const SYSTEM_SEEDS: SystemSeedDef[] = [
     role: "Quick assistant",
     tonePreset: "friendly",
     instructionsCompiled: AUCO_AGENT_INSTRUCTIONS,
+    enabledSkillGroups: [SKILL_GROUP_KNOWLEDGE],
   },
   {
     presetId: ORCHESTRATOR_PRESET_ID,
@@ -63,19 +66,21 @@ export class SystemAgentsService implements OnModuleInit {
   }
 
   seedQuickAssistant(): Promise<Agent> {
-    return this.upsertSystemAgent(SYSTEM_SEEDS[0]!);
+    return this.upsertSystemAgent(SYSTEM_SEEDS[0]);
   }
 
   seedOrchestrator(): Promise<Agent> {
-    return this.upsertSystemAgent(SYSTEM_SEEDS[1]!);
+    return this.upsertSystemAgent(SYSTEM_SEEDS[1]);
   }
 
   seedMother(): Promise<Agent> {
-    return this.upsertSystemAgent(SYSTEM_SEEDS[2]!);
+    return this.upsertSystemAgent(SYSTEM_SEEDS[2]);
   }
 
   getQuickAssistant(): Promise<Agent> {
-    return this.getOrSeedSystem(QUICK_ASSISTANT_PRESET_ID, () => this.seedQuickAssistant());
+    return this.getOrSeedSystem(QUICK_ASSISTANT_PRESET_ID, () =>
+      this.seedQuickAssistant(),
+    );
   }
 
   getOrchestrator(): Promise<Agent> {

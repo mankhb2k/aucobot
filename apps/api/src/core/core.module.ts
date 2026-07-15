@@ -10,6 +10,7 @@ import { DatabaseModule } from "./database/database.module";
 import { FeaturesModule } from "./features/features.module";
 import { HealthModule } from "./health/health.module";
 import { LoggingModule } from "./logging/logging.module";
+import { PluginsModule } from "./plugins/plugins.module";
 import { RealtimeModule } from "./realtime/realtime.module";
 import { RedisModule } from "./redis/redis.module";
 
@@ -19,6 +20,7 @@ import { RedisModule } from "./redis/redis.module";
     CommonModule,
     DatabaseModule,
     FeaturesModule,
+    PluginsModule,
     LoggingModule,
     RedisModule,
     AuthModule,

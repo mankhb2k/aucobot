@@ -1,6 +1,9 @@
 import {
   messageChunkPayloadSchema,
   messageDonePayloadSchema,
+  toolErrorPayloadSchema,
+  toolFinishedPayloadSchema,
+  toolStartedPayloadSchema,
   wsEventEnvelopeSchema,
 } from "@aucobot/shared";
 
@@ -9,6 +12,9 @@ import { getApiBaseUrl } from "@/lib/http/api-base-url";
 import type {
   MessageChunkPayload,
   MessageDonePayload,
+  ToolErrorPayload,
+  ToolFinishedPayload,
+  ToolStartedPayload,
   WsEventEnvelope,
 } from "@aucobot/shared";
 
@@ -16,6 +22,9 @@ export type AgentStreamHandlers = {
   onEvent?: (event: WsEventEnvelope) => void;
   onChunk?: (payload: MessageChunkPayload) => void;
   onDone?: (payload: MessageDonePayload) => void;
+  onToolStarted?: (payload: ToolStartedPayload) => void;
+  onToolFinished?: (payload: ToolFinishedPayload) => void;
+  onToolError?: (payload: ToolErrorPayload) => void;
   onOpen?: () => void;
   onClose?: () => void;
   onError?: (error: Event) => void;
@@ -91,9 +100,21 @@ export function connectAgentStream(
           handlers.onChunk?.(messageChunkPayloadSchema.parse(envelope.payload));
         } else if (envelope.type === "message.done") {
           handlers.onDone?.(messageDonePayloadSchema.parse(envelope.payload));
+        } else if (envelope.type === "tool.started") {
+          handlers.onToolStarted?.(
+            toolStartedPayloadSchema.parse(envelope.payload),
+          );
+        } else if (envelope.type === "tool.finished") {
+          handlers.onToolFinished?.(
+            toolFinishedPayloadSchema.parse(envelope.payload),
+          );
+        } else if (envelope.type === "tool.error") {
+          handlers.onToolError?.(toolErrorPayloadSchema.parse(envelope.payload));
         }
-      } catch {
-        // ignore malformed frames
+      } catch (error) {
+        if (process.env.NODE_ENV === "development") {
+          console.warn("[agent-stream] dropped WS frame", error, event.data);
+        }
       }
     });
 
