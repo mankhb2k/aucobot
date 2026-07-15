@@ -1,18 +1,18 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { ChatPanel } from "@/components/app/ChatPanel/ChatPanel";
 import { ChatComposer } from "@/components/app/ChatComposer/ChatComposer";
 import { ChatHeader } from "@/components/app/ChatHeader/ChatHeader";
 import { ChatList } from "@/components/app/ChatList/ChatList";
 import { ChatMessages } from "@/components/app/ChatMessages/ChatMessages";
+import { ChatPanel } from "@/components/app/ChatPanel/ChatPanel";
 import { useConversationMessages } from "@/hooks/chat/use-conversation-messages";
 import { useMessageStream } from "@/hooks/chat/use-message-stream";
 import { useSendMessage } from "@/hooks/chat/use-send-message";
+import { mapAgentDmToChat, mapMotherDmToChat } from "@/lib/agents/map-agent";
 import { agentsApi } from "@/lib/api/agents";
 import { conversationsApi } from "@/lib/api/conversations";
 import { documentsApi } from "@/lib/api/documents";
-import { mapAgentDmToChat, mapMotherDmToChat } from "@/lib/agents/map-agent";
 import { mapConversationToChat } from "@/lib/conversations/map-conversation";
 import { initialChats } from "@/lib/mockData";
 import {
@@ -95,8 +95,8 @@ export function TelegramAppShell() {
     isApiSession && streaming !== null && toolActivity === null;
 
   const storeMessages = useMemo(
-    () => mergeDisplayMessages(persistedMessages, streaming),
-    [persistedMessages, streaming],
+    () => mergeDisplayMessages(persistedMessages),
+    [persistedMessages],
   );
 
   const displayMessages = isApiSession ? storeMessages : activeChat.messages;
@@ -173,12 +173,19 @@ export function TelegramAppShell() {
 
   const handleCreateConversation = useCallback(
     async (input: CreateConversationInput) => {
-      const created = await conversationsApi.create(input);
-      const chat = mapConversationToChat(created);
-      setChats((prev) => [chat, ...prev.filter((c) => c.id !== chat.id)]);
-      setActiveChatId(chat.id);
-      setWorkflowViewMode("chat");
-      setListError(null);
+      try {
+        const created = await conversationsApi.create(input);
+        const chat = mapConversationToChat(created);
+        setChats((prev) => [chat, ...prev.filter((c) => c.id !== chat.id)]);
+        setActiveChatId(chat.id);
+        setWorkflowViewMode("chat");
+        setListError(null);
+      } catch (err) {
+        setListError(
+          err instanceof Error ? err.message : "Không tạo được hội thoại",
+        );
+        throw err;
+      }
     },
     [],
   );
@@ -461,6 +468,12 @@ export function TelegramAppShell() {
         <ChatMessages
           messages={displayMessages}
           activeChatId={activeChatId}
+          agentAvatar={{
+            text: activeChat.avatarText,
+            bg: activeChat.avatarBg,
+            src: activeChat.avatarUrl,
+            name: activeChat.name,
+          }}
           isAgentTyping={isAgentTyping}
           toolActivity={toolActivity}
           workflowViewMode={workflowViewMode}

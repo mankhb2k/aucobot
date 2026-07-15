@@ -15,8 +15,11 @@ import {
   type AgentStepStatus,
 } from "@/components/app/AgentActivity";
 
+import type { ChatAgentAvatar } from "@/types/chat";
+
 interface ChatProgressCardProps {
   type: "working" | "scheduling";
+  avatar?: ChatAgentAvatar;
   onComplete?: () => void;
 }
 
@@ -70,6 +73,7 @@ const SCHEDULING_STEPS: StepDef[] = [
 /** Demo wrapper — auto chạy step, UI dùng AgentActivity (style chat-simulator) */
 export const ChatProgressCard: React.FC<ChatProgressCardProps> = ({
   type,
+  avatar,
   onComplete,
 }) => {
   const defs = type === "working" ? WORKING_STEPS : SCHEDULING_STEPS;
@@ -112,7 +116,11 @@ export const ChatProgressCard: React.FC<ChatProgressCardProps> = ({
             : "Đang xử lý"
       }
       steps={steps}
-      avatar={{ text: "TL", className: "bg-emerald-500" }}
+      avatar={{
+        text: avatar?.text ?? "TL",
+        bg: avatar?.bg ?? "bg-emerald-500",
+        src: avatar?.src,
+      }}
     />
   );
 };

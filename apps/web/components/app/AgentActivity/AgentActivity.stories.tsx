@@ -121,7 +121,7 @@ export const Working: Story = {
     state: "working",
     title: "Đang làm việc",
     steps: workingSteps,
-    avatar: { text: "TL", className: "bg-emerald-500" },
+    avatar: { text: "TL", bg: "bg-emerald-500" },
     showAvatar: true,
   },
 };
@@ -132,7 +132,7 @@ export const Done: Story = {
     state: "done",
     title: "Đã hoàn thành",
     steps: doneSteps,
-    avatar: { text: "TL", className: "bg-emerald-500" },
+    avatar: { text: "TL", bg: "bg-emerald-500" },
   },
 };
 
@@ -142,7 +142,7 @@ export const Scheduling: Story = {
     state: "working",
     title: "Đang xử lý",
     steps: schedulingSteps,
-    avatar: { text: "TL", className: "bg-emerald-500" },
+    avatar: { text: "TL", bg: "bg-emerald-500" },
   },
 };
 
@@ -152,7 +152,7 @@ export const ErrorState: Story = {
     state: "error",
     title: "Có lỗi xảy ra",
     steps: errorSteps,
-    avatar: { text: "TL", className: "bg-emerald-500" },
+    avatar: { text: "TL", bg: "bg-emerald-500" },
   },
 };
 

@@ -6,6 +6,14 @@ export interface Message {
   read: boolean;
 }
 
+/** Agent identity beside every them-side row (message / typing / tool). */
+export type ChatAgentAvatar = {
+  text?: string;
+  bg?: string;
+  src?: string;
+  name?: string;
+};
+
 export interface Chat {
   id: string;
   name: string;

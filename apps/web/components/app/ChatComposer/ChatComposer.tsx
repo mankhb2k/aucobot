@@ -91,8 +91,9 @@ export const ChatComposer: React.FC<ChatComposerProps> = ({
             className="hidden"
             accept=".pdf,.docx,.txt,.md,application/pdf,text/plain,text/markdown,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
             onChange={(e) => {
-              const file = e.target.files?.[0];
-              e.target.value = "";
+              const input = e.currentTarget;
+              const file = input.files?.[0];
+              input.value = "";
               if (file) void onAttachFile?.(file);
             }}
           />

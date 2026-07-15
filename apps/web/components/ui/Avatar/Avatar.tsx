@@ -11,6 +11,9 @@ import {
 export type { AvatarGradient };
 export { avatarGradients, AVATAR_GRADIENT_KEYS } from "./avatar-gradients";
 
+/** Size avatar trong message stream (bubble / typing / tool). */
+export const MESSAGE_AVATAR_SIZE = "sm" as const;
+
 export interface AvatarProps {
   src?: string;
   alt?: string;

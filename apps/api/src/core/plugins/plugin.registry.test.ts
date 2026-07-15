@@ -13,7 +13,7 @@ describe("PluginRegistry", () => {
         ({
           description: "search",
           inputSchema: {},
-          execute: async () => ({ ok: true }),
+          execute: () => Promise.resolve({ ok: true }),
         }) as never,
     });
     registry.register({
@@ -24,7 +24,7 @@ describe("PluginRegistry", () => {
         ({
           description: "other",
           inputSchema: {},
-          execute: async () => ({ ok: true }),
+          execute: () => Promise.resolve({ ok: true }),
         }) as never,
     });
 
@@ -34,10 +34,7 @@ describe("PluginRegistry", () => {
       conversationId: "c1",
     };
 
-    const knowledge = registry.getToolsForSkillGroups(
-      [SKILL_GROUP_KNOWLEDGE],
-      ctx,
-    );
+    const knowledge = registry.getToolsForSkillGroups([SKILL_GROUP_KNOWLEDGE], ctx);
     expect(Object.keys(knowledge)).toEqual(["web_search"]);
 
     const empty = registry.getToolsForSkillGroups([], ctx);

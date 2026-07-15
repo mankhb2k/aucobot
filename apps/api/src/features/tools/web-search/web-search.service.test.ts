@@ -73,15 +73,16 @@ describe("WebSearchService", () => {
 
     const fetchMock = jest.spyOn(globalThis, "fetch").mockResolvedValue({
       ok: true,
-      json: async () => ({
-        results: [
-          {
-            title: "Vietnam AI Challenge",
-            url: "https://example.com/vai",
-            content: "A national AI program.",
-          },
-        ],
-      }),
+      json: () =>
+        Promise.resolve({
+          results: [
+            {
+              title: "Vietnam AI Challenge",
+              url: "https://example.com/vai",
+              content: "A national AI program.",
+            },
+          ],
+        }),
     } as Response);
 
     const result = await service.search("Vietnam AI Innovation Challenge");
@@ -107,7 +108,7 @@ describe("WebSearchService", () => {
     jest.spyOn(globalThis, "fetch").mockResolvedValue({
       ok: false,
       status: 401,
-      text: async () => "unauthorized",
+      text: () => Promise.resolve("unauthorized"),
     } as Response);
 
     await expect(service.search("x")).rejects.toThrow("Web search failed (401)");

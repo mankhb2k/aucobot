@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { Share2, Check, CheckCheck } from "lucide-react";
+import Image from "next/image";
 
 export const DoubleCheck = ({ className = "text-[#4ec163]" }) => (
   <CheckCheck className={`w-[15px] h-[15px] inline-block ${className} stroke-[2.5]`} />

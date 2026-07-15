@@ -108,6 +108,7 @@ describe("AgentsService", () => {
 
       expect(promptCompiler.compile).toHaveBeenCalled();
       expect(prisma.agent.create).toHaveBeenCalledWith({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- jest asymmetric matcher
         data: expect.objectContaining({
           ownerId: "user-1",
           isSystem: false,

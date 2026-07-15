@@ -2,6 +2,7 @@
 
 import { Check, Loader2 } from "lucide-react";
 import React from "react";
+import { Avatar, MESSAGE_AVATAR_SIZE } from "@/components/ui/Avatar/Avatar";
 
 export type AgentActivityState = "working" | "done" | "error";
 export type AgentStepStatus = "pending" | "running" | "done" | "error";
@@ -19,9 +20,12 @@ export interface AgentActivityProps {
   title?: string;
   state?: AgentActivityState;
   steps: AgentActivityStep[];
-  /** Avatar agent (vd. Trợ Lý) */
+  /** Avatar agent — cùng hệ Avatar UI (text / bg / src) */
   avatar?: {
-    text: string;
+    text?: string;
+    bg?: string;
+    src?: string;
+    /** @deprecated dùng `bg` */
     className?: string;
   };
   showAvatar?: boolean;
@@ -57,28 +61,31 @@ export function AgentActivity({
   title,
   state = "working",
   steps,
-  avatar = { text: "TL", className: "bg-emerald-500" },
+  avatar = { text: "TL", bg: "bg-emerald-500" },
   showAvatar = true,
   className = "",
 }: AgentActivityProps) {
   const doneCount = steps.filter((s) => s.status === "done").length;
   const headerTitle = title ?? DEFAULT_TITLE[state];
   const countLabel = `${Math.min(doneCount + (state === "working" ? 1 : 0), steps.length)}/${steps.length}`;
+  const avatarBg = avatar.bg ?? avatar.className ?? "bg-emerald-500";
 
   return (
     <div
-      className={`mb-1 flex items-start gap-2 animate-in fade-in duration-300 ${className}`.trim()}
+      className={`mb-1.5 flex items-start gap-2 animate-in fade-in duration-300 ${className}`.trim()}
     >
       {showAvatar && (
-        <div
-          className={`flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-full text-xs font-bold text-white shadow-sm ${avatar.className ?? "bg-emerald-500"}`}
-        >
-          {avatar.text}
-        </div>
+        <Avatar
+          size={MESSAGE_AVATAR_SIZE}
+          src={avatar.src}
+          text={avatar.text ?? "AA"}
+          bg={avatarBg}
+          alt="Agent"
+          className="mt-0.5"
+        />
       )}
 
-      <div className="box-border flex w-full max-w-[min(440px,85%)] flex-col gap-2 rounded-xl border border-slate-200 bg-white p-3 shadow-xs">
-        <div className="flex items-center gap-2">
+      <div className="box-border flex w-full max-w-[min(440px,85%)] flex-col gap-2 rounded-xl border border-slate-200 bg-white p-3 shadow-xs">        <div className="flex items-center gap-2">
           <span
             className={`h-2 w-2 shrink-0 rounded-full ${
               state === "working"

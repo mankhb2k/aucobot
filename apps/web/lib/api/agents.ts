@@ -29,7 +29,7 @@ async function parseErrorMessage(res: Response, fallback: string): Promise<strin
   try {
     const data: unknown = await res.json();
     if (data && typeof data === "object" && "message" in data) {
-      const message = (data as { message: unknown }).message;
+      const message = data.message;
       if (typeof message === "string") {
         return message;
       }

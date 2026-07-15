@@ -1,21 +1,26 @@
 import { GitFork } from "lucide-react";
 import React, { useRef, useEffect } from "react";
 import { DoubleCheck, SingleCheck } from "@/components/app/icons/icons";
+import { Avatar, MESSAGE_AVATAR_SIZE } from "@/components/ui/Avatar/Avatar";
 import { isEmojiOnly } from "@/lib/telegramUtils";
 import { AgentActivity } from "../AgentActivity/AgentActivity";
 import { WorkflowDashboard } from "../WorkflowDashboard/WorkflowDashboard";
 import { ChatActionButtons } from "./ChatActionButton/ChatActionButton";
 import { ChatProgressCard } from "./ChatProgressCard/ChatProgressCard";
 import { ChatTypingIndicator } from "./ChatTypingIndicator/ChatTypingIndicator";
-import type { Message } from "@/types/chat";
 import type {
   AgentActivityState,
   AgentActivityStep,
 } from "../AgentActivity/AgentActivity";
+import type { ChatAgentAvatar, Message } from "@/types/chat";
+
+export type { ChatAgentAvatar };
 
 export interface ChatMessagesProps {
   messages: Message[];
   activeChatId: string;
+  /** Avatar mặc định của agent trong conversation này */
+  agentAvatar?: ChatAgentAvatar;
   /** Agent đang chờ / stream token — hiện bubble … */
   isAgentTyping?: boolean;
   /** Live tool-calling progress (API sessions) */
@@ -33,9 +38,23 @@ export interface ChatMessagesProps {
   onCompleteScheduling?: (messageId: string) => void;
 }
 
+function AgentSideAvatar({ avatar }: { avatar?: ChatAgentAvatar }) {
+  return (
+    <Avatar
+      size={MESSAGE_AVATAR_SIZE}
+      src={avatar?.src}
+      text={avatar?.text ?? "AA"}
+      bg={avatar?.bg ?? "blue"}
+      alt={avatar?.name ?? "Agent"}
+      className="mt-0.5"
+    />
+  );
+}
+
 export const ChatMessages: React.FC<ChatMessagesProps> = ({
   messages,
   activeChatId,
+  agentAvatar,
   isAgentTyping = false,
   toolActivity = null,
   workflowViewMode,
@@ -81,6 +100,7 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
               <ChatProgressCard
                 key={message.id}
                 type={isProgressWorking ? "working" : "scheduling"}
+                avatar={agentAvatar}
                 onComplete={() =>
                   isProgressWorking
                     ? onCompleteWorking?.(message.id)
@@ -94,8 +114,9 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
             return (
               <div
                 key={message.id}
-                className={`flex w-full mb-2 ${isMe ? "justify-end" : "justify-start"}`}
+                className={`flex w-full mb-2 items-start gap-2 ${isMe ? "justify-end" : "justify-start"}`}
               >
+                {!isMe && <AgentSideAvatar avatar={agentAvatar} />}
                 <div className="relative group max-w-[70%] select-text">
                   <span className="text-[56px] leading-none select-all filter drop-shadow-sm inline-block tracking-[-0.1em]">
                     {message.text}
@@ -127,8 +148,9 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
           return (
             <div
               key={message.id}
-              className={`flex flex-col w-full mb-1.5 ${isMe ? "items-end" : "items-start"}`}
+              className={`flex w-full mb-1.5 items-start gap-2 ${isMe ? "justify-end" : "justify-start"}`}
             >
+              {!isMe && <AgentSideAvatar avatar={agentAvatar} />}
               <div
                 className={`flex flex-col ${
                   showActionButtons ? "w-[min(100%,280px)] max-w-[75%]" : "w-fit max-w-[75%]"
@@ -208,10 +230,14 @@ export const ChatMessages: React.FC<ChatMessagesProps> = ({
           <AgentActivity
             state={toolActivity.state}
             steps={toolActivity.steps}
-            avatar={{ text: "AA", className: "bg-[#3390ec]" }}
+            avatar={{
+              text: agentAvatar?.text ?? "AA",
+              bg: agentAvatar?.bg ?? "blue",
+              src: agentAvatar?.src,
+            }}
           />
         ) : (
-          isAgentTyping && <ChatTypingIndicator />
+          isAgentTyping && <ChatTypingIndicator avatar={agentAvatar} />
         )}
         <div ref={messagesEndRef} />
       </div>

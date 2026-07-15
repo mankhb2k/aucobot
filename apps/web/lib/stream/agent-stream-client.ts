@@ -111,10 +111,8 @@ export function connectAgentStream(
         } else if (envelope.type === "tool.error") {
           handlers.onToolError?.(toolErrorPayloadSchema.parse(envelope.payload));
         }
-      } catch (error) {
-        if (process.env.NODE_ENV === "development") {
-          console.warn("[agent-stream] dropped WS frame", error, event.data);
-        }
+      } catch {
+        // ignore malformed / schema-mismatched frames
       }
     });
 
