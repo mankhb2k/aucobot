@@ -12,5 +12,25 @@ export interface LlmCompletionPort {
     system: string;
     messages: LlmChatMessage[];
     onChunk: (delta: string) => void;
+    skillGroups?: string[];
+    toolContext?: {
+      ownerId: string;
+      agentId: string;
+      conversationId: string;
+    };
+    onToolStart?: (event: {
+      toolCallId: string;
+      toolName: string;
+      input: unknown;
+    }) => void;
+    onToolFinish?: (event: {
+      toolCallId: string;
+      toolName: string;
+      output: unknown;
+      ok: boolean;
+      errorMessage?: string;
+    }) => void;
   }): Promise<string>;
+
+  toolLabel?(name: string): string;
 }

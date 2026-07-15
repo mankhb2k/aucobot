@@ -1,49 +1,39 @@
 # AI orchestration
 
-> **💡 Planned** — Together / Vercel AI SDK, agent chat. Plugin id: `ai-orchestration`.
+> Plugin id: `ai-orchestration`. Together via `@aucobot/llm-services` + Vercel AI SDK.
 
 ## Vai trò
 
-Runtime LLM — gọi Together qua `@aucobot/llm-services`, **không** định nghĩa agent (xem [`core/agents/`](../../core/agents/README.md)).
+Runtime LLM — gọi Together, **không** định nghĩa agent (xem [`core/agents/`](../../core/agents/README.md)).
 
 | Làm | Không làm |
 |-----|-----------|
-| `generateText` / `streamText` với model env | Seed AucoAgent, CRUD user agent |
-| Nhận `system` + `messages[]` → trả reply | HTTP route trực tiếp (delegate từ conversations messages) |
-| Log token usage 💡 | Tool calling (phase sau) |
+| `generateText` / `streamText` với tools + multi-step | Seed AucoAgent, CRUD user agent |
+| Resolve tools từ `PluginRegistry` theo `enabledSkillGroups` | HTTP route trực tiếp (delegate từ conversations messages) |
+| Emit usage + tool lifecycle qua MessagesService → WS | Persist tool message parts (ephemeral UI only) |
 
-## Phase A — AucoAgent (đã chốt)
+## Phase C — Tool calling (MVP)
 
 | Quyết định | Chọn |
 |------------|------|
-| Model default | `Qwen/Qwen2.5-7B-Instruct-Turbo` (`packages/llm-services`) |
-| Response mode | **Non-stream** — `generateText`, JSON `{ reply }` một lần |
-| Lý do | Phase này chỉ validate API pipeline; UI/UX stream defer phase sau |
-| Stream | **Phase B** — `streamText` + WSS `message.chunk` / `message.done` |
+| Engine | `streamText` + `tools` + `stopWhen: stepCountIs(~5)` |
+| Tools | `web_search`, `read_document`, `update_agent_memory` (skill group `knowledge`) |
+| UI | WS `tool.started` / `tool.finished` / `tool.error` → `AgentActivity` |
+| Message DB | Chỉ text reply cuối |
 
-### API contract (phase A)
+Non-stream `complete()` vẫn plain text (không tools).
 
-```text
-POST /api/conversations/:id/messages
-  Body:  { "content": "..." }
-  Response 201: {
-    "userMessage": { ... },
-    "assistantMessage": { "content": "..." }
-  }
-```
-
-Together gọi qua Vercel AI SDK; assistant message persist sau khi có full text.
-
-## Env (planned)
+## Env
 
 | Env | Ghi chú |
 |-----|---------|
 | `TOGETHER_API_KEY` | Server-only |
-| `TOGETHER_MODEL` | Optional override; default Qwen 2.5 7B |
-
-Bật module: `ENABLED_FEATURES=ai-orchestration` (khi đăng ký trong `feature-loader.ts`).
+| `TOGETHER_MODEL` | Optional; default Qwen 2.5 7B |
+| `ENABLED_FEATURES` | Include `ai-orchestration` (+ `documents`, `web-search` nếu cần) |
 
 ## Tham chiếu
 
 - [`packages/llm-services`](../../../../packages/llm-services/src/index.ts)
-- [`core/agents/README.md`](../../core/agents/README.md) — AucoAgent identity + resolve
+- [`core/plugins/`](../../core/plugins/) — PluginRegistry
+- [`features/tools/`](../tools/README.md)
+- [`core/agents/README.md`](../../core/agents/README.md)

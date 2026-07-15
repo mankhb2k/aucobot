@@ -68,6 +68,7 @@ describe("SystemAgentsService", () => {
       await service.seedQuickAssistant();
 
       expect(prisma.agent.create).toHaveBeenCalledWith({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- jest asymmetric matcher
         data: expect.objectContaining({
           isSystem: true,
           presetId: QUICK_ASSISTANT_PRESET_ID,
@@ -86,6 +87,7 @@ describe("SystemAgentsService", () => {
 
       expect(prisma.agent.update).toHaveBeenCalledWith({
         where: { id: "existing-qa" },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- jest asymmetric matcher
         data: expect.objectContaining({
           isSystem: true,
           name: AUCO_AGENT_NAME,
@@ -168,7 +170,11 @@ describe("SystemAgentsService", () => {
       await service.seedAllSystemAgents();
 
       expect(prisma.agent.create).toHaveBeenCalledTimes(3);
-      expect(prisma.agent.create.mock.calls.map((c) => c[0].data.presetId)).toEqual([
+      const createdPresetIds = prisma.agent.create.mock.calls.map((call) => {
+        const [arg] = call as [{ data: { presetId: string } }];
+        return arg.data.presetId;
+      });
+      expect(createdPresetIds).toEqual([
         QUICK_ASSISTANT_PRESET_ID,
         ORCHESTRATOR_PRESET_ID,
         MOTHER_PRESET_ID,

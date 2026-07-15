@@ -130,9 +130,6 @@ export const useMessageStore = create<MessageStoreState>((set) => ({
  * Display list — không merge partial stream text.
  * Typing indicator render riêng khi `streamingByConversationId` có giá trị.
  */
-export function mergeDisplayMessages(
-  messages: Message[],
-  _streaming?: StreamingState | null,
-): Message[] {
+export function mergeDisplayMessages(messages: Message[]): Message[] {
   return messages;
 }

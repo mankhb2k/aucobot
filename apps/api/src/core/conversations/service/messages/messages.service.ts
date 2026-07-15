@@ -9,7 +9,15 @@ import {
   ServiceUnavailableException,
 } from "@nestjs/common";
 
-import { createWsEvent } from "@aucobot/shared";
+import {
+  createWsEvent,
+  TOOL_UI_LABELS,
+  type KnowledgeToolName,
+  CreateMessageInput,
+  MessageListResponse,
+  MessageResponse,
+  SendMessageResponse,
+} from "@aucobot/shared";
 
 import { AgentResolverService } from "../../../agents/service/agent-resolver/agent-resolver.service";
 import { PrismaService } from "../../../database/prisma.service";
@@ -21,12 +29,6 @@ import { ConversationAccessService } from "../conversation-access/conversation-a
 import type { LlmCompletionPort } from "../../../plugins/llm-completion.port";
 import type { ConversationEventsPort } from "../../../realtime/conversation-events.port";
 import type { Message, Prisma } from "@aucobot/database";
-import type {
-  CreateMessageInput,
-  MessageListResponse,
-  MessageResponse,
-  SendMessageResponse,
-} from "@aucobot/shared";
 
 const MESSAGE_HISTORY_LIMIT = 20;
 
@@ -104,6 +106,7 @@ export class MessagesService {
         conversationId,
         agentId: agent.id,
         system: agent.instructionsCompiled,
+        skillGroups: agent.enabledSkillGroups ?? [],
         history,
       }).catch((error: unknown) => {
         this.logger.error(
@@ -143,6 +146,7 @@ export class MessagesService {
     conversationId: string;
     agentId: string;
     system: string;
+    skillGroups: string[];
     history: Array<{ role: "user" | "assistant"; content: string }>;
   }): Promise<void> {
     if (!this.llmCompletion?.stream || !this.conversationEvents) {
@@ -150,15 +154,91 @@ export class MessagesService {
     }
 
     const streamingId = randomUUID();
+    const runId = streamingId;
+    const summarizeInput = (value: unknown): string | undefined => {
+      if (value == null) return undefined;
+      if (typeof value === "string") return value.slice(0, 160);
+      try {
+        return JSON.stringify(value).slice(0, 160);
+      } catch {
+        return undefined;
+      }
+    };
+
     const reply = await this.llmCompletion.stream({
       system: input.system,
       messages: input.history,
+      skillGroups: input.skillGroups,
+      toolContext: {
+        ownerId: input.userId,
+        agentId: input.agentId,
+        conversationId: input.conversationId,
+      },
       onChunk: (delta) => {
         this.conversationEvents?.emit(
           input.conversationId,
           createWsEvent("message.chunk", input.conversationId, {
             messageId: streamingId,
             delta,
+          }),
+        );
+      },
+      onToolStart: (event) => {
+        const label =
+          this.llmCompletion?.toolLabel?.(event.toolName) ??
+          TOOL_UI_LABELS[event.toolName as KnowledgeToolName] ??
+          event.toolName;
+        this.conversationEvents?.emit(
+          input.conversationId,
+          createWsEvent("tool.started", input.conversationId, {
+            runId,
+            toolCallId: event.toolCallId,
+            name: event.toolName,
+            label,
+            inputSummary: summarizeInput(event.input),
+          }),
+        );
+      },
+      onToolFinish: (event) => {
+        if (!event.ok) {
+          this.conversationEvents?.emit(
+            input.conversationId,
+            createWsEvent("tool.error", input.conversationId, {
+              runId,
+              toolCallId: event.toolCallId,
+              name: event.toolName,
+              message: event.errorMessage ?? "Tool failed",
+            }),
+          );
+          return;
+        }
+
+        const detail =
+          typeof event.output === "object" &&
+          event.output &&
+          "preview" in event.output &&
+          typeof (event.output as { preview?: unknown }).preview === "string"
+            ? (event.output as { preview: string }).preview
+            : typeof event.output === "object" &&
+                event.output &&
+                "title" in event.output &&
+                typeof (event.output as { title?: unknown }).title === "string"
+              ? (event.output as { title: string }).title
+              : typeof event.output === "object" &&
+                  event.output &&
+                  "query" in event.output &&
+                  typeof (event.output as { query?: unknown }).query === "string"
+                ? (event.output as { query: string }).query
+                : undefined;
+
+        this.conversationEvents?.emit(
+          input.conversationId,
+          createWsEvent("tool.finished", input.conversationId, {
+            runId,
+            toolCallId: event.toolCallId,
+            name: event.toolName,
+            ok: true,
+            detail,
           }),
         );
       },

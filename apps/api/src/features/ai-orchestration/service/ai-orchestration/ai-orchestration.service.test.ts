@@ -7,11 +7,15 @@ import { Test } from "@nestjs/testing";
 
 import { generateChatWithTogether } from "@aucobot/llm-services";
 
+import { PluginRegistry } from "../../../../core/plugins/plugin.registry";
+
 import { AiOrchestrationService } from "./ai-orchestration.service";
 
 jest.mock("@aucobot/llm-services", () => ({
   DEFAULT_TOGETHER_MODEL: "Qwen/Qwen2.5-7B-Instruct-Turbo",
   generateChatWithTogether: jest.fn(),
+  streamAgentWithTogether: jest.fn(),
+  streamChatWithTogether: jest.fn(),
 }));
 
 describe("AiOrchestrationService", () => {
@@ -25,11 +29,17 @@ describe("AiOrchestrationService", () => {
     get: jest.fn(),
   };
 
+  const pluginRegistry = {
+    getToolsForSkillGroups: jest.fn().mockReturnValue({}),
+    getLabel: jest.fn((name: string) => name),
+  };
+
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       providers: [
         AiOrchestrationService,
         { provide: ConfigService, useValue: configService },
+        { provide: PluginRegistry, useValue: pluginRegistry },
       ],
     }).compile();
 

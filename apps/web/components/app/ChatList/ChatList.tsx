@@ -10,11 +10,7 @@ import { useDocumentTheme } from "@/hooks/theme/use-document-theme";
 import { initialWorkflows } from "@/lib/mockData";
 import type { Chat } from "@/types/chat";
 import type { ThemeAppearance } from "@/utils/theme/resolve-document-theme";
-import type {
-  ConversationType,
-  CreateAgentInput,
-  CreateConversationInput,
-} from "@aucobot/shared";
+import type { CreateAgentInput, CreateConversationInput } from "@aucobot/shared";
 
 export interface ChatListProps {
   chats: Chat[];
@@ -39,10 +35,29 @@ export const ChatList: React.FC<ChatListProps> = ({
   const [isPenMenuOpen, setIsPenMenuOpen] = useState(false);
   const [isNightMode, setIsNightMode] = useState(false);
   const [appearance, setAppearance] = useState<ThemeAppearance>("system");
-  const [createType, setCreateType] = useState<ConversationType | null>(null);
+  /** Chỉ New Group mở form; New Chat tạo session ngay (kiểu ChatGPT/Gemini). */
+  const [createGroupOpen, setCreateGroupOpen] = useState(false);
   const [createAgentOpen, setCreateAgentOpen] = useState(false);
+  const [creatingQuickChat, setCreatingQuickChat] = useState(false);
 
   useDocumentTheme(appearance);
+
+  async function handleNewChat() {
+    setIsPenMenuOpen(false);
+    setActiveTab("Tin nhắn");
+    if (!onCreateConversation || creatingQuickChat) return;
+    setCreatingQuickChat(true);
+    try {
+      await onCreateConversation({
+        type: "session",
+        title: "Chat mới",
+      });
+    } catch {
+      // Surface via shell listError; keep menu closed
+    } finally {
+      setCreatingQuickChat(false);
+    }
+  }
 
   function setThemeAppearance(next: ThemeAppearance) {
     setAppearance(next);
@@ -87,10 +102,16 @@ export const ChatList: React.FC<ChatListProps> = ({
     });
 
   return (
-    <div className="relative w-[22.5rem] md:w-[23.75rem] bg-white rounded-2xl shadow-xl flex flex-col flex-shrink-0 overflow-hidden">
-      <div className="p-3 pb-2 flex flex-col gap-2.5">
+    <div
+      className={`relative z-20 w-[22.5rem] md:w-[23.75rem] bg-white rounded-2xl shadow-xl flex flex-col flex-shrink-0 ${
+        createGroupOpen || createAgentOpen
+          ? "overflow-hidden"
+          : "overflow-visible"
+      }`}
+    >
+      <div className="relative z-30 p-3 pb-2 flex flex-col gap-2.5 overflow-visible">
         <div className="flex items-center gap-3">
-          <div className="relative">
+          <div className="relative z-40">
             <button
               onClick={() => setIsSidebarMenuOpen(!isSidebarMenuOpen)}
               className={`p-2.5 rounded-full transition-colors cursor-pointer ${isSidebarMenuOpen ? "bg-gray-100 text-[#08060d]" : "text-gray-500 hover:bg-gray-100 hover:text-[#08060d]"}`}
@@ -168,7 +189,7 @@ export const ChatList: React.FC<ChatListProps> = ({
             />
           </div>
 
-          <div className="relative">
+          <div className="relative z-40">
             <button
               onClick={() => setIsPenMenuOpen(!isPenMenuOpen)}
               className={`p-2.5 rounded-full transition-colors cursor-pointer flex items-center justify-center ${
@@ -186,18 +207,16 @@ export const ChatList: React.FC<ChatListProps> = ({
               align="right"
             >
               <DropdownItem
-                label="New Chat"
+                label={creatingQuickChat ? "Đang tạo chat…" : "New Chat"}
                 onClick={() => {
-                  setIsPenMenuOpen(false);
-                  setCreateType("session");
-                  setActiveTab("Tin nhắn");
+                  void handleNewChat();
                 }}
               />
               <DropdownItem
                 label="New Group"
                 onClick={() => {
                   setIsPenMenuOpen(false);
-                  setCreateType("room");
+                  setCreateGroupOpen(true);
                   setActiveTab("Tin nhắn");
                 }}
               />
@@ -222,7 +241,7 @@ export const ChatList: React.FC<ChatListProps> = ({
         </Tabs>
       </div>
 
-      <div className="chat-scroll-view flex-1 thin-scrollbar pt-1.5 pb-3 mb-3 flex flex-col gap-0.5 mr-[3px] scrollbar-thin scrollbar-thumb-black/14 hover:scrollbar-thumb-black/26 active:scrollbar-thumb-black/8 scrollbar-track-transparent">
+      <div className="chat-scroll-view relative z-0 min-h-0 flex-1 thin-scrollbar overflow-y-auto pt-1.5 pb-3 mb-3 flex flex-col gap-0.5 mr-[3px] scrollbar-thin scrollbar-thumb-black/14 hover:scrollbar-thumb-black/26 active:scrollbar-thumb-black/8 scrollbar-track-transparent rounded-b-2xl">
         {activeTab === "Workflow" ? (
           initialWorkflows
             .filter((wf) => wf.name.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -296,12 +315,12 @@ export const ChatList: React.FC<ChatListProps> = ({
           )}
       </div>
 
-      {onCreateConversation && createType !== null && (
+      {onCreateConversation && createGroupOpen && (
         <CreateConversationDialog
-          key={createType}
+          key="create-group"
           open
-          type={createType}
-          onClose={() => setCreateType(null)}
+          type="room"
+          onClose={() => setCreateGroupOpen(false)}
           onSubmit={onCreateConversation}
         />
       )}

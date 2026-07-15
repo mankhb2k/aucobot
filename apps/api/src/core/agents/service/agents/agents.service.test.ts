@@ -9,26 +9,25 @@ import { AgentsService } from "./agents.service";
 
 import type { Agent } from "@aucobot/database";
 
-const mockAgent = (overrides: Partial<Agent> = {}): Agent =>
-  ({
-    id: "agent-user-1",
-    ownerId: "user-1",
-    isSystem: false,
-    presetId: "custom",
-    name: "Mai Content",
-    avatarUrl: null,
-    bio: null,
-    role: "Content creator",
-    description: "Viết caption",
-    tonePreset: "casual",
-    toneNotes: null,
-    enabledSkillGroups: ["web-search"],
-    instructionsSource: {},
-    instructionsCompiled: "## Identity\nMai Content",
-    createdAt: new Date("2026-07-01T10:00:00.000Z"),
-    updatedAt: new Date("2026-07-01T10:00:00.000Z"),
-    ...overrides,
-  }) as Agent;
+const mockAgent = (overrides: Partial<Agent> = {}): Agent => ({
+  id: "agent-user-1",
+  ownerId: "user-1",
+  isSystem: false,
+  presetId: "custom",
+  name: "Mai Content",
+  avatarUrl: null,
+  bio: null,
+  role: "Content creator",
+  description: "Viết caption",
+  tonePreset: "casual",
+  toneNotes: null,
+  enabledSkillGroups: ["web-search"],
+  instructionsSource: {},
+  instructionsCompiled: "## Identity\nMai Content",
+  createdAt: new Date("2026-07-01T10:00:00.000Z"),
+  updatedAt: new Date("2026-07-01T10:00:00.000Z"),
+  ...overrides,
+});
 
 const motherRow = mockAgent({
   id: "mother-1",
@@ -109,6 +108,7 @@ describe("AgentsService", () => {
 
       expect(promptCompiler.compile).toHaveBeenCalled();
       expect(prisma.agent.create).toHaveBeenCalledWith({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- jest asymmetric matcher
         data: expect.objectContaining({
           ownerId: "user-1",
           isSystem: false,

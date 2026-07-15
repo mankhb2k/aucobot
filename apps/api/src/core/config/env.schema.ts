@@ -62,6 +62,14 @@ export const envSchema = z.object({
   /** Together AI — required when ai-orchestration feature is enabled. */
   TOGETHER_API_KEY: z.string().optional(),
   TOGETHER_MODEL: z.string().optional(),
+  /** Tavily — required when web-search feature is enabled. */
+  TAVILY_API_KEY: z.string().optional(),
+  /** Cloudflare R2 — required when documents feature is enabled. */
+  R2_ACCOUNT_ID: z.string().optional(),
+  R2_ACCESS_KEY_ID: z.string().optional(),
+  R2_SECRET_ACCESS_KEY: z.string().optional(),
+  R2_BUCKET: z.string().optional(),
+  R2_PUBLIC_BASE_URL: z.string().url().optional(),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

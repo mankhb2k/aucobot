@@ -34,8 +34,8 @@ const COPY: Record<
 };
 
 /**
- * Form tạo Session (New Chat) / Room (New Group) — kiểu Telegram create channel.
- * Remount via `key` ở parent khi mở lại để form reset (không dùng effect setState).
+ * Form tạo Room (New Group). New Chat tạo session ngay — không dùng dialog này.
+ * Remount via `key` ở parent khi mở lại để form reset.
  */
 export function CreateConversationDialog({
   open,

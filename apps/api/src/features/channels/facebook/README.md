@@ -13,7 +13,7 @@
 
 ## Không làm
 
-- Tavily / web search → `features/integrations/web-search`
+- Tavily / web search → `features/tools/web-search`
 - BullMQ schedule → publishing / workflow
 - Client Graph thuần không Nest → `packages/social-providers`
 

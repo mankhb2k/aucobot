@@ -5,13 +5,14 @@ import { ChatComposer } from "@/components/app/ChatComposer/ChatComposer";
 import { ChatHeader } from "@/components/app/ChatHeader/ChatHeader";
 import { ChatList } from "@/components/app/ChatList/ChatList";
 import { ChatMessages } from "@/components/app/ChatMessages/ChatMessages";
-import { UserInfo } from "@/components/app/ChatPanel/UserInfo/UserInfo";
+import { ChatPanel } from "@/components/app/ChatPanel/ChatPanel";
 import { useConversationMessages } from "@/hooks/chat/use-conversation-messages";
 import { useMessageStream } from "@/hooks/chat/use-message-stream";
 import { useSendMessage } from "@/hooks/chat/use-send-message";
+import { mapAgentDmToChat, mapMotherDmToChat } from "@/lib/agents/map-agent";
 import { agentsApi } from "@/lib/api/agents";
 import { conversationsApi } from "@/lib/api/conversations";
-import { mapAgentDmToChat, mapMotherDmToChat } from "@/lib/agents/map-agent";
+import { documentsApi } from "@/lib/api/documents";
 import { mapConversationToChat } from "@/lib/conversations/map-conversation";
 import { initialChats } from "@/lib/mockData";
 import {
@@ -19,6 +20,7 @@ import {
   mergeDisplayMessages,
   useMessageStore,
 } from "@/stores/message/message.store";
+import { useToolRunStore } from "@/stores/tool-run/tool-run.store";
 import type { Chat, Message } from "@/types/chat";
 import type { CreateAgentInput, CreateConversationInput } from "@aucobot/shared";
 
@@ -61,6 +63,7 @@ export function TelegramAppShell() {
   const [approvedMessages, setApprovedMessages] = useState<Record<string, boolean>>({
     rm3: true,
   });
+  const [attachHint, setAttachHint] = useState<string | null>(null);
 
   const activeChat =
     chats.find((c) => c.id === activeChatId) ?? chats[0] ?? EMPTY_CHAT;
@@ -81,11 +84,19 @@ export function TelegramAppShell() {
   const streaming = useMessageStore(
     (state) => state.streamingByConversationId[activeChatId] ?? null,
   );
-  const isAgentTyping = isApiSession && streaming !== null;
+  const toolRun = useToolRunStore(
+    (state) => state.byConversationId[activeChatId] ?? null,
+  );
+  const toolActivity =
+    isApiSession && toolRun && toolRun.steps.length > 0
+      ? { state: toolRun.state, steps: toolRun.steps }
+      : null;
+  const isAgentTyping =
+    isApiSession && streaming !== null && toolActivity === null;
 
   const storeMessages = useMemo(
-    () => mergeDisplayMessages(persistedMessages, streaming),
-    [persistedMessages, streaming],
+    () => mergeDisplayMessages(persistedMessages),
+    [persistedMessages],
   );
 
   const displayMessages = isApiSession ? storeMessages : activeChat.messages;
@@ -162,12 +173,19 @@ export function TelegramAppShell() {
 
   const handleCreateConversation = useCallback(
     async (input: CreateConversationInput) => {
-      const created = await conversationsApi.create(input);
-      const chat = mapConversationToChat(created);
-      setChats((prev) => [chat, ...prev.filter((c) => c.id !== chat.id)]);
-      setActiveChatId(chat.id);
-      setWorkflowViewMode("chat");
-      setListError(null);
+      try {
+        const created = await conversationsApi.create(input);
+        const chat = mapConversationToChat(created);
+        setChats((prev) => [chat, ...prev.filter((c) => c.id !== chat.id)]);
+        setActiveChatId(chat.id);
+        setWorkflowViewMode("chat");
+        setListError(null);
+      } catch (err) {
+        setListError(
+          err instanceof Error ? err.message : "Không tạo được hội thoại",
+        );
+        throw err;
+      }
     },
     [],
   );
@@ -326,6 +344,22 @@ export function TelegramAppShell() {
     );
   };
 
+  const handleAttachFile = useCallback(
+    async (file: File) => {
+      if (!isApiSession || !activeChatId) return;
+      setAttachHint(`Đang tải lên ${file.name}…`);
+      try {
+        const doc = await documentsApi.upload(activeChatId, file);
+        setAttachHint(`Đã thêm ${doc.title}`);
+        window.setTimeout(() => setAttachHint(null), 4000);
+      } catch {
+        setAttachHint(`Upload thất bại: ${file.name}`);
+        window.setTimeout(() => setAttachHint(null), 4000);
+      }
+    },
+    [activeChatId, isApiSession],
+  );
+
   const handleSendMessage = (text: string) => {
     if (!activeChat.id) return;
 
@@ -434,7 +468,14 @@ export function TelegramAppShell() {
         <ChatMessages
           messages={displayMessages}
           activeChatId={activeChatId}
+          agentAvatar={{
+            text: activeChat.avatarText,
+            bg: activeChat.avatarBg,
+            src: activeChat.avatarUrl,
+            name: activeChat.name,
+          }}
           isAgentTyping={isAgentTyping}
+          toolActivity={toolActivity}
           workflowViewMode={workflowViewMode}
           setWorkflowViewMode={setWorkflowViewMode}
           approvedMessages={approvedMessages}
@@ -446,6 +487,8 @@ export function TelegramAppShell() {
         />
         <ChatComposer
           onSendMessage={handleSendMessage}
+          onAttachFile={isApiSession ? handleAttachFile : undefined}
+          attachHint={attachHint}
           workflowViewMode={workflowViewMode}
           setWorkflowViewMode={setWorkflowViewMode}
           disabled={sending && isApiSession}
@@ -460,10 +503,11 @@ export function TelegramAppShell() {
         }`}
       >
         <div className="h-full w-[22.5rem] lg:w-[28.125rem]">
-          <UserInfo
+          <ChatPanel
             activeChat={activeChat}
             setIsRightPanelOpen={setIsRightPanelOpen}
             onToggleNotifications={handleToggleNotifications}
+            onOpenWorkflowDiagram={() => setWorkflowViewMode("diagram")}
           />
         </div>
       </div>

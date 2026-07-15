@@ -62,10 +62,8 @@ export const TabsList: React.FC<TabsListProps> = ({
     const container = containerRef.current;
     if (!container) return;
 
-    const activeEl = container.querySelector(
-      "[data-state='active']",
-    ) as HTMLElement | null;
-    if (!activeEl) return;
+    const activeEl = container.querySelector("[data-state='active']");
+    if (!(activeEl instanceof HTMLElement)) return;
 
     const containerRect = container.getBoundingClientRect();
     const activeRect = activeEl.getBoundingClientRect();
@@ -103,10 +101,8 @@ export const TabsList: React.FC<TabsListProps> = ({
     const container = containerRef.current;
     if (!container) return;
 
-    const activeEl = container.querySelector(
-      "[data-state='active']",
-    ) as HTMLElement | null;
-    if (!activeEl) return;
+    const activeEl = container.querySelector("[data-state='active']");
+    if (!(activeEl instanceof HTMLElement)) return;
 
     const containerWidth = container.clientWidth;
     const activeLeft = activeEl.offsetLeft;

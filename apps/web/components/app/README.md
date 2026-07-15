@@ -12,7 +12,7 @@ app/
   ChatMessages/         # Danh sách tin nhắn
   ChatComposer/         # Ô nhập + emoji picker
   ChatPanel/
-    UserInfo/           # Panel metadata bên phải
+    ChatPanel/          # Right panel: Session / Room / Agent / Workflow
   EmojiPicker/
   AnimatedEmoji/
   icons/                # Icon phụ trợ app (check marks, phone, …)

@@ -986,26 +986,33 @@ Core gồm **4 lớp**. Tắt bất kỳ feature nào, core vẫn chạy — app
 
 #### `src/features` — plugin (bật/tắt)
 
-| Feature | Vai trò | Phụ thuộc |
-|---------|---------|-----------|
-| `facebook` | OAuth Meta, MCP tools FB | core + `social-providers` |
-| `tiktok` | OAuth TikTok, MCP tools TikTok | core + `social-providers` |
-| `publishing` | Schedule + publish processor, job state | core `queue`, `events` |
-| `approvals` | Human-in-the-loop, approval queue API | core `events` |
-| `documents` | Upload, extract text, `read_document` tool | core `conversations` **💡** |
-| `web-search` | `web_search` tool (Tavily/Serper) | core `agents` |
-| `ai-orchestration` | Vercel AI SDK, agent chat, orchestrator dispatch (star) | core `agents`, `llm-services` |
+Feature nhóm theo **độ nặng / bản chất** — `channels/` tách riêng (OAuth + webhook, feature nặng); mọi tool nhỏ khác (kể cả loại cần platform key) gộp chung `tools/` để tránh phình top-level khi số lượng còn ít. Folder cha chỉ là tổ chức thư mục, **không** đổi id dùng trong `ENABLED_FEATURES` (id vẫn là tên leaf: `facebook`, `web-search`, …).
 
-Bật/tắt ví dụ:
+| Feature (id) | Folder | Vai trò | Phụ thuộc |
+|---|---|---------|-----------|
+| `facebook` | `features/channels/facebook/` | OAuth Meta, MCP tools FB | core + `social-providers` |
+| `tiktok` | `features/channels/tiktok/` | OAuth TikTok, MCP tools TikTok | core + `social-providers` |
+| `publishing` | `features/workflow/` | Schedule + publish processor, job state | core `queue`, `events` |
+| `approvals` | `features/workflow/` | Human-in-the-loop, approval queue API | core `events` |
+| `documents` | `features/tools/read-document/` | Upload, extract text, `read_document` tool | core `conversations` **💡** |
+| `web-search` | `features/tools/web-search/` | `web_search` tool (Tavily/Serper) | core `agents` |
+| `ai-orchestration` | `features/ai-orchestration/` | Vercel AI SDK, agent chat, orchestrator dispatch (star), **đọc registry `core/plugins` để attach tool vào streamText** | core `agents`, `llm-services` |
+| *(builtin, không có id riêng)* | `features/tools/builtin/` + `features/tools/update-agent-memory/` | `create_draft_post`, `handoff_to_agent`, `propose_automation`, `update_agent_memory` — Prisma thuần, luôn bật cùng `tools` | core `agents` |
+
+**Nhóm folder (senior note):** `channels/` = secret là **token OAuth của user**, feature nặng (OAuth flow, webhook, refresh token) → tách riêng. `tools/` = mọi tool nhỏ Agent gọi 1 phát trong chat, bất kể có cần **API key platform** (`web-search` — `TAVILY_API_KEY`) hay **không cần secret gì** (`builtin`, `read-document`, `update-agent-memory`) — không tách thêm tầng `integrations/` theo loại secret vì số lượng còn ít (premature); `web-search`/`documents` vẫn giữ **id riêng** trong `ENABLED_FEATURES` để ops tắt độc lập khi thiếu key. Xem chi tiết ở [`features/tools/README.md`](../apps/api/src/features/tools/README.md) và [`features/channels/README.md`](../apps/api/src/features/channels/README.md).
+
+**Hai tầng bật/tắt khác nhau, đừng nhầm:** `ENABLED_FEATURES` (env) = platform/ops quyết định module có load lên server không (vd. server thiếu `TAVILY_API_KEY` → tắt `web-search`). `Agent.enabledSkillGroups` (DB, qua `POST/PATCH /api/agents`) = **user** tự chọn agent nào được dùng tool nào trong UI — độc lập hoàn toàn với folder/`ENABLED_FEATURES`.
+
+Bật/tắt ví dụ (id không đổi dù nằm trong folder cha nào):
 
 ```env
-ENABLED_FEATURES=facebook,tiktok,publishing,approvals,documents,ai-orchestration
-# Tắt tiktok → bỏ khỏi list, core + FB vẫn chạy
+ENABLED_FEATURES=facebook,tiktok,publishing,approvals,documents,web-search,ai-orchestration
+# Tắt tiktok → bỏ khỏi list, core + FB vẫn chạy (facebook nằm ở channels/facebook/, không ảnh hưởng channels/tiktok/)
 ```
 
-#### Contract plugin (`core/plugins`)
+#### Contract plugin (`core/plugins`) — single registration path
 
-Mỗi feature implement `FeaturePlugin`:
+Mỗi feature implement `FeaturePlugin` và **tự đăng ký `mcpTools` của chính nó** — không có feature/subfolder nào đăng ký hộ feature khác, kể cả `features/tools/*` (mỗi subfolder — `builtin/`, `web-search/`, `read-document/`, `update-agent-memory/` — là 1 `FeaturePlugin` riêng, `tools/` không phải cầu nối chung):
 
 ```typescript
 // core/plugins/feature-plugin.interface.ts
@@ -1018,8 +1025,17 @@ export interface FeaturePlugin {
 }
 ```
 
+```text
+channels/facebook, tools/web-search, tools/read-document, tools/builtin, tools/update-agent-memory
+  ──(mỗi feature/subfolder tự onEnable → registry.register(mcpTools))──►  core/plugins (registry — nơi DUY NHẤT giữ danh sách tool)
+                                                                        │
+features/ai-orchestration ──(đọc registry, lọc theo enabledSkillGroups của core/agents)──┘
+                          ──► attach vào streamText/generateText
+```
+
 - **Agent** trong core chỉ thấy tools từ registry — không biết Facebook/TikTok cụ thể.
 - Gỡ feature `tiktok` → registry không còn TikTok tools → agent TikTok-publisher không assign được tool đó.
+- **Tránh chồng lấn:** việc "bind tool vào agent" chỉ nằm ở `core/plugins` (lọc) + `features/ai-orchestration` (attach) — không lặp lại ở `features/tools/` hay bất kỳ feature nào khác.
 
 #### Giao tiếp giữa features (không import chéo)
 
@@ -1061,17 +1077,22 @@ apps/api/src/
 │
 └── features/
     ├── index.ts               # export all plugins + manifest
-    ├── facebook/
-    │   ├── facebook.plugin.ts
-    │   ├── facebook.module.ts
-    │   └── ...
-    ├── tiktok/
-    ├── publishing/
-    ├── approvals/
-    ├── documents/
-    ├── web-search/
+    ├── channels/               # nhóm: secret = token OAuth của USER — feature nặng, tách riêng
+    │   ├── facebook/
+    │   │   ├── facebook.plugin.ts
+    │   │   ├── facebook.module.ts
+    │   │   └── ...
+    │   └── tiktok/
+    ├── tools/                  # mọi tool nhỏ gọi 1 phát trong chat (kể cả cần platform key)
+    │   ├── builtin/             # create_draft_post, handoff_to_agent, propose_automation
+    │   ├── update-agent-memory/ # không secret
+    │   ├── web-search/          # id: web-search — TAVILY_API_KEY
+    │   └── read-document/       # id: documents — storage R2/S3
+    ├── workflow/               # publishing + approvals (control plane Bot/job)
     └── ai-orchestration/
 ```
+
+> Nhóm folder (`channels/`, `tools/`) chỉ tổ chức thư mục — id `ENABLED_FEATURES` vẫn là leaf name (`facebook`, `web-search`, `documents`, …), xem bảng feature ở [§Kiến trúc API](#kiến-trúc-api-core--features-plugin).
 
 #### Scale: rút plugin → tách service riêng (giống WordPress)
 
@@ -1132,7 +1153,7 @@ Sau:    approvals ──event──► Redis Stream ──► svc-publishing (N 
 | Thêm kênh (Zalo) | Thêm `features/zalo/` hoặc `svc-zalo` — core không đổi |
 | Feature AI quá nặng | Tách `svc-ai` — core gọi qua HTTP + streaming |
 
-**Ưu tiên implement:** `core/common` + `core/plugins` → `core/conversations` **🔜** → `core/agents` **💡** → `features/facebook` **💡** → …
+**Ưu tiên implement:** `core/common` + `core/plugins` → `core/conversations` **🔜** → `core/agents` **💡** → `features/channels/facebook` **💡** → …
 
 MVP: `main.ts` import `CoreModule` + enabled features → worker processors từ feature `publishing`.  
 Sau: cùng codebase — `node dist/main.js` (api) hoặc `node dist/worker.js` (worker) hoặc deploy feature thành service riêng.
@@ -1282,16 +1303,13 @@ apps/api/src/
 │   ├── audit/
 │   └── plugins/
 └── features/
-    ├── facebook/
-    ├── tiktok/
-    ├── publishing/
-    ├── approvals/
-    ├── documents/
-    ├── web-search/
+    ├── channels/               # facebook/, tiktok/ — secret = OAuth user, feature nặng
+    ├── tools/                  # builtin/, update-agent-memory/, web-search/, read-document/
+    ├── workflow/               # publishing + approvals
     └── ai-orchestration/
 ```
 
-**Ưu tiên implement:** `core/common` + `core/plugins` → `core/conversations` **🔜** → `core/agents` **💡** → `features/facebook` **💡** → …
+**Ưu tiên implement:** `core/common` + `core/plugins` → `core/conversations` **🔜** → `core/agents` **💡** → `features/channels/facebook` **💡** → …
 
 ### `apps/web`
 
@@ -1580,7 +1598,7 @@ NEXT_PUBLIC_API_URL="http://localhost:4000"
 TOGETHER_API_KEY=
 
 # Feature plugins (comma-separated)
-ENABLED_FEATURES=facebook,tiktok,publishing,approvals,documents,ai-orchestration
+ENABLED_FEATURES=facebook,tiktok,publishing,approvals,documents,web-search,ai-orchestration
 
 # Web search (feature plugin)
 TAVILY_API_KEY=

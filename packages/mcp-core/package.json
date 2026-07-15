@@ -18,8 +18,11 @@
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\""
   },
   "dependencies": {
+    "@ai-sdk/provider-utils": "^5.0.10",
     "@aucobot/shared": "workspace:*",
-    "@aucobot/social-providers": "workspace:*"
+    "@aucobot/social-providers": "workspace:*",
+    "ai": "^7.0.4",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "typescript": "^5.8.3"

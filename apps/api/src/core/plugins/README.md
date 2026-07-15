@@ -1,26 +1,24 @@
-# `plugins/` — Plugin platform (contract)
+# `plugins/` — Plugin platform
 
-> **💡 Planned** — chưa có code. Giữ cấu trúc thư mục; triển khai khi feature đầu tiên cần đăng ký MCP tools.
+Contract chung để `src/features/*` cắm tools vào core: `PluginRegistry` đăng ký factory theo skill group; orchestration đọc registry theo `agent.enabledSkillGroups`.
 
-## Vai trò
+## Single registration path
 
-Contract chung để `src/features/*` cắm vào core: `FeaturePlugin` interface, MCP tool registry, lifecycle `onEnable` / `onDisable`. Agent (`core/agents/`) chỉ đọc tools từ registry — core không biết Facebook/TikTok cụ thể.
+**Registry ở đây là nơi DUY NHẤT giữ danh sách chat tools.** Mỗi feature module tự `register` lúc `onModuleInit`.
 
-## Không nhầm với
+```text
+tools/web-search            ──►  ┐
+tools/read-document          ─►  ├──►  PluginRegistry  ──►  ai-orchestration
+tools/builtin                ──►  │         (skillGroups filter)
+tools/update-agent-memory    ──►  ┘
+```
 
-| Folder | Vai trò |
-|--------|---------|
-| [`features/`](../features/README.md) | Bật/tắt `ENABLED_FEATURES`, nạp NestJS module — **✅ đã có** |
-| **`plugins/`** (đây) | Contract + registry MCP tools — **💡 planned** |
-| [`src/features/`](../../features/README.md) | Code nghiệp vụ từng feature (OAuth, publish, …) |
-
-Loader (`loadEnabledFeatures`) nằm ở `features/`, không phải `plugins/`.
-
-## Files (planned)
+## Files
 
 | File | Vai trò |
 |------|---------|
-| `feature-plugin.interface.ts` | Contract mỗi plugin implement |
-| `plugin.registry.ts` | Đăng ký MCP tools khi feature bật |
+| `plugin.registry.ts` | `register` / `getToolsForSkillGroups` / `getLabel` |
+| `plugins.module.ts` | Global Nest module |
+| `llm-completion.port.ts` | Port stream/complete (+ tool callbacks) |
 
-Xem `aucobot-architecture.md`.
+Loader feature modules: [`features/feature-registry.ts`](../../features/feature-registry.ts).

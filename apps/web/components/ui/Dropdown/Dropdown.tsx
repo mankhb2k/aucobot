@@ -1,5 +1,12 @@
 import { ChevronRight, Check } from "lucide-react";
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import { createPortal } from "react-dom";
 
 export interface DropdownContentProps {
   isOpen: boolean;
@@ -99,10 +106,12 @@ export const DropdownSeparator = () => (
   <div className="h-px bg-gray-100 my-1.5 mx-1"></div>
 );
 
-// Submenu Context
 interface DropdownSubContextProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
+  triggerRef: React.RefObject<HTMLDivElement | null>;
+  scheduleClose: () => void;
+  cancelClose: () => void;
 }
 
 const DropdownSubContext = createContext<DropdownSubContextProps | undefined>(
@@ -119,17 +128,38 @@ const useDropdownSub = () => {
   return context;
 };
 
-// Submenu Container
+/** Submenu — portal ra body để không bị parent `overflow` cắt. */
 export const DropdownSub: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const cancelClose = () => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  };
+
+  const scheduleClose = () => {
+    cancelClose();
+    closeTimerRef.current = setTimeout(() => setIsOpen(false), 120);
+  };
+
   return (
-    <DropdownSubContext.Provider value={{ isOpen, setIsOpen }}>
+    <DropdownSubContext.Provider
+      value={{ isOpen, setIsOpen, triggerRef, scheduleClose, cancelClose }}
+    >
       <div
+        ref={triggerRef}
         className="relative w-full"
-        onMouseEnter={() => setIsOpen(true)}
-        onMouseLeave={() => setIsOpen(false)}
+        onMouseEnter={() => {
+          cancelClose();
+          setIsOpen(true);
+        }}
+        onMouseLeave={scheduleClose}
       >
         {children}
       </div>
@@ -145,7 +175,7 @@ export const DropdownSubTrigger: React.FC<DropdownSubTriggerProps> = ({
   className = "",
   onClick,
 }) => {
-  const { isOpen, setIsOpen } = useDropdownSub();
+  const { isOpen, setIsOpen, cancelClose } = useDropdownSub();
 
   return (
     <DropdownItem
@@ -158,14 +188,16 @@ export const DropdownSubTrigger: React.FC<DropdownSubTriggerProps> = ({
               onClick();
               setIsOpen(!isOpen);
             }
-          : () => setIsOpen(!isOpen)
+          : () => {
+              cancelClose();
+              setIsOpen(!isOpen);
+            }
       }
       className={className}
     />
   );
 };
 
-// Submenu Content Panel
 export interface DropdownSubContentProps {
   children: React.ReactNode;
   className?: string;
@@ -175,15 +207,41 @@ export const DropdownSubContent: React.FC<DropdownSubContentProps> = ({
   children,
   className = "",
 }) => {
-  const { isOpen } = useDropdownSub();
+  const { isOpen, triggerRef, cancelClose, scheduleClose } = useDropdownSub();
+  const [coords, setCoords] = useState<{ top: number; left: number } | null>(
+    null,
+  );
 
-  if (!isOpen) return null;
+  useLayoutEffect(() => {
+    if (!isOpen || !triggerRef.current) {
+      setCoords(null);
+      return undefined;
+    }
+    const update = () => {
+      const rect = triggerRef.current!.getBoundingClientRect();
+      setCoords({ top: rect.top - 4, left: rect.right - 4 });
+    };
+    update();
+    window.addEventListener("resize", update);
+    window.addEventListener("scroll", update, true);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("scroll", update, true);
+    };
+  }, [isOpen, triggerRef]);
 
-  return (
+  if (!isOpen || !coords || typeof document === "undefined") return null;
+
+  return createPortal(
     <div
-      className={`absolute left-full top-0 -ml-1 z-[60] w-max overflow-hidden bg-white/95 backdrop-blur-md rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-gray-100/30 p-1 text-gray-600 text-left font-medium animate-in fade-in zoom-in-95 duration-100 select-none ${className}`}
+      className={`fixed z-[70] w-max bg-white/95 backdrop-blur-md rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-gray-100/30 p-1 text-gray-600 text-left font-medium animate-in fade-in zoom-in-95 duration-100 select-none ${className}`}
+      style={{ top: coords.top, left: coords.left }}
+      onMouseEnter={cancelClose}
+      onMouseLeave={scheduleClose}
+      onClick={(e) => e.stopPropagation()}
     >
       {children}
-    </div>
+    </div>,
+    document.body,
   );
 };
